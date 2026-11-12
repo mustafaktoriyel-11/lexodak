@@ -1,5 +1,5 @@
 // Lex Odak - service worker
-var SURUM = 'lex-odak-v19';
+var SURUM = 'lex-odak-v20';
 var MEVZUAT = 'lex-mevzuat-2';  // kanun metinleri sürüm değişse de silinmez
 var DOSYALAR = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png', './gizlilik.html'];
 
@@ -17,7 +17,7 @@ self.addEventListener('activate', function (e) {
 
 // Kanun metinleri: agdan gelen dosya saglamsa onbellegi guncelle; bozuk/bos/eksikse eldeki saglam kopyayi ver
 function mevzuatAl(req) {
-  return fetch(req).then(function (r) {
+  return fetch(req, { cache: 'no-cache' }).then(function (r) {
     if (!r.ok) throw 0;
     return r.text().then(function (t) {
       var j = JSON.parse(t);

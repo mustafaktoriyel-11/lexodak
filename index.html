@@ -2902,7 +2902,7 @@ function lexDersler(){
   }
   // madde numarası araması: "85", "m. 85", "madde 85/a", "tck 85", "5237 85", "borçlar 49", "anayasa geçici 1"
   function noAyir(ham,l){
-    var t=norm(ham).replace(/[.,]/g,' ').split(/\s+/).filter(function(w){return w&&w!=='m'&&w!=='md'&&w!=='madde'&&w!=='maddesi';});
+    var t=norm(ham).replace(/([^\d\s\/.,])(\d)/g,'$1 $2').replace(/[.,]/g,' ').split(/\s+/).filter(function(w){return w&&w!=='m'&&w!=='md'&&w!=='madde'&&w!=='maddesi';});
     if(!t.length)return null;var son=t[t.length-1];
     if(!/^\d{1,4}(\/[a-z0-9]{1,2})?$/.test(son))return null;
     t.pop();if(!t.length&&l.some(function(k){return k.no===son;}))return null;   // yalnız kanun numarası: kanunu bul

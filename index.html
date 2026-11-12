@@ -854,17 +854,141 @@ html.mf-gece .pm-basla,html.mf-gece .mt-btn,html.mf-gece .mt-alt .bitir,html.mf-
 .alt-nav em,.prg-u span small,.pm-sik-k.on .pm-sik-bas em{background:#C99A2E;color:#2E2206}
 .mt-sec button.yanlis i{background:#A0480C}
 .pm-saat::before{content:'';position:absolute;left:50%;top:50%;width:330px;height:330px;transform:translate(-50%,-52%);background:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 200 200%22 fill=%22none%22 stroke=%22%23762B37%22 stroke-width=%222.2%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Ccircle cx=%22100%22 cy=%2230%22 r=%226%22/%3E%3Cpath d=%22M100 36V170M70 176h60M80 170h40M30 52h140M100 46l-4 6h8z%22/%3E%3Cpath d=%22M40 52L22 112M40 52l18 60M160 52l-18 60M160 52l18 60%22/%3E%3Cpath d=%22M14 112h52a26 14 0 0 1-52 0zM134 112h52a26 14 0 0 1-52 0z%22/%3E%3C/svg%3E") center/contain no-repeat;opacity:.055;pointer-events:none;z-index:-1}.pm-saat{isolation:isolate}html.mf-gece .pm-saat::before{background-image:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 200 200%22 fill=%22none%22 stroke=%22%23FFFFFF%22 stroke-width=%222.2%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Ccircle cx=%22100%22 cy=%2230%22 r=%226%22/%3E%3Cpath d=%22M100 36V170M70 176h60M80 170h40M30 52h140M100 46l-4 6h8z%22/%3E%3Cpath d=%22M40 52L22 112M40 52l18 60M160 52l-18 60M160 52l18 60%22/%3E%3Cpath d=%22M14 112h52a26 14 0 0 1-52 0zM134 112h52a26 14 0 0 1-52 0z%22/%3E%3C/svg%3E");opacity:.06}.mt-hero{background:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2272%22 height=%2272%22 viewBox=%220 0 72 72%22%3E%3Ctext x=%2218%22 y=%2230%22 font-family=%22Georgia,serif%22 font-size=%2222%22 font-weight=%22700%22 fill=%22white%22 fill-opacity=%22.07%22 text-anchor=%22middle%22%3E%C2%A7%3C/text%3E%3Cg transform=%22translate(46 44) scale(.12)%22 fill=%22none%22 stroke=%22white%22 stroke-opacity=%22.08%22 stroke-width=%2210%22 stroke-linecap=%22round%22%3E%3Cpath d=%22M100 36V170M70 176h60M30 52h140M40 52L22 112M40 52l18 60M160 52l-18 60M160 52l18 60M14 112h52a26 14 0 0 1-52 0zM134 112h52a26 14 0 0 1-52 0z%22/%3E%3C/g%3E%3C/svg%3E") 0 0/72px 72px,linear-gradient(135deg,#91283A,#4D1A22)}
-#lex-acilis{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;background:radial-gradient(120% 80% at 50% 30%,#8a2a3b 0%,#4D1A22 60%,#281619 100%);color:#fff;text-align:center;transition:opacity .4s ease,visibility .4s}#lex-acilis.git{opacity:0;visibility:hidden}#lex-acilis .la-ic{display:flex;flex-direction:column;align-items:center;animation:laGir .6s cubic-bezier(.2,.9,.3,1.25) both}#lex-acilis img{width:112px;height:112px;border-radius:26px;box-shadow:0 14px 40px rgba(0,0,0,.45)}#lex-acilis b{font-size:34px;font-weight:800;margin-top:20px;letter-spacing:-.5px}#lex-acilis span{font-size:16px;line-height:1.45;margin-top:8px;color:#F3DFE3;opacity:0;animation:laYazi .5s .35s ease forwards}#lex-acilis em{font-style:normal;font-weight:700;color:#E9C46A}@keyframes laGir{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:none}}@keyframes laYazi{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}@media (prefers-reduced-motion:reduce){#lex-acilis .la-ic,#lex-acilis span{animation:none;opacity:1}}
+
+#lex-acilis{position:fixed;inset:0;z-index:99999;background:#5E1F2A;overflow:hidden;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;cursor:pointer}
+#lex-acilis *{box-sizing:border-box}
+#lex-acilis svg{display:block}
+#lex-acilis .la-ikon{position:absolute;left:50%;top:50%;width:112px;height:112px;margin:-56px 0 0 -56px;border-radius:26px;animation:la-ikon .4s cubic-bezier(.5,0,.8,.4) both}
+@keyframes la-ikon{to{transform:translateY(-70px) scale(.45);opacity:0}}
+/* sahne: 360x640 sabit kutu, JS --la-s ile ölçekler */
+#lex-acilis .la-s{position:absolute;left:50%;top:50%;width:360px;height:640px;margin:-320px 0 0 -180px;transform:scale(var(--la-s,1));overflow:hidden}
+#lex-acilis .la-s>*{position:absolute}
+/* bina */
+#lex-acilis .la-b{left:11px;top:150px;width:338px;height:286px;transform-origin:50% 100%;animation:la-b 3.2s both;z-index:2}
+#lex-acilis .la-b svg{width:338px;height:286px}
+@keyframes la-b{
+0%,3.1%{opacity:0;transform:scale(.85)}
+14.1%{opacity:1;transform:scale(1)}
+50%{transform:none}
+53%{transform:translateX(-3px) rotate(-.7deg)}
+56%{transform:translateX(3px) rotate(.7deg)}
+59%{transform:translateX(-2px) rotate(-.4deg)}
+62.5%{opacity:1;transform:none}
+81.25%,100%{opacity:.1;transform:scale(.88)}}
+#lex-acilis .la-pen{opacity:0;animation:la-pen 1s 1.6s both}
+@keyframes la-pen{0%{opacity:0}30%{opacity:1}100%{opacity:.8}}
+/* kapı penceresi (clip) */
+#lex-acilis .la-dw{position:absolute;left:140.4px;top:166.4px;width:57.2px;height:88.4px;overflow:hidden;border-radius:26px 26px 0 0;background:#2A1218}
+#lex-acilis .la-dw>*{position:absolute}
+#lex-acilis .la-ig{inset:0;background:radial-gradient(circle at 50% 70%,#FFF1B8,#F5BE4A 60%,#C9962B);opacity:0;animation:la-ig 1s 1.6s both}
+@keyframes la-ig{0%{opacity:0}35%{opacity:1}100%{opacity:.9}}
+#lex-acilis .la-kp{left:0;top:0;width:100%;height:100%;transform-origin:0 50%;background:linear-gradient(#8A2F3E,#6E2430);border-right:3px solid #C9962B;animation:la-kp .3s 1s ease-in both;z-index:3}
+#lex-acilis .la-kp:before{content:"";position:absolute;inset:12px 9px 10px 9px;border:2px solid rgba(201,150,43,.7);border-radius:16px 16px 2px 2px}
+#lex-acilis .la-kp:after{content:"";position:absolute;right:7px;top:52%;width:5px;height:5px;border-radius:50%;background:#FFD97A}
+@keyframes la-kp{to{transform:scaleX(.12)}}
+/* kedi */
+#lex-acilis .la-ka{left:154px;top:356px;width:52px;height:52px;z-index:3;animation:la-kz .9s .4s cubic-bezier(.3,.5,.6,1) both,la-yok .01s 1.3s both}
+#lex-acilis .la-kh{width:52px;height:52px;transform-origin:50% 92%;animation:la-kh .15s .4s 6 ease-in-out both}
+#lex-acilis .la-ka svg,#lex-acilis .la-kb svg{width:52px;height:52px}
+@keyframes la-kz{from{transform:translateX(-214px)}to{transform:none}}
+@keyframes la-yok{to{opacity:0}}
+@keyframes la-kh{0%{transform:scale(1.06,.9)}45%{transform:translateY(-10px) rotate(-5deg)}100%{transform:scale(1.06,.9)}}
+#lex-acilis .la-kb{left:2.6px;top:40.4px;width:52px;height:52px;transform-origin:50% 90%;opacity:0;animation:la-kb .3s 1.3s ease-in forwards;z-index:1}
+@keyframes la-kb{0%{opacity:1;transform:none}100%{opacity:0;transform:translateY(-12px) scale(.4)}}
+/* aslan (kapıda, kırpılı) */
+#lex-acilis .la-al{left:-31.4px;top:-19.6px;width:120px;height:120px;transform-origin:60px 108px;z-index:2;opacity:0;transform:scale(.48);animation:la-al .2s 2s ease-out forwards,la-yok .01s 2.2s forwards}
+#lex-acilis .la-al svg,#lex-acilis .la-ab svg{width:120px;height:120px}
+@keyframes la-al{0%{opacity:0;transform:translateY(24px) scale(.4)}100%{opacity:1;transform:scale(.48)}}
+/* aslan (büyük) */
+#lex-acilis .la-ab{left:120px;top:296.8px;width:120px;height:120px;z-index:5;transform-origin:60px 108px;transform:translateY(-45px) scale(2.05);animation:la-ab .4s 2.2s cubic-bezier(.2,.8,.25,1.12) both}
+@keyframes la-ab{0%{opacity:0;transform:scale(.48)}1%{opacity:1;transform:scale(.48)}}
+#lex-acilis .la-bas,#lex-acilis .la-nf{width:120px;height:120px;transform-origin:60px 108px;position:relative}
+#lex-acilis .la-bas{animation:la-nod .45s 2.75s ease-in-out both}
+@keyframes la-nod{40%{transform:translateY(4px) rotate(-3deg)}}
+#lex-acilis .la-nf{animation:la-nf 2.4s 3.2s ease-in-out infinite alternate}
+@keyframes la-nf{to{transform:scale(1.025) translateY(-1px)}}
+#lex-acilis .la-lid{position:absolute;left:0;top:0;width:120px;height:120px}
+#lex-acilis .la-l{fill:#EFB04C;transform-box:fill-box;transform-origin:50% 0;transform:scaleY(0);animation:la-bl .16s 2.65s ease-in-out both}
+@keyframes la-bl{50%{transform:scaleY(1)}}
+/* ışık ve kıvılcım */
+#lex-acilis .la-hl{left:20px;top:190px;width:320px;height:320px;border-radius:50%;background:radial-gradient(circle,rgba(255,206,100,.6),rgba(255,206,100,0) 65%);opacity:0;z-index:1;animation:la-hl 1.3s 1.6s both}
+@keyframes la-hl{0%{opacity:0;transform:scale(.6)}30%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1.2)}}
+#lex-acilis .la-sp{left:174px;top:342px;z-index:4;opacity:0;color:#FFD97A;font:700 18px Georgia,serif;line-height:12px;animation:la-sp .55s ease-out both}
+#lex-acilis .la-st{width:12px;height:12px;background:#FFD97A;clip-path:polygon(50% 0,62% 38%,100% 50%,62% 62%,50% 100%,38% 62%,0 50%,38% 38%)}
+@keyframes la-sp{0%{opacity:0;transform:translate(0,0) scale(.2)}30%{opacity:1}100%{opacity:0;transform:translate(var(--x),var(--y)) scale(1.1) rotate(90deg)}}
+/* yazılar */
+#lex-acilis .la-t{left:0;top:404px;width:360px;text-align:center;z-index:6;color:#fff}
+#lex-acilis .la-t b{display:block;font-size:44px;line-height:50px;font-weight:800;letter-spacing:.5px;animation:la-t .35s 2.6s ease-out both}
+#lex-acilis .la-t i{display:block;font-style:normal;font-size:18px;line-height:24px;margin-top:6px;color:#F6EBDD;animation:la-t .35s 2.75s ease-out both}
+#lex-acilis .la-t u{display:block;text-decoration:none;font-size:18px;line-height:24px;font-weight:700;color:#E3B04B;animation:la-t .35s 2.85s ease-out both}
+@keyframes la-t{from{opacity:0;transform:translateY(12px)}}
+@media (prefers-reduced-motion:reduce){
+#lex-acilis *{animation:none!important}
+#lex-acilis .la-gec{display:none!important}}
+
+#lex-acilis.kisa{display:flex;align-items:center;justify-content:center;color:#fff;text-align:center;background:#5E1F2A radial-gradient(90% 60% at 50% 50%,rgba(255,255,255,.07),transparent 70%)}#lex-acilis.kisa .la-ic{position:absolute;left:0;right:0;top:50%;margin-top:-56px;display:flex;flex-direction:column;align-items:center}#lex-acilis.kisa img{width:112px;height:112px;border-radius:26px;box-shadow:0 14px 40px rgba(0,0,0,.45)}#lex-acilis.kisa b{font-size:34px;font-weight:800;margin-top:20px;letter-spacing:-.5px;opacity:0;animation:la-ky .4s .05s ease forwards}#lex-acilis.kisa span{font-size:16px;line-height:1.45;margin-top:8px;color:#F3DFE3;opacity:0;animation:la-ky .4s .2s ease forwards}#lex-acilis.kisa em{font-style:normal;font-weight:700;color:#E9C46A}@keyframes la-ky{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 </style>
 <script>try{if(localStorage.getItem('mf-tema')==='gece')document.documentElement.classList.add('mf-gece');}catch(e){}</script>
 </head>
 <body>
-<div id="lex-acilis" aria-hidden="true"><div class="la-ic"><img src="icon-192.png" alt=""><b>Lex Odak</b><span>Hukuk öğrencisinin<br><em>cebindeki çalışma asistanı</em></span></div></div>
-<script>(function(){var a=document.getElementById('lex-acilis'),g=false;try{g=sessionStorage.getItem('lex-acildi')==='1';sessionStorage.setItem('lex-acildi','1');}catch(e){}
-if(g||!a){if(a)a.remove();return;}var t0=Date.now(),bitti=false;
-function kapat(){if(bitti)return;bitti=true;a.classList.add('git');setTimeout(function(){a.remove();},420);}
-a.addEventListener('click',kapat);
-window.addEventListener('load',function(){setTimeout(kapat,Math.max(0,1300-(Date.now()-t0)));});setTimeout(kapat,2600);})();</script>
+<div id="lex-acilis" aria-hidden="true">
+<img class="la-ikon" src="icon-192.png" alt="">
+<div class="la-s">
+ <div class="la-hl la-gec"></div>
+ <div class="la-b la-gec">
+  <svg viewBox="0 0 260 220" stroke="#5E1F2A" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+   <rect x="6" y="205" width="248" height="9" rx="2" fill="#F6EBDD"/>
+   <rect x="14" y="196" width="232" height="9" rx="2" fill="#F6EBDD"/>
+   <rect x="22" y="86" width="216" height="110" fill="#E8D5B9"/>
+   <rect x="53" y="112" width="22" height="44" rx="4" fill="#3A1620"/><rect class="la-pen" x="53" y="112" width="22" height="44" rx="4" fill="#FFD97A" stroke="none"/>
+   <rect x="185" y="112" width="22" height="44" rx="4" fill="#3A1620"/><rect class="la-pen" x="185" y="112" width="22" height="44" rx="4" fill="#FFD97A" stroke="none"/>
+   <rect x="102" y="122" width="56" height="74" rx="3" fill="#C9962B"/>
+   <rect x="108" y="128" width="44" height="68" fill="#2A1218" stroke="none"/>
+   <g id="la-sut" fill="#F6EBDD">
+    <g><rect x="31" y="93" width="18" height="97"/><rect x="28" y="86" width="24" height="8" rx="2" fill="#C9962B"/><rect x="28" y="188" width="24" height="8" rx="2" fill="#C9962B"/><path d="M37 100v82M43 100v82" stroke="#E2CDB0" stroke-width="2"/></g>
+    <g><rect x="79" y="93" width="18" height="97"/><rect x="76" y="86" width="24" height="8" rx="2" fill="#C9962B"/><rect x="76" y="188" width="24" height="8" rx="2" fill="#C9962B"/><path d="M85 100v82M91 100v82" stroke="#E2CDB0" stroke-width="2"/></g>
+    <g><rect x="163" y="93" width="18" height="97"/><rect x="160" y="86" width="24" height="8" rx="2" fill="#C9962B"/><rect x="160" y="188" width="24" height="8" rx="2" fill="#C9962B"/><path d="M169 100v82M175 100v82" stroke="#E2CDB0" stroke-width="2"/></g>
+    <g><rect x="211" y="93" width="18" height="97"/><rect x="208" y="86" width="24" height="8" rx="2" fill="#C9962B"/><rect x="208" y="188" width="24" height="8" rx="2" fill="#C9962B"/><path d="M217 100v82M223 100v82" stroke="#E2CDB0" stroke-width="2"/></g>
+   </g>
+   <rect x="14" y="74" width="232" height="14" rx="2" fill="#F6EBDD"/>
+   <path d="M20 81h220" stroke="#C9962B" stroke-width="3"/>
+   <path d="M8 74L130 12L252 74Z" fill="#F6EBDD"/>
+   <path d="M34 67L130 24L226 67Z" fill="#E8D5B9" stroke="#C9962B" stroke-width="2.5"/>
+   <circle cx="130" cy="51" r="13" fill="#5E1F2A" stroke="#C9962B" stroke-width="3"/>
+   <g fill="none" stroke="#E3B04B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" transform="translate(130 51) scale(.7) translate(-130 -49.5)"><path d="M130 42v15M125.5 58h9M121.5 46h17"/><circle cx="130" cy="42" r="1.3" fill="#E3B04B" stroke="none"/><path d="M121.5 46l-3.6 7M121.5 46l3.6 7M138.5 46l-3.6 7M138.5 46l3.6 7"/><path d="M117.4 53h8.2a4.1 2.6 0 0 1-8.2 0zM134.4 53h8.2a4.1 2.6 0 0 1-8.2 0z" fill="#E3B04B"/></g>
+  </svg>
+  <div class="la-dw">
+   <div class="la-ig"></div>
+   <div class="la-kb"><div style="width:52px;height:52px"><svg viewBox="0 0 120 120"><use href="#mf-kedi"/></svg></div></div>
+   <div class="la-al"><svg viewBox="0 0 120 120"><use href="#mf-aslan"/></svg></div>
+   <div class="la-kp"></div>
+  </div>
+ </div>
+ <div class="la-ka la-gec"><div class="la-kh"><svg viewBox="0 0 120 120"><use href="#mf-kedi"/></svg></div></div>
+ <i class="la-sp la-gec" style="--x:-70px;--y:-60px;animation-delay:1.6s">§</i>
+ <i class="la-sp la-st la-gec" style="--x:60px;--y:-80px;animation-delay:1.65s"></i>
+ <i class="la-sp la-gec" style="--x:85px;--y:-20px;animation-delay:1.7s">§</i>
+ <i class="la-sp la-st la-gec" style="--x:-95px;--y:10px;animation-delay:1.7s"></i>
+ <i class="la-sp la-st la-gec" style="--x:-30px;--y:-100px;animation-delay:1.75s"></i>
+ <i class="la-sp la-gec" style="--x:30px;--y:-50px;animation-delay:1.8s">§</i>
+ <i class="la-sp la-st la-gec" style="--x:100px;--y:-65px;animation-delay:1.8s"></i>
+ <div class="la-ab"><div class="la-bas"><div class="la-nf"><svg viewBox="0 0 120 120"><use href="#mf-aslan"/></svg>
+  <svg class="la-lid" viewBox="0 0 120 120"><ellipse class="la-l" cx="50" cy="47.2" rx="5.4" ry="6"/><ellipse class="la-l" cx="70" cy="47.2" rx="5.4" ry="6"/></svg></div></div></div>
+ <div class="la-t"><b>Lex Odak</b><i>Hukuk öğrencisinin</i><u>cebindeki çalışma asistanı</u></div>
+</div>
+</div>
+<script>(function(){var a=document.getElementById('lex-acilis');if(!a)return;var g=false,tam=true;
+try{g=sessionStorage.getItem('lex-acildi')==='1';sessionStorage.setItem('lex-acildi','1');}catch(e){}
+if(g){a.remove();return;}
+try{var n=parseInt(localStorage.getItem('lex-acilis-sayi')||'0',10)||0;tam=(n%5===0);localStorage.setItem('lex-acilis-sayi',String(n+1));}catch(e){}   // ilk açılış ve sonra her 5 açılıştan biri tam animasyon
+if(!tam){a.className='kisa';a.innerHTML='<div class="la-ic"><img src="icon-192.png" alt=""><b>Lex Odak</b><span>Hukuk öğrencisinin<br><em>cebindeki çalışma asistanı</em></span></div>';}
+var sc=a.querySelector('.la-s');function fit(){if(sc)sc.style.setProperty('--la-s',Math.min(innerWidth/360,innerHeight/640));}fit();addEventListener('resize',fit);
+var t0=Date.now(),k=0,mv=!tam,min=tam?3300:1100,max=tam?4300:2600;
+function kapat(){if(k)return;k=1;removeEventListener('resize',fit);a.style.transition='opacity .4s';a.style.pointerEvents='none';a.style.opacity=0;setTimeout(function(){a.remove();},420);}
+window.LEX_ACILIS_KAPAT=kapat;a.addEventListener('pointerdown',kapat);
+function dene(){if(Date.now()-t0>=min&&mv)kapat();}
+addEventListener('load',function(){var h=window.LEX_MV_HAZIRLA;if(h)h().then(function(){mv=true;dene();});else mv=true;setTimeout(dene,Math.max(0,min-(Date.now()-t0))+20);});
+setTimeout(kapat,max);})();</script>
 
 <svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" style="position:absolute" aria-hidden="true">
 <defs>
@@ -2854,6 +2978,7 @@ function lexDersler(){
           if(m.b)L.push([m.n,m.b,on+norm(m.b),0]);});
         BSL.push({no:k.no,kisa:k.kisa,m:L});});
     }).catch(function(){tumSoz=null;IDX=null;throw 0;});return tumSoz;}
+  window.LEX_MV_HAZIRLA=function(){return tum().catch(function(){});};   // açılış ekranında sessizce önceden yükle
   function indeks(){return tum().then(function(){return IDX;}).catch(function(){return [];});}
   function kanun(no){return tum().then(function(){if(!KAN[no])throw 0;return KAN[no];});}
   function basliklar(){return tum().then(function(){return BSL;}).catch(function(){return [];});}

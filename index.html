@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Lex Odak</title>
-<meta name="description" content="Hukuk öğrencileri için odak sayacı, ders ve sınav takibi, HMGS denemesi ve günlük test.">
+<meta name="description" content="Hukuk öğrencisinin cebindeki çalışma asistanı: internetsiz mevzuat, geniş soru arşivi, odak sayacı ve düzenli çalışma takibi.">
 <meta name="theme-color" content="#762B37">
 <meta name="color-scheme" content="light dark">
 <link rel="manifest" href="manifest.webmanifest">
@@ -854,10 +854,18 @@ html.mf-gece .pm-basla,html.mf-gece .mt-btn,html.mf-gece .mt-alt .bitir,html.mf-
 .alt-nav em,.prg-u span small,.pm-sik-k.on .pm-sik-bas em{background:#C99A2E;color:#2E2206}
 .mt-sec button.yanlis i{background:#A0480C}
 .pm-saat::before{content:'';position:absolute;left:50%;top:50%;width:330px;height:330px;transform:translate(-50%,-52%);background:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 200 200%22 fill=%22none%22 stroke=%22%23762B37%22 stroke-width=%222.2%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Ccircle cx=%22100%22 cy=%2230%22 r=%226%22/%3E%3Cpath d=%22M100 36V170M70 176h60M80 170h40M30 52h140M100 46l-4 6h8z%22/%3E%3Cpath d=%22M40 52L22 112M40 52l18 60M160 52l-18 60M160 52l18 60%22/%3E%3Cpath d=%22M14 112h52a26 14 0 0 1-52 0zM134 112h52a26 14 0 0 1-52 0z%22/%3E%3C/svg%3E") center/contain no-repeat;opacity:.055;pointer-events:none;z-index:-1}.pm-saat{isolation:isolate}html.mf-gece .pm-saat::before{background-image:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 200 200%22 fill=%22none%22 stroke=%22%23FFFFFF%22 stroke-width=%222.2%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Ccircle cx=%22100%22 cy=%2230%22 r=%226%22/%3E%3Cpath d=%22M100 36V170M70 176h60M80 170h40M30 52h140M100 46l-4 6h8z%22/%3E%3Cpath d=%22M40 52L22 112M40 52l18 60M160 52l-18 60M160 52l18 60%22/%3E%3Cpath d=%22M14 112h52a26 14 0 0 1-52 0zM134 112h52a26 14 0 0 1-52 0z%22/%3E%3C/svg%3E");opacity:.06}.mt-hero{background:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2272%22 height=%2272%22 viewBox=%220 0 72 72%22%3E%3Ctext x=%2218%22 y=%2230%22 font-family=%22Georgia,serif%22 font-size=%2222%22 font-weight=%22700%22 fill=%22white%22 fill-opacity=%22.07%22 text-anchor=%22middle%22%3E%C2%A7%3C/text%3E%3Cg transform=%22translate(46 44) scale(.12)%22 fill=%22none%22 stroke=%22white%22 stroke-opacity=%22.08%22 stroke-width=%2210%22 stroke-linecap=%22round%22%3E%3Cpath d=%22M100 36V170M70 176h60M30 52h140M40 52L22 112M40 52l18 60M160 52l-18 60M160 52l18 60M14 112h52a26 14 0 0 1-52 0zM134 112h52a26 14 0 0 1-52 0z%22/%3E%3C/g%3E%3C/svg%3E") 0 0/72px 72px,linear-gradient(135deg,#91283A,#4D1A22)}
+#lex-acilis{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;background:radial-gradient(120% 80% at 50% 30%,#8a2a3b 0%,#4D1A22 60%,#281619 100%);color:#fff;text-align:center;transition:opacity .4s ease,visibility .4s}#lex-acilis.git{opacity:0;visibility:hidden}#lex-acilis .la-ic{display:flex;flex-direction:column;align-items:center;animation:laGir .6s cubic-bezier(.2,.9,.3,1.25) both}#lex-acilis img{width:112px;height:112px;border-radius:26px;box-shadow:0 14px 40px rgba(0,0,0,.45)}#lex-acilis b{font-size:34px;font-weight:800;margin-top:20px;letter-spacing:-.5px}#lex-acilis span{font-size:16px;line-height:1.45;margin-top:8px;color:#F3DFE3;opacity:0;animation:laYazi .5s .35s ease forwards}#lex-acilis em{font-style:normal;font-weight:700;color:#E9C46A}@keyframes laGir{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:none}}@keyframes laYazi{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}@media (prefers-reduced-motion:reduce){#lex-acilis .la-ic,#lex-acilis span{animation:none;opacity:1}}
 </style>
 <script>try{if(localStorage.getItem('mf-tema')==='gece')document.documentElement.classList.add('mf-gece');}catch(e){}</script>
 </head>
 <body>
+<div id="lex-acilis" aria-hidden="true"><div class="la-ic"><img src="icon-192.png" alt=""><b>Lex Odak</b><span>Hukuk öğrencisinin<br><em>cebindeki çalışma asistanı</em></span></div></div>
+<script>(function(){var a=document.getElementById('lex-acilis'),g=false;try{g=sessionStorage.getItem('lex-acildi')==='1';sessionStorage.setItem('lex-acildi','1');}catch(e){}
+if(g||!a){if(a)a.remove();return;}var t0=Date.now(),bitti=false;
+function kapat(){if(bitti)return;bitti=true;a.classList.add('git');setTimeout(function(){a.remove();},420);}
+a.addEventListener('click',kapat);
+window.addEventListener('load',function(){setTimeout(kapat,Math.max(0,1300-(Date.now()-t0)));});setTimeout(kapat,2600);})();</script>
+
 <svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" style="position:absolute" aria-hidden="true">
 <defs>
 <radialGradient id="mfk-gov" cx="50%" cy="40%" r="60%"><stop offset="0" stop-color="#FFB25E"/><stop offset="1" stop-color="#F28A2E"/></radialGradient>
@@ -931,7 +939,7 @@ html.mf-gece .pm-basla,html.mf-gece .mt-btn,html.mf-gece .mt-alt .bitir,html.mf-
 <div class="aslan-hale" aria-hidden="true"></div>
 <header class="ust"><div class="ust-ic">
 <img src="icon-192.png" alt="">
-<h1>Lex Odak <small>Hukuk Çalışma Sayacı &amp; Takibi</small></h1>
+<h1>Lex Odak <small>Cebindeki çalışma asistanın</small></h1>
 <div class="bosluk"></div>
 <button class="ikon-btn" id="tema" type="button" aria-label="Gece modu">🌙</button>
 </div></header>
@@ -2702,7 +2710,7 @@ function lexDersler(){
   function okBaslik(){
     var o=window.LEX_OKUL(),h=document.querySelector('.ust h1 small');if(!h)return;
     if(o){h.className='lex-okul';h.innerHTML=rozet(o,true)+'<span>'+esc(window.LEX_HUKUK_AD(o))+'</span>';h.setAttribute('role','button');h.setAttribute('aria-label','Okulunu değiştir: '+o.ad);}
-    else{h.className='';h.textContent='Hukuk Çalışma Sayacı & Takibi';h.removeAttribute('role');h.removeAttribute('aria-label');}
+    else{h.className='';h.textContent='Cebindeki çalışma asistanın';h.removeAttribute('role');h.removeAttribute('aria-label');}
   }
   function okListe(){
     var q=norm($('lex-ok-ara').value.trim()),mev=window.LEX_OKUL(),o='',n=0;

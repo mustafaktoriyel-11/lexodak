@@ -1,5 +1,5 @@
 // Lex Odak - service worker
-var SURUM = 'lex-odak-v27';
+var SURUM = 'lex-odak-v28';
 var MEVZUAT = 'lex-mevzuat-2';  // kanun metinleri sürüm değişse de silinmez
 var DOSYALAR = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png', './gizlilik.html'];
 

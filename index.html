@@ -807,6 +807,32 @@ html.mf-gece .dt-d{background:#392327;border-color:#42272C}html.mf-gece .dt-b{co
 html.mf-gece .dt-t button{background:#472E32;color:#E6DBDD}html.mf-gece .dt-t button b{color:#E2BCC2}
 html.mf-gece .dt-acik{background:#1D3A2E;color:#E6DBDD}html.mf-gece .dt-acik.no{background:#3A2618}
 
+/* ---- klasik sınav + IRAC ---- */
+.dt-irac{display:flex;width:100%;align-items:center;gap:10px;border:0;border-radius:12px;background:#FBF3E4;color:#5E1F2A;font:inherit;font-size:14px;font-weight:700;padding:11px 12px;margin:8px 0 2px;cursor:pointer;text-align:left}
+.dt-irac span{flex:1}.dt-irac em{font-style:normal}
+.dt-t button.ks{background:#FBF3E4}.dt-t button.ks b{color:#8A3B47}.dt-t button.ks.cz small{color:#1FA463}
+.ks-bilgi{background:#FBF3E4;border-radius:14px;padding:12px 14px;margin:0 0 12px;font-size:14px;line-height:1.5;color:#3B2A2D}
+.ks-bilgi b{display:block;font-size:16px;margin-bottom:2px;color:#5E1F2A}.ks-bilgi p{margin:6px 0 0}
+.ks-metin{font-size:15px;line-height:1.6;color:#351E22}.ks-metin p{margin:0 0 10px}
+.ks-ac{margin-top:4px}
+.ks-coz{margin-top:12px}.ks-coz[hidden]{display:none}
+.ks-b{border:1px solid #EADCC8;border-radius:14px;overflow:hidden;margin:0 0 12px;background:#fff}
+.ks-bb{background:#5E1F2A;color:#fff;font-weight:700;font-size:14.5px;padding:9px 12px;line-height:1.4}.ks-bb small{display:block;font-size:11px;letter-spacing:.5px;color:#E9C46A;margin-bottom:2px}
+.ks-r{display:flex;gap:10px;padding:10px 12px;border-top:1px solid #F1E8DC;font-size:14.5px;line-height:1.55;color:#351E22}
+.ks-r>i{flex:none;font-style:normal;width:26px;height:26px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;color:#fff}
+.ks-r>div{flex:1;min-width:0}.ks-r>div>b{display:block;font-size:12px;letter-spacing:.4px;text-transform:uppercase;color:#625356;margin-bottom:2px}.ks-r p{margin:0 0 8px}.ks-r p:last-child{margin:0}
+.ks-r.i>i{background:#8A3B47}.ks-r.r>i{background:#762B37}.ks-r.a>i{background:#C9962B}.ks-r.c>i{background:#1FA463}
+.ks-r.c{background:#F2FAF5}
+.ks-md{display:inline-block;border:0;border-radius:8px;background:#F7EBED;color:#762B37;font:inherit;font-size:12.5px;font-weight:700;padding:4px 9px;margin:6px 6px 0 0;cursor:pointer}
+.ks-cev{background:#FDFCFC;border-radius:12px;padding:12px 14px;font-size:14.5px;line-height:1.6}.ks-cev p{margin:0 0 8px}
+.ks-not{font-size:12.5px;color:#625356;text-align:center;margin:4px 6px 14px;line-height:1.45}
+.ir-adim{display:flex;gap:12px;margin:0 0 12px}.ir-adim>i{flex:none;font-style:normal;width:38px;height:38px;border-radius:11px;color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:17px}
+.ir-adim b{display:block;font-size:15px}.ir-adim p{margin:2px 0 0;font-size:14px;line-height:1.5;color:#3E2E31}
+.ir-ipucu{margin:0;padding-left:18px;font-size:14px;line-height:1.55}.ir-ipucu li{margin:0 0 6px}
+html.mf-gece .dt-irac,html.mf-gece .dt-t button.ks,html.mf-gece .ks-bilgi{background:#3A2A2E;color:#F0DCDF}html.mf-gece .ks-bilgi b{color:#F6C7CE}html.mf-gece .dt-t button.ks b{color:#F6C7CE}
+html.mf-gece .ks-metin,html.mf-gece .ks-r{color:#E6DBDD}html.mf-gece .ks-b{background:#392327;border-color:#42272C}html.mf-gece .ks-r{border-color:#42272C}html.mf-gece .ks-r.c{background:#1D3A2E}
+html.mf-gece .ks-md{background:#472E32;color:#E9CDD1}html.mf-gece .ks-cev{background:#392327;color:#E6DBDD}html.mf-gece .ir-adim p{color:#CBB6BA}
+
 .mv-hero h2{margin:10px 0 4px}
 .mv-liste{margin:12px 0 4px}
 .mv-k{display:flex;width:100%;align-items:center;gap:12px;border:0;background:#FDFCFC;border-radius:14px;box-shadow:0 2px 10px rgba(77,26,34,.06);padding:12px 14px;margin:0 0 10px;font:inherit;text-align:left;color:#351E22;cursor:pointer}
@@ -836,7 +862,15 @@ html.mf-gece .mv-bas b{color:#fff}html.mf-gece .mv-m p{color:#E6DBDD}html.mf-gec
 html.mf-gece .mv-yapis{background:#351E22}html.mf-gece .mv-m mark{background:#5C3F22}
 html.mf-gece .mt-kaynak.git{color:#E2BCC2}
 
-#mv-once[hidden],#mv-daha[hidden]{display:none}.mv-yildiz{float:right;margin:-6px -6px 0 8px;width:40px;height:40px;border:0;background:none;font-size:22px;line-height:1;color:#B8A9AC;cursor:pointer;border-radius:50%}.mv-yildiz.on{color:#C9962B}.mv-yildiz:active{transform:scale(.88)}.mv-fav-s{display:flex;align-items:center;gap:4px}.mv-fav-s .mv-b{flex:1;min-width:0}.mv-fav-s .mv-yildiz{float:none;margin:0;flex:none}#mv-fav{margin-bottom:6px}.mv-fav-ip{margin:4px 2px 10px}.mv-b span mark{background:#F6E3B5;color:inherit;border-radius:3px;padding:0 1px}.mv-bb{display:block;font-style:normal;font-weight:700;margin-bottom:2px}.mv-oz{margin:0 2px 6px}#mv-mt-daha{margin-top:10px}
+#mv-once[hidden],#mv-daha[hidden]{display:none}
+.mv-notb{float:right;margin:-6px -2px 0 0;width:40px;height:40px;border:0;background:none;font-size:19px;line-height:1;cursor:pointer;border-radius:50%;filter:grayscale(1);opacity:.55}.mv-notb.on{filter:none;opacity:1}
+.mv-not{margin:10px 0 0;padding:9px 12px;border-left:4px solid #C9962B;background:#FBF3E4;border-radius:0 10px 10px 0;font-size:14px;line-height:1.5;color:#3B2A2D;white-space:pre-wrap;cursor:pointer}
+.mv-not::before{content:'📝 Notum';display:block;font-size:11.5px;font-weight:800;color:#8A6A2B;margin-bottom:2px}
+.mv-not-d{margin:10px 0 0}.mv-not-t{width:100%;min-height:96px;resize:vertical;font-size:14.5px;line-height:1.5;box-sizing:border-box}
+.mv-not-a{display:flex;align-items:center;gap:8px;margin-top:6px}.mv-not-a small{flex:1;color:#625356;font-size:12px}.mv-not-a button{border:0;border-radius:10px;padding:8px 14px;font:inherit;font-size:13.5px;font-weight:700;cursor:pointer;background:#762B37;color:#fff}.mv-not-a button.sil{background:none;color:#B3261E}
+.mv-sek{display:flex;gap:6px;margin:4px 0 8px}.mv-sek button{flex:1;border:0;border-radius:10px;padding:9px 6px;font:inherit;font-size:13.5px;font-weight:700;background:#F7F2F3;color:#504043;cursor:pointer}.mv-sek button.on{background:#762B37;color:#fff}
+.mv-b span.mv-nk{color:#5A4A2A;font-style:italic}
+html.mf-gece .mv-not{background:#3A2F1E;color:#EADFC8}html.mf-gece .mv-sek button{background:#472E32;color:#CBB6BA}html.mf-gece .mv-sek button.on{background:#873341;color:#fff}html.mf-gece .mv-b span.mv-nk{color:#E2CFA4}.mv-yildiz{float:right;margin:-6px -6px 0 8px;width:40px;height:40px;border:0;background:none;font-size:22px;line-height:1;color:#B8A9AC;cursor:pointer;border-radius:50%}.mv-yildiz.on{color:#C9962B}.mv-yildiz:active{transform:scale(.88)}.mv-fav-s{display:flex;align-items:center;gap:4px}.mv-fav-s .mv-b{flex:1;min-width:0}.mv-fav-s .mv-yildiz{float:none;margin:0;flex:none}#mv-fav{margin-bottom:6px}.mv-fav-ip{margin:4px 2px 10px}.mv-b span mark{background:#F6E3B5;color:inherit;border-radius:3px;padding:0 1px}.mv-bb{display:block;font-style:normal;font-weight:700;margin-bottom:2px}.mv-oz{margin:0 2px 6px}#mv-mt-daha{margin-top:10px}
 .mv-k i.mv-bayrak{position:relative;overflow:hidden;width:54px;height:36px;border-radius:4px;background:#E30A17;box-shadow:0 1px 4px rgba(0,0,0,.25)}
 .mv-bayrak svg{display:block;width:100%;height:100%}
 .mv-bayrak::after{content:'';position:absolute;top:0;bottom:0;left:-60%;width:45%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.55),transparent);transform:skewX(-18deg);animation:mvParla 5s ease-in-out infinite}
@@ -1394,7 +1428,7 @@ setTimeout(kapat,max);})();</script>
 <button type="button" data-s="mevzuat"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path fill="currentColor" d="M6 2h11a2 2 0 0 1 2 2v14a1 1 0 0 1-1 1H7a1 1 0 0 0 0 2h11a1 1 0 1 1 0 2H7a3 3 0 0 1-3-3V4a2 2 0 0 1 2-2zm0 2v13.17A3 3 0 0 1 7 17h10V4zm5.2 2.2c1.1 0 1.9.5 2.3 1.2l-1.2.7c-.2-.4-.6-.6-1.1-.6-.6 0-1 .3-1 .7 0 1 3.4 1 3.4 3.1 0 .7-.4 1.3-1 1.6.4.3.6.8.6 1.3 0 1.2-1.1 2-2.4 2-1.2 0-2.1-.6-2.5-1.4l1.2-.7c.2.5.7.8 1.3.8.6 0 1-.3 1-.7 0-1.1-3.4-1-3.4-3.1 0-.7.4-1.3 1-1.6-.3-.3-.5-.7-.5-1.2 0-1.1 1-2 2.3-2zm.3 3.8c-.6 0-1 .3-1 .7 0 .5.6.7 1.3 1 .5-.1.8-.4.8-.8 0-.5-.5-.9-1.1-.9z"/></svg><span>Mevzuat</span></button>
 <button type="button" data-s="program"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path fill="currentColor" d="M19 4h-1V2h-2v2H8V2H6v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 16H5V10h14zm0-12H5V6h14zM7 12h5v5H7z"/></svg><span>Program</span><em id="nav-yuzde"></em></button>
 <button type="button" data-s="istat"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path fill="currentColor" d="M5 9.2h3V19H5zM10.6 5h2.8v14h-2.8zm5.6 8H19v6h-2.8z"/></svg><span>İstatistik</span></button>
-<button type="button" data-s="mantik"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path fill="currentColor" d="M12 2a7 7 0 0 0-4 12.74V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.26A7 7 0 0 0 12 2zm2 11.6V16h-4v-2.4l-.43-.3A5 5 0 1 1 14.43 13.3zM9 20h6v2H9z"/></svg><span>Test</span><em id="nav-mantik"></em></button>
+<button type="button" data-s="mantik"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h4"/><path d="M14 3v4h4"/><path d="M14 3l4 4v4"/><path d="M8.5 10h6M8.5 13.5h4"/><path d="M19.4 14.6l1.5 1.5-5.6 5.6-2.1.6.6-2.1z"/></svg><span>Sınav</span><em id="nav-mantik"></em></button>
 </nav>
 
 <script type="application/json" id="okul-veri">[{"ad":"Ada Kent Üniversitesi","kisa":"ADKÜ","sehir":"Gazimağusa","tur":"KKTC"},{"ad":"Afyon Kocatepe Üniversitesi","kisa":"AKÜ","sehir":"Afyonkarahisar","tur":"Devlet"},{"ad":"Akdeniz Üniversitesi","kisa":"AKDÜ","sehir":"Antalya","tur":"Devlet"},{"ad":"Altınbaş Üniversitesi","kisa":"ALTÜ","sehir":"İstanbul","tur":"Vakıf"},{"ad":"Anadolu Üniversitesi","kisa":"ANÜ","sehir":"Eskişehir","tur":"Devlet"},{"ad":"Ankara Bilim Üniversitesi","kisa":"ABÜ","sehir":"Ankara","tur":"Vakıf"},{"ad":"Ankara Hacı Bayram Veli Üniversitesi","kisa":"AHBVÜ","sehir":"Ankara","tur":"Devlet"},{"ad":"Ankara Medipol Üniversitesi","kisa":"AMPÜ","sehir":"Ankara","tur":"Vakıf"},{"ad":"Ankara Sosyal Bilimler Üniversitesi","kisa":"ASBÜ","sehir":"Ankara","tur":"Devlet"},{"ad":"Ankara Üniversitesi","kisa":"AÜ","sehir":"Ankara","tur":"Devlet"},{"ad":"Ankara Yıldırım Beyazıt Üniversitesi","kisa":"AYBÜ","sehir":"Ankara","tur":"Devlet"},{"ad":"Antalya Bilim Üniversitesi","kisa":"ANBÜ","sehir":"Antalya","tur":"Vakıf"},{"ad":"Atatürk Üniversitesi","kisa":"ATAÜ","sehir":"Erzurum","tur":"Devlet"},{"ad":"Atılım Üniversitesi","kisa":"ATLÜ","sehir":"Ankara","tur":"Vakıf"},{"ad":"Bahçeşehir Üniversitesi","kisa":"BAU","sehir":"İstanbul","tur":"Vakıf"},{"ad":"Balıkesir Üniversitesi","kisa":"BALÜ","sehir":"Balıkesir","tur":"Devlet"},{"ad":"Başkent Üniversitesi","kisa":"BAŞÜ","sehir":"Ankara","tur":"Vakıf"},{"ad":"Boğaziçi Üniversitesi","kisa":"BÜ","sehir":"İstanbul","tur":"Devlet"},{"ad":"Bolu Abant İzzet Baysal Üniversitesi","kisa":"AİBÜ","sehir":"Bolu","tur":"Devlet"},{"ad":"Bursa Uludağ Üniversitesi","kisa":"BUÜ","sehir":"Bursa","tur":"Devlet"},{"ad":"Çağ Üniversitesi","kisa":"ÇAĞÜ","sehir":"Mersin","tur":"Vakıf"},{"ad":"Çankaya Üniversitesi","kisa":"ÇANÜ","sehir":"Ankara","tur":"Vakıf"},{"ad":"Çankırı Karatekin Üniversitesi","kisa":"ÇKÜ","sehir":"Çankırı","tur":"Devlet"},{"ad":"Çukurova Üniversitesi","kisa":"ÇÜ","sehir":"Adana","tur":"Devlet"},{"ad":"Dicle Üniversitesi","kisa":"DÜ","sehir":"Diyarbakır","tur":"Devlet"},{"ad":"Doğu Akdeniz Üniversitesi","kisa":"DAÜ","sehir":"Gazimağusa","tur":"KKTC"},{"ad":"Doğuş Üniversitesi","kisa":"DOĞÜ","sehir":"İstanbul","tur":"Vakıf"},{"ad":"Dokuz Eylül Üniversitesi","kisa":"DEÜ","sehir":"İzmir","tur":"Devlet"},{"ad":"Erciyes Üniversitesi","kisa":"ERÜ","sehir":"Kayseri","tur":"Devlet"},{"ad":"Erzincan Binali Yıldırım Üniversitesi","kisa":"EBYÜ","sehir":"Erzincan","tur":"Devlet"},{"ad":"Eskişehir Osmangazi Üniversitesi","kisa":"ESOGÜ","sehir":"Eskişehir","tur":"Devlet"},{"ad":"Fatih Sultan Mehmet Vakıf Üniversitesi","kisa":"FSMVÜ","sehir":"İstanbul","tur":"Vakıf"},{"ad":"Galatasaray Üniversitesi","kisa":"GSÜ","sehir":"İstanbul","tur":"Devlet"},{"ad":"Gaziantep Üniversitesi","kisa":"GAÜ","sehir":"Gaziantep","tur":"Devlet"},{"ad":"Girne Amerikan Üniversitesi","kisa":"GAÜ-K","sehir":"Girne","tur":"KKTC"},{"ad":"Girne Üniversitesi","kisa":"GİRÜ","sehir":"Girne","tur":"KKTC"},{"ad":"Hacettepe Üniversitesi","kisa":"HÜ","sehir":"Ankara","tur":"Devlet"},{"ad":"Hasan Kalyoncu Üniversitesi","kisa":"HKÜ","sehir":"Gaziantep","tur":"Vakıf"},{"ad":"İbn Haldun Üniversitesi","kisa":"İHÜ","sehir":"İstanbul","tur":"Vakıf"},{"ad":"İhsan Doğramacı Bilkent Üniversitesi","kisa":"BİLK","sehir":"Ankara","tur":"Vakıf"},{"ad":"İnönü Üniversitesi","kisa":"İNÜ","sehir":"Malatya","tur":"Devlet"},{"ad":"İstanbul 29 Mayıs Üniversitesi","kisa":"İ29MÜ","sehir":"İstanbul","tur":"Vakıf"},{"ad":"İstanbul Aydın Üniversitesi","kisa":"İAÜ","sehir":"İstanbul","tur":"Vakıf"},{"ad":"İstanbul Beykent Üniversitesi","kisa":"BEYÜ","sehir":"İstanbul","tur":"Vakıf"},{"ad":"İstanbul Bilgi Üniversitesi","kisa":"BİLGİ","sehir":"İstanbul","tur":"Vakıf"},{"ad":"İstanbul Gedik Üniversitesi","kisa":"GEDÜ","sehir":"İstanbul","tur":"Vakıf"},{"ad":"İstanbul Kültür Üniversitesi","kisa":"İKÜ","sehir":"İstanbul","tur":"Vakıf"},{"ad":"İstanbul Medeniyet Üniversitesi","kisa":"İMÜ","sehir":"İstanbul","tur":"Devlet"},{"ad":"İstanbul Medipol Üniversitesi","kisa":"İMPÜ","sehir":"İstanbul","tur":"Vakıf"},{"ad":"İstanbul Okan Üniversitesi","kisa":"OKAN","sehir":"İstanbul","tur":"Vakıf"},{"ad":"İstanbul Sabahattin Zaim Üniversitesi","kisa":"İSZÜ","sehir":"İstanbul","tur":"Vakıf"},{"ad":"İstanbul Ticaret Üniversitesi","kisa":"İTİCÜ","sehir":"İstanbul","tur":"Vakıf"},{"ad":"İstanbul Üniversitesi","kisa":"İÜ","sehir":"İstanbul","tur":"Devlet"},{"ad":"İstanbul Yeni Yüzyıl Üniversitesi","kisa":"İYYÜ","sehir":"İstanbul","tur":"Vakıf"},{"ad":"İzmir Bakırçay Üniversitesi","kisa":"İBÜ","sehir":"İzmir","tur":"Devlet"},{"ad":"İzmir Demokrasi Üniversitesi","kisa":"İDÜ","sehir":"İzmir","tur":"Devlet"},{"ad":"İzmir Ekonomi Üniversitesi","kisa":"İEÜ","sehir":"İzmir","tur":"Vakıf"},{"ad":"İzmir Katip Çelebi Üniversitesi","kisa":"İKÇÜ","sehir":"İzmir","tur":"Devlet"},{"ad":"Kadir Has Üniversitesi","kisa":"KHÜ","sehir":"İstanbul","tur":"Vakıf"},{"ad":"Kıbrıs Aydın Üniversitesi","kisa":"KAÜ","sehir":"Girne","tur":"KKTC"},{"ad":"Kırıkkale Üniversitesi","kisa":"KKÜ","sehir":"Kırıkkale","tur":"Devlet"},{"ad":"Kırklareli Üniversitesi","kisa":"KLÜ","sehir":"Kırklareli","tur":"Devlet"},{"ad":"Kocaeli Üniversitesi","kisa":"KOÜ","sehir":"Kocaeli","tur":"Devlet"},{"ad":"Koç Üniversitesi","kisa":"KOÇ","sehir":"İstanbul","tur":"Vakıf"},{"ad":"KTO Karatay Üniversitesi","kisa":"KTOKÜ","sehir":"Konya","tur":"Vakıf"},{"ad":"Lefke Avrupa Üniversitesi","kisa":"LAÜ","sehir":"Lefke","tur":"KKTC"},{"ad":"Maltepe Üniversitesi","kisa":"MALÜ","sehir":"İstanbul","tur":"Vakıf"},{"ad":"Marmara Üniversitesi","kisa":"MÜ","sehir":"İstanbul","tur":"Devlet"},{"ad":"MEF Üniversitesi","kisa":"MEF","sehir":"İstanbul","tur":"Vakıf"},{"ad":"Necmettin Erbakan Üniversitesi","kisa":"NEÜ","sehir":"Konya","tur":"Devlet"},{"ad":"Nuh Naci Yazgan Üniversitesi","kisa":"NNYÜ","sehir":"Kayseri","tur":"Vakıf"},{"ad":"Ondokuz Mayıs Üniversitesi","kisa":"OMÜ","sehir":"Samsun","tur":"Devlet"},{"ad":"Özyeğin Üniversitesi","kisa":"ÖZÜ","sehir":"İstanbul","tur":"Vakıf"},{"ad":"Pamukkale Üniversitesi","kisa":"PAÜ","sehir":"Denizli","tur":"Devlet"},{"ad":"Piri Reis Üniversitesi","kisa":"PRÜ","sehir":"İstanbul","tur":"Vakıf"},{"ad":"Recep Tayyip Erdoğan Üniversitesi","kisa":"RTEÜ","sehir":"Rize","tur":"Devlet"},{"ad":"Sakarya Üniversitesi","kisa":"SAÜ","sehir":"Sakarya","tur":"Devlet"},{"ad":"Selçuk Üniversitesi","kisa":"SÜ","sehir":"Konya","tur":"Devlet"},{"ad":"Sivas Cumhuriyet Üniversitesi","kisa":"CÜ","sehir":"Sivas","tur":"Devlet"},{"ad":"Süleyman Demirel Üniversitesi","kisa":"SDÜ","sehir":"Isparta","tur":"Devlet"},{"ad":"Tekirdağ Namık Kemal Üniversitesi","kisa":"NKÜ","sehir":"Tekirdağ","tur":"Devlet"},{"ad":"TOBB Ekonomi ve Teknoloji Üniversitesi","kisa":"TOBB","sehir":"Ankara","tur":"Vakıf"},{"ad":"Tokat Gaziosmanpaşa Üniversitesi","kisa":"GOPÜ","sehir":"Tokat","tur":"Devlet"},{"ad":"Trabzon Üniversitesi","kisa":"TÜ","sehir":"Trabzon","tur":"Devlet"},{"ad":"Türk-Alman Üniversitesi","kisa":"TAÜ","sehir":"İstanbul","tur":"Devlet"},{"ad":"Ufuk Üniversitesi","kisa":"UFÜ","sehir":"Ankara","tur":"Vakıf"},{"ad":"Uluslararası Final Üniversitesi","kisa":"FİNÜ","sehir":"Girne","tur":"KKTC"},{"ad":"Uluslararası Kıbrıs Üniversitesi","kisa":"UKÜ","sehir":"Lefkoşa","tur":"KKTC"},{"ad":"Yakın Doğu Üniversitesi","kisa":"YDÜ","sehir":"Lefkoşa","tur":"KKTC"},{"ad":"Yalova Üniversitesi","kisa":"YÜ","sehir":"Yalova","tur":"Devlet"},{"ad":"Yaşar Üniversitesi","kisa":"YAŞÜ","sehir":"İzmir","tur":"Vakıf"},{"ad":"Yeditepe Üniversitesi","kisa":"YEÜ","sehir":"İstanbul","tur":"Vakıf"},{"ad":"Yozgat Bozok Üniversitesi","kisa":"YBÜ","sehir":"Yozgat","tur":"Devlet"}]</script>
@@ -2292,7 +2326,7 @@ function lexDersler(){
     var b=e.parentNode,z=b.querySelector('.nav-roz');
     if(r){var sv=seviye(r.d,r.sn);if(!z){z=document.createElement('i');z.className='nav-roz';z.setAttribute('aria-hidden','true');b.insertBefore(z,b.firstChild);}
       if(z.textContent!==sv.e){z.textContent=sv.e;z.classList.remove('yeni');void z.offsetWidth;z.classList.add('yeni');}
-      b.classList.add('rozetli');b.setAttribute('aria-label','Test, bugünkü rozetin: '+sv.a);}
+      b.classList.add('rozetli');b.setAttribute('aria-label','Sınav, bugünkü rozetin: '+sv.a);}
     else{if(z)z.remove();b.classList.remove('rozetli');b.removeAttribute('aria-label');}}
   document.addEventListener('visibilitychange',function(){if(!document.hidden)rozet();});
   function basla(tekrar){
@@ -2351,7 +2385,7 @@ function lexDersler(){
       var ic='<p class="mt-soru" style="margin-top:10px">'+esc(q.s)+'</p>'+(q.g&&q.g.tip==='dizi'?diziHtml(q.g.h):(q.g?'<div class="mt-fig">'+figur(q.g)+'</div>':''))+
         '<div class="mt-sec'+(fig?' fig':'')+'">'+q.o.map(function(x,k){return '<button type="button" disabled class="'+(k===q.c?'dogru':(k===c?'yanlis':''))+'"><i>'+'ABCDE'[k]+'</i>'+(fig?secFig(q.g,x):'<span>'+esc(x)+'</span>')+'</button>';}).join('')+'</div><div class="acik">💡 '+esc(q.a)+(q.k?'<small class="mt-kaynak" data-k="'+esc(q.k)+'">📖 '+esc(q.k)+'</small>':'')+'</div>';
       return '<details><summary><em>'+(ok?'✅':(c===null?'⚪':'❌'))+'</em>'+(j+1)+'. '+esc(q.d||TIPAD[q.t])+'</summary>'+ic+'</details>';}).join('')+'</div>';
-    o+='<p class="pm-kucuk" style="text-align:center;margin:-4px 0 14px">Sorular eğitim amaçlıdır. Mevzuat değişebilir; esas olan yürürlükteki kanun metnidir.</p>';o+='<button type="button" class="mt-btn2" id="mt-don" style="margin-bottom:16px">‹ Test sayfasına dön</button>';
+    o+='<p class="pm-kucuk" style="text-align:center;margin:-4px 0 14px">Sorular eğitim amaçlıdır. Mevzuat değişebilir; esas olan yürürlükteki kanun metnidir.</p>';o+='<button type="button" class="mt-btn2" id="mt-don" style="margin-bottom:16px">‹ Sınav sayfasına dön</button>';
     $('mt-sonuc').innerHTML=o;$('mt-sonuc').hidden=false;$('mt-giris').hidden=true;$('mt-test').hidden=true;window.scrollTo(0,0);
     $('mt-don').addEventListener('click',giris);
     if(window.LEX_MV_VAR)window.LEX_MV_VAR(function(set){[].forEach.call(document.querySelectorAll('#mt-sonuc .mt-kaynak[data-k]'),function(e){var m=/(\d{3,4}) sayılı[^\n]*? m\. ?(\d+)/.exec(e.dataset.k);if(!m||!set[m[1]])return;var b=document.createElement('button');b.type='button';b.className='mt-kaynak git';b.textContent=e.textContent+' · maddeyi aç ›';b.addEventListener('click',function(){window.LEX_MV_AC(m[1],m[2]);});e.replaceWith(b);});});
@@ -3007,20 +3041,32 @@ function lexDersler(){
   function favYaz(a){try{localStorage.setItem('lex-mv-fav',JSON.stringify(a));}catch(e){}}
   function favMi(no,n){return favOku().some(function(x){return x[0]===no&&x[1]===n;});}
   function favDegis(no,n){var a=favOku(),i=-1;a.forEach(function(x,j){if(x[0]===no&&x[1]===n)i=j;});if(i>=0)a.splice(i,1);else a.unshift([no,n,Date.now()]);favYaz(a);return i<0;}
+  // ---- maddeye not (localStorage lex-mv-not: {"kanun|madde": [metin, zaman]}) ----
+  function notlar(){try{var o=JSON.parse(localStorage.getItem('lex-mv-not')||'{}');return o&&typeof o==='object'?o:{};}catch(e){return {};}}
+  function notAl(no,n){var x=notlar()[no+'|'+n];return x?x[0]:'';}
+  function notKoy(no,n,t){var o=notlar(),k=no+'|'+n;t=String(t||'').replace(/\s+$/,'');if(t)o[k]=[t,Date.now()];else delete o[k];try{localStorage.setItem('lex-mv-not',JSON.stringify(o));}catch(e){}}
+  var favSek='fav';
   function favCiz(){
-    var el=$('mv-fav');if(!el)return;var a=favOku();
+    var el=$('mv-fav');if(!el)return;var a=favOku(),N=notlar(),nk=Object.keys(N).sort(function(x,y){return N[y][1]-N[x][1];});
     if($('mv-ara').value.trim()){el.innerHTML='';return;}
-    if(!a.length){el.innerHTML='<p class="pm-kucuk mv-fav-ip">☆ Bir kanunu açıp maddenin yanındaki yıldıza dokunursan o madde burada, favorilerinde durur.</p>';return;}
+    if(!a.length&&!nk.length){el.innerHTML='<p class="pm-kucuk mv-fav-ip">☆ Bir maddenin yanındaki yıldıza dokunursan favorilerine eklenir; 📝 simgesiyle maddeye kendi notunu yazabilirsin. Notlar yalnız bu telefonda kalır.</p>';return;}
+    if(favSek==='fav'&&!a.length)favSek='not';if(favSek==='not'&&!nk.length)favSek='fav';
     indeks().then(function(l){
       if($('mv-ara').value.trim())return;
       var K={},o='',say=0;l.forEach(function(k){K[k.no]=k;});
+      function md(no,n){var kk=KAN[no],m=null;if(!kk)return null;kk.maddeler.some(function(y){if(y.n===n){m=y;return true;}return false;});return m;}
+      var sek='<div class="mv-sek"><button type="button" data-s="fav"'+(favSek==='fav'?' class="on"':'')+'>★ Favoriler · '+a.length+'</button><button type="button" data-s="not"'+(favSek==='not'?' class="on"':'')+'>📝 Notlarım · '+nk.length+'</button></div>';
+      if(favSek==='not'){nk.forEach(function(x){var p=x.split('|'),k=K[p[0]],m=md(p[0],p[1]);if(!k||!m)return;say++;var t=N[x][0];
+          o+='<button type="button" class="mv-b" data-no="'+esc(k.no)+'" data-n="'+esc(m.n)+'"><b>'+esc(k.kisa)+' m. '+esc(m.n)+'</b><span><i class="mv-bb">'+esc(m.b||'')+'</i><span class="mv-nk">'+esc(t.length>110?t.slice(0,110)+'…':t)+'</span></span></button>';});
+        el.innerHTML=sek+o;bBagla(el);sekBagla(el);return;}
       a.forEach(function(x){var k=K[x[0]],kk=KAN[x[0]],m=null;if(!k||!kk)return;
         kk.maddeler.some(function(y){if(y.n===x[1]){m=y;return true;}return false;});if(!m)return;say++;
         o+='<div class="mv-fav-s"><button type="button" class="mv-b" data-no="'+esc(k.no)+'" data-n="'+esc(m.n)+'"><b>'+esc(k.kisa)+' m. '+esc(m.n)+'</b><span>'+esc(m.b||(m.m.slice(0,80)+'…'))+'</span></button><button type="button" class="mv-yildiz on" data-no="'+esc(k.no)+'" data-n="'+esc(m.n)+'" aria-label="Favorilerden çıkar">★</button></div>';});
-      el.innerHTML=say?'<p class="mv-etk">★ Favori maddelerim · '+say+'</p>'+o:'';
-      bBagla(el);
+      el.innerHTML=sek+o;
+      bBagla(el);sekBagla(el);
     });
   }
+  function sekBagla(el){[].forEach.call(el.querySelectorAll('.mv-sek button'),function(b){b.addEventListener('click',function(){favSek=b.dataset.s;favCiz();});});}
   $('pg-mevzuat').addEventListener('click',function(e){
     var b=e.target.closest&&e.target.closest('.mv-yildiz');if(!b)return;e.preventDefault();e.stopPropagation();
     var on=favDegis(b.dataset.no,b.dataset.n);
@@ -3110,8 +3156,24 @@ function lexDersler(){
   function maddeHtml(m,q){
     var t=isaretle(m.m,q||VURGU);
     var f=akt&&favMi(akt.no,m.n);
-    return '<article class="mv-m" id="mv-i-'+m.i+'"><h4>'+(akt?'<button type="button" class="mv-yildiz'+(f?' on':'')+'" data-no="'+esc(akt.no)+'" data-n="'+esc(m.n)+'" aria-label="'+(f?'Favorilerden çıkar':'Favorilere ekle')+'">'+(f?'★':'☆')+'</button>':'')+'Madde '+esc(m.n)+(m.b?' <small>· '+esc(m.b)+'</small>':'')+'</h4><p>'+t+'</p></article>';
+    return '<article class="mv-m" id="mv-i-'+m.i+'"><h4>'+(akt?'<button type="button" class="mv-yildiz'+(f?' on':'')+'" data-no="'+esc(akt.no)+'" data-n="'+esc(m.n)+'" aria-label="'+(f?'Favorilerden çıkar':'Favorilere ekle')+'">'+(f?'★':'☆')+'</button>':'')+(akt?'<button type="button" class="mv-notb'+(notAl(akt.no,m.n)?' on':'')+'" data-no="'+esc(akt.no)+'" data-n="'+esc(m.n)+'" aria-label="Maddeye not yaz">📝</button>':'')+'Madde '+esc(m.n)+(m.b?' <small>· '+esc(m.b)+'</small>':'')+'</h4><p>'+t+'</p>'+notHtml(akt&&akt.no,m.n)+'</article>';
   }
+  function notHtml(no,n){var t=no?notAl(no,n):'';return t?'<div class="mv-not" data-no="'+esc(no)+'" data-n="'+esc(n)+'">'+esc(t)+'</div>':'';}
+  function notAc(art,no,n){
+    if(art.querySelector('.mv-not-d'))return;var v=art.querySelector('.mv-not');if(v)v.remove();
+    art.insertAdjacentHTML('beforeend','<div class="mv-not-d"><textarea class="lex-in mv-not-t" placeholder="Bu maddeye notun: hocanın vurguladığı nokta, örnek olay, sınavda çıktı…" maxlength="4000"></textarea><div class="mv-not-a"><small>Otomatik kaydedilir · yalnız bu telefonda</small>'+(notAl(no,n)?'<button type="button" class="sil">Sil</button>':'')+'<button type="button" class="ok">Bitti</button></div></div>');
+    var d=art.querySelector('.mv-not-d'),ta=d.querySelector('textarea'),z=null;ta.value=notAl(no,n);
+    function kay(){notKoy(no,n,ta.value);var b=art.querySelector('.mv-notb');if(b)b.classList.toggle('on',!!ta.value.trim());}
+    ta.addEventListener('input',function(){clearTimeout(z);z=setTimeout(kay,400);});
+    function kapa(){clearTimeout(z);kay();d.remove();art.insertAdjacentHTML('beforeend',notHtml(no,n));}
+    d.querySelector('.ok').addEventListener('click',kapa);
+    var sl=d.querySelector('.sil');if(sl)sl.addEventListener('click',function(){if(!confirm('Bu not silinsin mi?'))return;ta.value='';kapa();});
+    ta.focus();
+  }
+  $('pg-mevzuat').addEventListener('click',function(e){
+    var b=e.target.closest&&e.target.closest('.mv-notb, .mv-not');if(!b)return;e.preventDefault();e.stopPropagation();
+    var art=b.closest('.mv-m');if(art)notAc(art,b.dataset.no,b.dataset.n);
+  },true);
   function ayrac(m){return m.y?m.y.map(function(y){return '<div class="mv-y s'+y[0]+'">'+esc(y[1])+'</div>';}).join(''):'';}
   function ciz(q){
     var o='';goster.slice(bas,sinir).forEach(function(m){o+=(filtreli?'':ayrac(m))+maddeHtml(m,q);});
@@ -3203,22 +3265,30 @@ function lexDersler(){
   var K='lex-ders-test',AK='lex-dt-aktif',VERI=null,soz=null,aktif=oku(AK,null),mod=null,acik=null;
   function veri(){if(VERI)return Promise.resolve(VERI);if(soz)return soz;
     soz=fetch('testler.json').then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(j){VERI={};(j.dersler||[]).forEach(function(d){VERI[d.kod]=d.sorular||[];});return VERI;}).catch(function(){soz=null;return {};});return soz;}
+  var KSV=null,ksSoz=null,KSK='lex-klasik';
+  function ksVeri(){if(KSV)return Promise.resolve(KSV);if(ksSoz)return ksSoz;
+    ksSoz=fetch('klasik.json').then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(j){KSV={};(j.dersler||[]).forEach(function(d){KSV[d.kod]=d.sinavlar||[];});return KSV;}).catch(function(){ksSoz=null;return {};});return ksSoz;}
+  function par(x){return String(x).split(/\n{2,}/).map(function(p){return '<p>'+esc(p).replace(/\n/g,'<br>')+'</p>';}).join('');}
+  function mdBtn(ks){return (ks||[]).map(function(k){var m=/^(\d{4}) sayılı (.+?) m\. ?(.+)$/.exec(k);if(!m)return '';return '<button type="button" class="ks-md" data-no="'+m[1]+'" data-n="'+esc(m[3])+'">📖 '+esc(m[2])+' m. '+esc(m[3])+' ›</button>';}).join('');}
+  var TURAD={vize:'Vize',final:'Final'};
   function dersOf(kod){for(var i=0;i<DERSLER.length;i++)if(DERSLER[i].kod===kod)return DERSLER[i];return {ad:kod};}
   function secili(d){var l=oku('lex-dersler',null);if(!l||!l.length)return false;return d.es.some(function(x){return l.indexOf(x)>=0;});}
   // ---------- liste ----------
   function liste(){
-    veri().then(function(V){
+    Promise.all([veri(),ksVeri()]).then(function(VV){var V=VV[0],KS=VV[1];
       var kay=oku(K,{}),sec=[],dig=[];DERSLER.forEach(function(d){(secili(d)?sec:dig).push(d);});
       function kart(d){
-        var S=V[d.kod]||[],nt=Math.floor(S.length/NT),k=kay[d.kod]||{},bit=0,t;for(t=1;t<=nt;t++)if(k[t])bit++;
-        var ac=acik===d.kod&&nt>0,o='<div class="dt-d'+(nt?'':' yok')+'"><button type="button" class="dt-b" data-kod="'+d.kod+'"'+(nt?' aria-expanded="'+ac+'"':' disabled')+'><i>'+d.ik+'</i><span><b>'+esc(d.ad)+'</b><small>'+(nt?nt+' test · '+(nt*NT)+' soru'+(bit?' · '+bit+'/'+nt+' çözüldü':''):'Hazırlanıyor')+'</small></span><em>'+(nt?(ac?'▾':'›'):'')+'</em></button>';
-        if(ac){o+='<div class="dt-t">';for(t=1;t<=nt;t++){var r=k[t];o+='<button type="button" data-kod="'+d.kod+'" data-t="'+t+'"'+(r?' class="cz"':'')+'><span>Test '+t+'</span><small>'+(r?'En iyi '+r.d+'/'+NT:NT+' soru')+'</small><b>'+(r?'Tekrar':'Başla')+' ›</b></button>';}o+='</div>';}
+        var S=V[d.kod]||[],nt=Math.floor(S.length/NT),k=kay[d.kod]||{},bit=0,t,ks=KS[d.kod]||[],var_=nt||ks.length;for(t=1;t<=nt;t++)if(k[t])bit++;
+        var ac=acik===d.kod&&var_,o='<div class="dt-d'+(var_?'':' yok')+'"><button type="button" class="dt-b" data-kod="'+d.kod+'"'+(var_?' aria-expanded="'+ac+'"':' disabled')+'><i>'+d.ik+'</i><span><b>'+esc(d.ad)+'</b><small>'+(var_?(nt?nt+' test · '+(nt*NT)+' soru':'')+(ks.length?(nt?' · ':'')+'vize + final':'')+(bit?' · '+bit+'/'+nt+' çözüldü':''):'Hazırlanıyor')+'</small></span><em>'+(var_?(ac?'▾':'›'):'')+'</em></button>';
+        if(ac){o+='<div class="dt-t">';for(t=1;t<=nt;t++){var r=k[t];o+='<button type="button" data-kod="'+d.kod+'" data-t="'+t+'"'+(r?' class="cz"':'')+'><span>Test '+t+'</span><small>'+(r?'En iyi '+r.d+'/'+NT:NT+' soru')+'</small><b>'+(r?'Tekrar':'Başla')+' ›</b></button>';}
+          var kk=oku(KSK,{})[d.kod]||{};ks.forEach(function(s,j){var g=kk[s.tur];o+='<button type="button" class="ks'+(g?' cz':'')+'" data-kod="'+d.kod+'" data-ks="'+j+'"><span>'+(TURAD[s.tur]||s.tur)+'</span><small>'+(g?'✓ İncelendi':'Klasik sınav · IRAC çözümlü')+'</small><b>Aç ›</b></button>';});o+='</div>';}
         return o+'</div>';
       }
-      $('dt-liste').innerHTML='<div class="mt-kart"><p class="mt-bas">📚 Ders testleri</p><p class="pm-kucuk" style="margin:0 0 4px">Her derste '+NT+' soruluk testler: bilgi, süre ve olay soruları. Cevabı işaretleyince çözümü hemen görürsün.</p>'+
+      $('dt-liste').innerHTML='<div class="mt-kart"><p class="mt-bas">📚 Ders testleri</p><p class="pm-kucuk" style="margin:0 0 4px">Her derste '+NT+' soruluk testler ve çözümlü örnek vize-final sınavları.</p><button type="button" class="dt-irac" id="dt-irac"><span>⚖️ IRAC: olay sorusu nasıl çözülür?</span><em>›</em></button>'+
         (sec.length?'<p class="dt-etk">Derslerin</p>'+sec.map(kart).join(''):'')+(dig.length?'<p class="dt-etk">'+(sec.length?'Diğer dersler':'Dersler')+'</p>'+dig.map(kart).join(''):'')+'</div>';
       [].forEach.call(document.querySelectorAll('#dt-liste .dt-b'),function(b){b.addEventListener('click',function(){acik=acik===b.dataset.kod?null:b.dataset.kod;liste();});});
-      [].forEach.call(document.querySelectorAll('#dt-liste .dt-t button'),function(b){b.addEventListener('click',function(){basla(b.dataset.kod,+b.dataset.t);});});
+      [].forEach.call(document.querySelectorAll('#dt-liste .dt-t button'),function(b){b.addEventListener('click',function(){if(b.dataset.ks!==undefined)ksAc(b.dataset.kod,+b.dataset.ks);else basla(b.dataset.kod,+b.dataset.t);});});
+      $('dt-irac').addEventListener('click',rehber);
     });
   }
   // ---------- test ----------
@@ -3261,6 +3331,55 @@ function lexDersler(){
     $('dt-tekrar').addEventListener('click',function(){basla(kod,t);});
     $('dt-don').addEventListener('click',kapat);
   }
+  // ---------- klasik sınav ----------
+  function ksAc(kod,j){
+    var s=(KSV[kod]||[])[j];if(!s)return;ksSon=[kod,j];mod='klasik';var d=dersOf(kod),tt=TURAD[s.tur]||s.tur,o='';
+    o+='<div class="mt-ust"><div class="mt-ust-s"><span>'+esc(d.ad)+' · '+tt+' sınavı</span><button type="button" class="dt-cik" id="dt-cik">Kapat</button></div></div>';
+    o+='<div class="ks-bilgi"><b>📝 '+esc(d.ad)+' · Örnek '+tt+'</b>Süre '+s.sure+' dk · '+esc(s.konu)+'<p>Önce soruları kâğıda kendin çöz, sonra çözümü aç. Çözümler <button type="button" class="dt-cik" id="ks-irac">IRAC yöntemiyle</button> yazıldı.</p></div>';
+    s.sorular.forEach(function(q,i){
+      o+='<div class="mt-kart ks-s"><span class="mt-tip">Soru '+(i+1)+' · '+(q.tip==='olay'?'Olay':'Teorik')+' · '+q.puan+' puan</span><div class="ks-metin">'+par(q.s)+'</div>';
+      o+='<button type="button" class="mt-btn2 ks-ac" data-i="'+i+'">'+(q.tip==='olay'?'💡 Çözümü göster':'📘 Cevabı göster')+'</button><div class="ks-coz" id="ks-c'+i+'" hidden>';
+      if(q.tip==='olay')q.cozum.forEach(function(b){
+        o+='<div class="ks-b"><div class="ks-bb"><small>I · SORUN</small>'+esc(b.sorun)+'</div>'+
+          '<div class="ks-r r"><i>K</i><div><b>Kural</b>'+par(b.kural)+mdBtn(b.k)+'</div></div>'+
+          '<div class="ks-r a"><i>U</i><div><b>Uygulama</b>'+par(b.uygulama)+'</div></div>'+
+          '<div class="ks-r c"><i>S</i><div><b>Sonuç</b>'+par(b.sonuc)+'</div></div></div>';});
+      else o+='<div class="ks-cev">'+par(q.cevap)+mdBtn(q.k)+'</div>';
+      o+='</div></div>';});
+    o+='<p class="ks-not">Örnek çözümdür; kabul gören görüşe göre yazılmıştır. Hocanın değerlendirmesi farklı olabilir; esas olan yürürlükteki kanun metnidir.</p>';
+    var dg=(KSV[kod]||[])[1-j];if(dg)o+='<button type="button" class="mt-btn" id="ks-dig" style="margin-bottom:10px">'+(TURAD[dg.tur]||dg.tur)+' sınavına geç ›</button>';
+    o+='<button type="button" class="mt-btn2" id="ks-don" style="margin-bottom:16px">‹ Ders testlerine dön</button>';
+    var kap=$('dt-calis');kap.innerHTML=o;goster();window.scrollTo(0,0);acik=kod;
+    [].forEach.call(kap.querySelectorAll('.ks-ac'),function(b){b.addEventListener('click',function(){var c=$('ks-c'+b.dataset.i),ac_=c.hidden;c.hidden=!ac_;
+      b.textContent=ac_?'Çözümü gizle':(s.sorular[+b.dataset.i].tip==='olay'?'💡 Çözümü göster':'📘 Cevabı göster');
+      if(ac_){var kk=oku(KSK,{});(kk[kod]||(kk[kod]={}))[s.tur]=Date.now();yaz(KSK,kk);}});});
+    [].forEach.call(kap.querySelectorAll('.ks-md'),function(b){b.addEventListener('click',function(){if(window.LEX_MV_AC)window.LEX_MV_AC(b.dataset.no,b.dataset.n);});});
+    $('dt-cik').addEventListener('click',kapat);$('ks-don').addEventListener('click',kapat);$('ks-irac').addEventListener('click',rehber);
+    var dd=$('ks-dig');if(dd)dd.addEventListener('click',function(){ksAc(kod,1-j);});
+  }
+  // ---------- IRAC rehberi ----------
+  function rehber(){
+    var geri=mod==='klasik'?$('dt-calis').innerHTML:null,gy=window.scrollY;mod='rehber';
+    var A=[['I','Sorun','#8A3B47','Olayda çözülmesi gereken hukuki soruyu tek cümleyle belirle. Birden fazla sorun varsa her birini ayrı başlıkta ele al.'],
+      ['K','Kural','#762B37','Soruyu çözen kanun maddesini numarasıyla yaz ve kuralın unsurlarını sırala. Madde metnini ezbere kopyalamak değil, unsurları doğru çıkarmak önemli.'],
+      ['U','Uygulama','#C9962B','Olaydaki olguları kuralın unsurlarına tek tek bağla: “…davranışı şu unsuru karşılar, çünkü…”. Notun çoğu buradan gelir.'],
+      ['S','Sonuç','#1FA463','Kısa ve net bir hüküm kur: kim, hangi maddeye göre, ne olur. Sorulan neyse ona cevap ver.']];
+    var o='<div class="mt-ust"><div class="mt-ust-s"><span>IRAC yöntemi</span><button type="button" class="dt-cik" id="dt-cik">Kapat</button></div></div>';
+    o+='<div class="ks-bilgi"><b>⚖️ IRAC nedir?</b>Olay sorularını düzenli çözmek için kullanılan dört adımlı yöntem: Issue (Sorun), Rule (Kural), Application (Uygulama), Conclusion (Sonuç). Okuyan kişi her adımda neyi neden söylediğini görür.</div>';
+    o+='<div class="mt-kart">'+A.map(function(x){return '<div class="ir-adim"><i style="background:'+x[2]+'">'+x[0]+'</i><div><b>'+x[1]+'</b><p>'+x[3]+'</p></div></div>';}).join('')+'</div>';
+    o+='<div class="mt-kart"><p class="mt-bas">Kısa örnek</p><div class="ks-metin"><p>Can, durakta kendisine sebepsiz yere hakaret eden Efe’ye tokat atar. Doktor raporuna göre yaralanma basit bir tıbbi müdahaleyle giderilebilecek ölçüde hafiftir. Efe şikâyetçi olur. Can’ın ceza sorumluluğunu değerlendiriniz.</p></div>'+
+      '<div class="ks-b"><div class="ks-bb">Can’ın kasten yaralama suçundan sorumluluğu ve cezası</div>'+
+      '<div class="ks-r r"><i>K</i><div><b>Kural</b><p>TCK m. 86/1’e göre kasten başkasının vücuduna acı veren kişi kasten yaralama suçunu işler. Etki basit bir tıbbi müdahaleyle giderilebilecek kadar hafifse m. 86/2 uygulanır: suç şikâyete bağlıdır, ceza altı aydan bir yıl altı aya kadar hapis veya adlî para cezasıdır. Haksız bir fiilin yarattığı hiddet altında suç işleyenin cezası m. 29’a göre dörtte birden dörtte üçe kadar indirilir.</p>'+mdBtn(['5237 sayılı TCK m. 86','5237 sayılı TCK m. 29'])+'</div></div>'+
+      '<div class="ks-r a"><i>U</i><div><b>Uygulama</b><p>Can tokadı bilerek ve isteyerek atmış, Efe’nin vücuduna acı vermiştir; kasten yaralama oluşur. Rapora göre etki basit tıbbi müdahaleyle giderilebilecek kadar hafiftir ve Efe şikâyetçidir; bu nedenle m. 86/2 uygulanır. Efe’nin sebepsiz hakareti haksız bir fiildir ve Can bunun yarattığı hiddetle hareket etmiştir; m. 29’un şartları da gerçekleşmiştir.</p></div></div>'+
+      '<div class="ks-r c"><i>S</i><div><b>Sonuç</b><p>Can, TCK m. 86/2’ye göre cezalandırılır; belirlenen cezadan m. 29 uyarınca haksız tahrik indirimi yapılır.</p></div></div></div></div>';
+    o+='<div class="mt-kart"><p class="mt-bas">Sınavda puan kazandıran ipuçları</p><ul class="ir-ipucu"><li>Her alt soruyu (a, b, c…) ayrı başlıkla cevapla.</li><li>Madde numarası yaz; fıkra biliyorsan ekle (m. 86/2).</li><li>Olaydaki her ayrıntı bir şey için verilmiştir; kullanmadığın olgu kalmasın.</li><li>Sonuç olayın sorusuna cevap vermeli: “sorumludur / değildir”, “geçerlidir / geçersizdir”.</li><li>Bir unsur olayda belirsizse iki ihtimali de kısaca çöz: “…ise…, değilse…”.</li></ul></div>';
+    o+='<button type="button" class="mt-btn2" id="ir-don" style="margin-bottom:16px">‹ '+(geri?'Sınava dön':'Ders testlerine dön')+'</button>';
+    var kap=$('dt-calis');kap.innerHTML=o;goster();window.scrollTo(0,0);
+    [].forEach.call(kap.querySelectorAll('.ks-md'),function(b){b.addEventListener('click',function(){if(window.LEX_MV_AC)window.LEX_MV_AC(b.dataset.no,b.dataset.n);});});
+    function don(){if(geri&&ksSon){ksAc(ksSon[0],ksSon[1]);}else kapat();}
+    $('dt-cik').addEventListener('click',don);$('ir-don').addEventListener('click',don);
+  }
+  var ksSon=null;
   // Test sekmesi açılışı: ders testi sürüyorsa onu göster, değilse günlük test + ders listesi
   var eskiMT=window.MF_MT;
   window.MF_MT=function(){

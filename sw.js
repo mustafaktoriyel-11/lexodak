@@ -1,6 +1,7 @@
 // Lex Odak - service worker
-var SURUM = 'lex-odak-v52';
-var MEVZUAT = 'lex-mevzuat-2';  // kanun metinleri sürüm değişse de silinmez
+var SURUM = 'lex-odak-v54';
+var MEVZUAT = 'lex-mevzuat-2';
+var OCR = 'lex-ocr-1';  // taranmış PDF okuma motoru (jsdelivr), bir kez iner  // kanun metinleri sürüm değişse de silinmez
 var DOSYALAR = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png', './gizlilik.html'];
 
 self.addEventListener('install', function (e) {
@@ -10,7 +11,7 @@ self.addEventListener('install', function (e) {
 
 self.addEventListener('activate', function (e) {
   e.waitUntil(caches.keys().then(function (ks) {
-    return Promise.all(ks.filter(function (k) { return k !== SURUM && k !== MEVZUAT; }).map(function (k) { return caches.delete(k); }));
+    return Promise.all(ks.filter(function (k) { return k !== SURUM && k !== MEVZUAT && k !== OCR; }).map(function (k) { return caches.delete(k); }));
   }));
   self.clients.claim();
 });
@@ -34,6 +35,14 @@ function mevzuatAl(req) {
 // Uygulama dosyalari: once agdan dene (guncel kalsin), olmazsa onbellekten ver
 self.addEventListener('fetch', function (e) {
   var u = new URL(e.request.url);
+  if (e.request.method === 'GET' && u.hostname === 'cdn.jsdelivr.net' && /^\/npm\/(tesseract\.js|tesseract\.js-core|@tesseract\.js-data)/.test(u.pathname)) {
+    e.respondWith(caches.open(OCR).then(function (c) {
+      return c.match(e.request).then(function (r) {
+        return r || fetch(e.request).then(function (y) { if (y.ok) c.put(e.request, y.clone()); return y; });
+      });
+    }));
+    return;
+  }
   if (e.request.method !== 'GET' || u.origin !== location.origin) return;
   if (/\/mevzuat\.json$/.test(u.pathname)) { e.respondWith(mevzuatAl(e.request)); return; }
   e.respondWith(

@@ -5004,6 +5004,7 @@ function lexDersler(){
   var NUM='(\\d{1,4})(?:\\s*\\/\\s*(?:\\d{1,2}|[a-zçğıöşü]))?(?![\\d])';
   var RE_K=new RegExp('(?<!['+HARF+'])('+adlar.map(rx).join('|')+')(?!['+HARF+'])(?:[\'’][a-zçğıöşü]{1,6})?[\\s,.]*(?:'+MAD+'\\s*)?'+NUM,'g');
   var RE_S=new RegExp('(?<!\\d)(\\d{4})\\s*(?:sayılı|s\\.)\\s*(?:[^\\d]{0,60}?)(?:Kanun|K\\.)\\S{0,6}\\s*(?:'+MAD+'\\s*)?'+NUM,'g');
+  var RE_UC=new RegExp('(?:(?<!['+HARF+'])('+adlar.map(rx).join('|')+')(?:[\'’][a-zçğıöşü]{1,6})?[\\s,.]*)?(?<!['+HARF+'])(?:madde|md\\.?|m\\.)\\s*$');
   var RE_D=new RegExp('(?<!['+HARF+'])(?:madde|md\\.|m\\.)\\s*'+NUM,'g');
   var DERS_K=[['muhakeme','5271'],['cmk','5271'],['ceza','5237'],['medeni usul','6100'],['hmk','6100'],['usul','6100'],['borç','6098'],['icra','2004'],['iflas','2004'],['idari yarg','2577'],['iş hukuk','4857'],['ticaret','6102'],['şirket','6102'],['kıymetli','6102'],['eşya','4721'],['medeni','4721'],['aile','4721'],['miras','4721'],['kişiler','4721'],['anayasa','2709'],['möhuk','5718'],['özel hukuk','5718'],['kabahat','5326']];
   function dersKanun(d){d=String(d||'').toLocaleLowerCase('tr');for(var i=0;i<DERS_K.length;i++)if(d.indexOf(DERS_K[i][0])>=0)return DERS_K[i][1];return '';}
@@ -5053,8 +5054,20 @@ function lexDersler(){
         while((m=RE_K.exec(sa.t)))ekle(m.index,m.index+m[0].length,KAN_HARITA[m[1]],m[2]);
         RE_S.lastIndex=0;
         while((m=RE_S.exec(sa.t)))if(KAN_NO[m[1]])ekle(m.index,m.index+m[0].length,m[1],m[2]);
-        RE_D.lastIndex=0;while((m=RE_D.exec(sa.t))){if(vars)ekle(m.index,m.index+m[0].length,vars,m[1],1);else yalin++;}
+        RE_D.lastIndex=0;while((m=RE_D.exec(sa.t))){if(!vars)yalin++;ekle(m.index,m.index+m[0].length,vars,m[1],1);}
       });
+      // "(m." satır sonunda, "62)" alt satırda
+      for(var si=0;si+1<S.length;si++){
+        var a1=S[si],a2=S[si+1],uc=RE_UC.exec(a1.t),bas=/^\s*\(?(\d{1,4})(?![\d])/.exec(a2.t);
+        if(!uc||!bas)continue;
+        var na=parseInt(bas[1],10);if(!(na>0)||na>1600||KAN_NO[bas[1]])continue;
+        var kn=uc[1]?KAN_HARITA[uc[1]]:vars,v=uc[1]?0:1;if(v&&!vars)yalin++;
+        var b0=bas.index+bas[0].length-bas[1].length,b1=bas.index+bas[0].length;
+        var o2={x:a2.x1[b0]/VW,y:a2.ust/VH,w:(a2.x2[b1-1]-a2.x1[b0])/VW,h:a2.yuk/VH,no:kn,n:String(na)},u0=uc.index+uc[0].length-uc[0].replace(/^[^A-Za-zÇĞİÖŞÜçğıöşü]*/,'').length;
+        var o1={x:a1.x1[u0]/VW,y:a1.ust/VH,w:(a1.x2[a1.t.length-1]-a1.x1[u0])/VW,h:a1.yuk/VH,no:kn,n:String(na)};
+        if(v){o1.v=o2.v=1;}
+        if(o1.w>0)bulunan.push(o1);if(o2.w>0)bulunan.push(o2);
+      }
       bulunan.yalin=yalin;bulunan.metin=S.map(function(sa){return sa.t;}).join(' ').slice(0,6000);
       return bulunan;
   }
@@ -5077,7 +5090,8 @@ function lexDersler(){
       if(L.taranmis&&!L.okundu&&g.ocrAcik)ocrSira(g,s.n);
       if(!L.length)return;
       var k=s.atk;if(!k){k=document.createElement('div');k.className='kt-atk';s.atk=k;}
-      k.innerHTML=L.map(function(a,i){return '<button type="button" class="kt-atif" data-i="'+i+'" style="left:'+(a.x*100).toFixed(3)+'%;top:'+(a.y*100).toFixed(3)+'%;width:'+(a.w*100).toFixed(3)+'%;height:'+(a.h*100).toFixed(3)+'%" aria-label="Madde '+esc(a.n)+'"></button>';}).join('');
+      var vk=varsK(g);
+      k.innerHTML=L.map(function(a,i){if(a.v&&!vk)return '';return '<button type="button" class="kt-atif" data-i="'+i+'" style="left:'+(a.x*100).toFixed(3)+'%;top:'+(a.y*100).toFixed(3)+'%;width:'+(a.w*100).toFixed(3)+'%;height:'+(a.h*100).toFixed(3)+'%" aria-label="Madde '+esc(a.n)+'"></button>';}).join('');
       k.setAttribute('data-n',s.n);
       if(k.parentNode!==s.el)s.el.appendChild(k);
       try{if(!localStorage.getItem(ATIF_IP)){localStorage.setItem(ATIF_IP,'1');bildir('§ Altı noktalı atıflara dokun: madde hemen açılır.');}}catch(e){}
@@ -5185,10 +5199,11 @@ function lexDersler(){
           ctx=c.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,c.width,c.height);
           await page.render({canvasContext:ctx,viewport:vp}).promise;
         }else{
-          var rk=Math.min(2.5,2000/Math.max(g.nw,g.nh,1));if(Math.max(g.nw,g.nh)*rk<1000)rk=1000/Math.max(g.nw,g.nh,1);
+          var rk=Math.min(2.5,2600/Math.max(g.nw,g.nh,1));if(Math.max(g.nw,g.nh)*rk<1200)rk=1200/Math.max(g.nw,g.nh,1);
           c.width=Math.round(g.nw*rk);c.height=Math.round(g.nh*rk);
-          ctx=c.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,c.width,c.height);ctx.drawImage(g.img,0,0,c.width,c.height);
+          ctx=c.getContext('2d',{willReadFrequently:true});ctx.fillStyle='#fff';ctx.fillRect(0,0,c.width,c.height);ctx.drawImage(g.img,0,0,c.width,c.height);
         }
+        try{arkaDuzelt(c);}catch(e){}
         if(G!==g)break;
         var r=await w.recognize(c);
         var A=atifSatir(ocrSatir(r&&r.data),varsK(g),c.width,c.height);
@@ -5224,6 +5239,27 @@ function lexDersler(){
   }
 
 
+
+
+  // fotoğraf/tarama: her pikseli çevresinin ortalamasına böl -> gölge ve renkli ışık gider, yazı koyulaşır
+  function arkaDuzelt(c){
+    var W=c.width,H=c.height,ctx=c.getContext('2d',{willReadFrequently:true}),im=ctx.getImageData(0,0,W,H),d=im.data,n=W*H;
+    var gr=new Float32Array(n),i,x,y;
+    for(i=0;i<n;i++)gr[i]=d[i*4]*.299+d[i*4+1]*.587+d[i*4+2]*.114;
+    var W1=W+1,ig=new Float64Array(W1*(H+1));
+    for(y=1;y<=H;y++){var sat=0,o=y*W1,p=(y-1)*W1,r=(y-1)*W;for(x=1;x<=W;x++){sat+=gr[r+x-1];ig[o+x]=ig[p+x]+sat;}}
+    var R=Math.max(12,Math.round(Math.max(W,H)/90));
+    for(y=0;y<H;y++){
+      var y0=Math.max(0,y-R),y1=Math.min(H,y+R+1);
+      for(x=0;x<W;x++){
+        var x0=Math.max(0,x-R),x1=Math.min(W,x+R+1);
+        var ort=(ig[y1*W1+x1]-ig[y0*W1+x1]-ig[y1*W1+x0]+ig[y0*W1+x0])/((x1-x0)*(y1-y0));
+        var v=gr[y*W+x]/Math.max(ort,1)*255;v=(v-150)*2.43;v=v<0?0:v>255?255:v;
+        i=(y*W+x)*4;d[i]=d[i+1]=d[i+2]=v;
+      }
+    }
+    ctx.putImageData(im,0,0);
+  }
 
   // ---------- resim dosyası: tek "sayfa" gibi ----------
   function sayfaS(g,n){return g.pdf?g.sayfalar[n-1]:(n===1?g.resimS:null);}

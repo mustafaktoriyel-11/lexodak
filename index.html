@@ -1072,6 +1072,11 @@ html.mf-gece .kt-yan{background:#22161A;border-left-color:#000}
 .kt-ocr-yuz{position:absolute;right:-4px;bottom:-4px;font-style:normal;font-size:10px;font-weight:800;background:#fff;color:#4D1A22;border-radius:8px;padding:1px 4px;line-height:1.3}
 .kt-ocr-yuz:empty{display:none}
 .kt-ds-ac{display:flex;align-items:center;justify-content:center}.kt-ds-ac[hidden]{display:none}
+.kt-mad-kn{display:block;width:100%;margin:10px 0 0;padding:8px 4px;background:none;border:0;font:inherit;font-size:13.5px;color:#7A8099;text-align:left;cursor:pointer}
+.kt-mad-kn b{color:#4D1A22}
+.kt-kn-l{flex-wrap:wrap;overflow:visible}
+.kt-kn-l .kt-eb.on small{color:#F2DDA8}
+.kt-kn-l .kt-eb small{display:block;font-size:11px;font-weight:600;color:#B07A12}
 .kt-ds-cubuk{height:8px;border-radius:4px;background:#EEE9E1;overflow:hidden}
 .kt-ds-cubuk i{display:block;height:100%;width:0;background:#C9962B;transition:width .2s}
 .kt-mn-b:disabled{opacity:.45}
@@ -1093,6 +1098,7 @@ html.mf-gece .kt-yan{background:#22161A;border-left-color:#000}
 .kt-gor-ic{width:max-content;min-width:100%;box-sizing:border-box;padding:8px 0}
 .kt-sf{position:relative;margin:0 auto 8px;background:#fff;box-shadow:0 1px 6px rgba(0,0,0,.4)}
 .kt-sf canvas{display:block;width:100%;height:100%}
+.kt-rs{position:relative;width:max-content;margin:0 auto}.kt-rs>img{margin:0}
 .kt-gor-ic img{display:block;margin:0 auto;max-width:none;background:#fff}
 .kt-gor-msg{position:absolute;left:0;right:0;top:0;padding:40px 24px;text-align:center;color:#fff;font-size:15px;line-height:1.5}
 .kt-gor-msg button{display:block;margin:14px auto 0;min-height:44px;padding:0 20px;border:0;border-radius:10px;background:#C9962B;color:#2B1F05;font:inherit;font-weight:700;cursor:pointer}
@@ -4019,9 +4025,23 @@ function lexDersler(){
     <div class="kt-tut"></div>
     <div class="kt-mad-bas"><b id="kt-mad-ad"></b><small id="kt-mad-alt"></small></div>
     <div class="kt-mad-m" id="kt-mad-m"></div>
+    <button type="button" class="kt-mad-kn" id="kt-mad-kn" hidden></button>
     <div class="kt-sh-alt">
       <button type="button" class="mt-btn2" id="kt-mad-kapat">Kapat</button>
       <button type="button" class="mt-btn" id="kt-mad-git">Mevzuatta aç</button>
+    </div>
+  </div>
+</div>
+<div id="kt-kn" class="kt-ort" hidden>
+  <div class="kt-perde" data-kapat="1"></div>
+  <div class="kt-panel" role="dialog" aria-modal="true" aria-labelledby="kt-kn-b">
+    <div class="kt-tut"></div>
+    <h3 id="kt-kn-b" class="kt-sh-baslik">§ Bu dosya hangi kanunu anlatıyor?</h3>
+    <p class="pm-kucuk" id="kt-kn-ac" style="margin:0 0 12px"></p>
+    <div class="kt-etiketler kt-kn-l" id="kt-kn-l" role="radiogroup"></div>
+    <div class="kt-sh-alt">
+      <button type="button" class="mt-btn2" id="kt-kn-yok">Hiçbiri</button>
+      <button type="button" class="mt-btn" id="kt-kn-tamam">Kaydet</button>
     </div>
   </div>
 </div>
@@ -4584,9 +4604,10 @@ function lexDersler(){
     g.url=URL.createObjectURL(g.blob);
     var im=new Image();
     im.alt=g.m.ad;
-    im.onload=function(){g.nw=im.naturalWidth;g.nh=im.naturalHeight;resimOlcek(g);};
+    im.onload=function(){g.nw=im.naturalWidth;g.nh=im.naturalHeight;resimOlcek(g);resimAtif(g);};
     im.onerror=function(){mesaj('Resim açılamadı.',{ad:'Telefonda aç',fn:function(){paylas(g.m,g.blob);}});};
-    ic.innerHTML='';ic.appendChild(im);im.src=g.url;g.img=im;
+    var sar=document.createElement('div');sar.className='kt-rs';sar.appendChild(im);
+    ic.innerHTML='';ic.appendChild(sar);im.src=g.url;g.img=im;g.resimS={n:1,el:sar,canvas:im};
   }
   function resimOlcek(g){
     if(!g.img||!g.nw)return;
@@ -5008,32 +5029,33 @@ function lexDersler(){
     });
     return out;
   }
-  function atifBul(page,ders){
+  function atifBul(page,vars){
     var vp=page.getViewport({scale:1});
     return page.getTextContent().then(function(tc){
       var harf=0;tc.items.forEach(function(it){harf+=(it.str||'').replace(/\s/g,'').length;});
       var S=satirlar(tc.items,vp.transform);
       S.forEach(function(sa){sa.ust=sa.y-sa.h*.92;sa.yuk=sa.h*1.18;});
-      var L=atifSatir(S,ders,vp.width,vp.height);L.taranmis=harf<25;return L;
+      var L=atifSatir(S,vars,vp.width,vp.height);L.taranmis=harf<25;return L;
     });
   }
-  function atifSatir(S,ders,VW,VH){
-      var bulunan=[],vars=dersKanun(ders);
+  function atifSatir(S,vars,VW,VH){
+      var bulunan=[],yalin=0;
       S.forEach(function(sa){
         var dolu=[];
-        function ekle(a,b,no,n){
+        function ekle(a,b,no,n,v){
           for(var i=0;i<dolu.length;i++)if(a<dolu[i][1]&&b>dolu[i][0])return;
           var na=parseInt(n,10);if(!(na>0)||na>1600||KAN_NO[n])return;
           dolu.push([a,b]);
           var x1=sa.x1[a],x2=sa.x2[b-1];
-          bulunan.push({x:x1/VW,y:sa.ust/VH,w:(x2-x1)/VW,h:sa.yuk/VH,no:no,n:String(na)});
+          var o={x:x1/VW,y:sa.ust/VH,w:(x2-x1)/VW,h:sa.yuk/VH,no:no,n:String(na)};if(v)o.v=1;bulunan.push(o);
         }
         var m;RE_K.lastIndex=0;
         while((m=RE_K.exec(sa.t)))ekle(m.index,m.index+m[0].length,KAN_HARITA[m[1]],m[2]);
         RE_S.lastIndex=0;
         while((m=RE_S.exec(sa.t)))if(KAN_NO[m[1]])ekle(m.index,m.index+m[0].length,m[1],m[2]);
-        if(vars){RE_D.lastIndex=0;while((m=RE_D.exec(sa.t)))ekle(m.index,m.index+m[0].length,vars,m[1]);}
+        RE_D.lastIndex=0;while((m=RE_D.exec(sa.t))){if(vars)ekle(m.index,m.index+m[0].length,vars,m[1],1);else yalin++;}
       });
+      bulunan.yalin=yalin;bulunan.metin=S.map(function(sa){return sa.t;}).join(' ').slice(0,6000);
       return bulunan;
   }
   var ATIF_IP='lex-atif-ipucu';
@@ -5041,13 +5063,14 @@ function lexDersler(){
     try{
       if(!g.atif[s.n]){
         var page=await g.pdf.getPage(s.n);
-        var A=await atifBul(page,g.m.ders);
+        var A=await atifBul(page,varsK(g));
         if(A.taranmis){
           var oc=g.m.ocr&&g.m.ocr[s.n];
           if(oc){A=oc.slice();A.taranmis=true;A.okundu=true;}
           else{g.taranmis=true;ocrDugme(g);}
         }
         g.atif[s.n]=A;
+        if(A.yalin&&!varsK(g))knSor(g,A.metin);
       }
       if(g.kapali||!s.canvas||!s.el)return;
       var L=g.atif[s.n];
@@ -5065,6 +5088,7 @@ function lexDersler(){
   ic.addEventListener('click',function(e){
     var b=e.target.closest&&e.target.closest('.kt-atif');if(!b||!G||CZ.acik)return;
     var k=b.parentNode,n=+k.getAttribute('data-n'),a=(G.atif[n]||[])[+b.getAttribute('data-i')];if(!a)return;
+    if(a.v){var vk=varsK(G);if(!vk)return;a={no:vk,n:a.n,v:1};}
     e.preventDefault();e.stopPropagation();
     if(gor.classList.contains('yan')&&window.LEX_MV_YAN){window.LEX_MV_YAN(a.no,a.n);return;}
     madAc(a);
@@ -5074,6 +5098,7 @@ function lexDersler(){
     $('kt-mad-ad').textContent='m. '+a.n;$('kt-mad-alt').textContent='';
     $('kt-mad-m').innerHTML='<p class="pm-kucuk" style="margin:0">Yükleniyor…</p>';
     $('kt-mad-git').textContent=genis()?'Yanda aç':'Mevzuatta aç';
+    var kb=$('kt-mad-kn');kb.hidden=!a.v;if(a.v)kb.innerHTML='Bu dosyadaki yalın “m.” atıfları: <b>'+esc(kanAd(a.no))+'</b> · değiştir';
     $('kt-mad').hidden=false;
     if(window.LEX_GERI)window.LEX_GERI.ekle('kt-mad',function(){madKapat(true);});
     if(!window.LEX_MV_MADDE){$('kt-mad-m').textContent='Mevzuat yüklenemedi.';return;}
@@ -5091,6 +5116,7 @@ function lexDersler(){
   }
   $('kt-mad').addEventListener('click',function(e){if(e.target.getAttribute('data-kapat'))madKapat();});
   $('kt-mad-kapat').addEventListener('click',function(){madKapat();});
+  $('kt-mad-kn').addEventListener('click',function(){madKapat();var g=G;if(g)setTimeout(function(){knSor(g,'',true);},window.LEX_GERI?80:0);});
   $('kt-mad-git').addEventListener('click',function(){
     var a=MAD_A;if(!a)return;madKapat();
     setTimeout(function(){
@@ -5132,7 +5158,7 @@ function lexDersler(){
     g.ocrAcik=true;g.m.ocrAcik=true;metaYaz(g.m).catch(function(){});ocrDugme(g);
     var ilk=!window.Tesseract&&!localStorage.getItem(OCR_IP);
     bildir(ilk?'Okuma motoru bir kez indiriliyor (~5 MB). Sonra internetsiz çalışır; açtığın sayfalar birkaç saniyede okunur.':'Taranmış sayfalar okunuyor; atıflar birkaç saniyede belirir.');
-    g.sayfalar.forEach(function(s){var L=g.atif[s.n];if(s.canvas&&L&&L.taranmis&&!L.okundu)ocrSira(g,s.n);});
+    tumS(g).forEach(function(s){var L=g.atif[s.n];if(s.canvas&&L&&L.taranmis&&!L.okundu)ocrSira(g,s.n);});
   });
   function ocrSira(g,n){
     if(g.ocrQ.indexOf(n)<0)g.ocrQ.push(n);
@@ -5144,25 +5170,33 @@ function lexDersler(){
     try{
       while(G===g&&g.ocrAcik&&g.ocrQ.length){
         // önce ekranda görünen sayfa
-        var sec=0;for(var i=0;i<g.ocrQ.length;i++){var s=g.sayfalar[g.ocrQ[i]-1];if(s&&s.el&&isGorunur(g,s)&&Math.abs(g.ocrQ[i]-g.sayfa)<=1){sec=i;break;}}
+        var sec=0;for(var i=0;i<g.ocrQ.length;i++){var s=sayfaS(g,g.ocrQ[i]);if(s&&s.el&&isGorunur(g,s)&&Math.abs(g.ocrQ[i]-g.sayfa)<=1){sec=i;break;}}
         var n=g.ocrQ.splice(sec,1)[0],L=g.atif[n];if(!L||L.okundu)continue;
-        var sy=g.sayfalar[n-1];if(!sy||!sy.el||!isGorunur(g,sy))continue; // uzaklaştıysa: yeniden görününce sıraya girer
+        var sy=sayfaS(g,n);if(!sy||!sy.el||!isGorunur(g,sy))continue; // uzaklaştıysa: yeniden görününce sıraya girer
         b.classList.add('calis');
         var w=await ocrIsci();if(G!==g||!g.ocrAcik)break;
         try{localStorage.setItem(OCR_IP,'1');}catch(e){}
-        ocrYuz('s.'+n);
-        var page=await g.pdf.getPage(n),v1=page.getViewport({scale:1});
-        var olcek=Math.min(3,1800/Math.max(1,v1.width)),vp=page.getViewport({scale:olcek});
-        var c=document.createElement('canvas');c.width=Math.floor(vp.width);c.height=Math.floor(vp.height);
-        var ctx=c.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,c.width,c.height);
-        await page.render({canvasContext:ctx,viewport:vp}).promise;
+        ocrYuz(g.pdf?'s.'+n:'…');
+        var c=document.createElement('canvas'),ctx;
+        if(g.pdf){
+          var page=await g.pdf.getPage(n),v1=page.getViewport({scale:1});
+          var olcek=Math.min(3,1800/Math.max(1,v1.width)),vp=page.getViewport({scale:olcek});
+          c.width=Math.floor(vp.width);c.height=Math.floor(vp.height);
+          ctx=c.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,c.width,c.height);
+          await page.render({canvasContext:ctx,viewport:vp}).promise;
+        }else{
+          var rk=Math.min(2.5,2000/Math.max(g.nw,g.nh,1));if(Math.max(g.nw,g.nh)*rk<1000)rk=1000/Math.max(g.nw,g.nh,1);
+          c.width=Math.round(g.nw*rk);c.height=Math.round(g.nh*rk);
+          ctx=c.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,c.width,c.height);ctx.drawImage(g.img,0,0,c.width,c.height);
+        }
         if(G!==g)break;
         var r=await w.recognize(c);
-        var A=atifSatir(ocrSatir(r&&r.data),g.m.ders,c.width,c.height);
+        var A=atifSatir(ocrSatir(r&&r.data),varsK(g),c.width,c.height);
         c.width=c.height=0;
         A.taranmis=true;A.okundu=true;g.atif[n]=A;
         if(!g.m.ocr||typeof g.m.ocr!=='object')g.m.ocr={};
-        g.m.ocr[n]=A.map(function(a){return {x:+a.x.toFixed(4),y:+a.y.toFixed(4),w:+a.w.toFixed(4),h:+a.h.toFixed(4),no:a.no,n:a.n};});
+        g.m.ocr[n]=A.map(function(a){var o={x:+a.x.toFixed(4),y:+a.y.toFixed(4),w:+a.w.toFixed(4),h:+a.h.toFixed(4),no:a.no,n:a.n};if(a.v)o.v=1;return o;});
+        if(A.yalin&&!varsK(g))knSor(g,A.metin);
         metaYaz(g.m).catch(function(){});
         if(sy.canvas&&G===g)atifKatman(g,sy);
       }
@@ -5188,6 +5222,59 @@ function lexDersler(){
     });
     return S;
   }
+
+
+
+  // ---------- resim dosyası: tek "sayfa" gibi ----------
+  function sayfaS(g,n){return g.pdf?g.sayfalar[n-1]:(n===1?g.resimS:null);}
+  function tumS(g){return g.pdf?g.sayfalar:(g.resimS?[g.resimS]:[]);}
+  function resimAtif(g){
+    if(G!==g||!g.resimS)return;
+    var oc=g.m.ocr&&g.m.ocr[1],A=oc?oc.slice():[];A.taranmis=true;if(oc)A.okundu=true;
+    g.atif[1]=A;g.taranmis=true;ocrDugme(g);
+    atifKatman(g,g.resimS);
+  }
+
+  // ---------- dosyanın kanunu: yalın "m. 62" atıfları hangi kanuna? ----------
+  function varsK(g){var k=g.m.kanun;if(k==='-')return '';return (k&&KAN_NO[k])?k:dersKanun(g.m.ders);}
+  function kanAd(no){for(var i=0;i<KAN_AD.length;i++)if(KAN_AD[i][0]===no){var a=KAN_AD[i][1];return a[0]==='Anayasa'?'Anayasa':a[0];}return no;}
+  var KN_IP=[['2004',/icra|haciz|iflas|ilam|ilâm|konkordato|takip|ödeme emri|itiraz/g],['5237',/suç|ceza|fail|kast|taksir|mağdur/g],['5271',/soruşturma|kovuşturma|sanık|şüpheli|savcı|tutuklama/g],
+    ['6098',/borç|alacak|sözleşme|tazminat|haksız fiil|temerrüt|kefil/g],['4721',/zilyet|mülkiyet|tapu|miras|mirasçı|evlilik|boşanma|velayet|vasi|ayni hak|irtifak/g],
+    ['6102',/şirket|tacir|ticari|kambiyo|bono|poliçe|anonim|limited/g],['6100',/dava şartı|ispat|delil|istinaf|temyiz|ön inceleme|ihtiyati tedbir/g],
+    ['2709',/anayasa|temel hak|yasama|yürütme|cumhurbaşkanı|anayasa mahkemesi/g],['4857',/işçi|işveren|kıdem|ihbar|fesih|iş sözleşmesi/g],['2577',/idari|iptal davası|tam yargı|idare mahkemesi/g],
+    ['5718',/yabancı|tanıma|tenfiz|kanunlar ihtilafı/g],['5326',/kabahat|idari para cezası/g]];
+  function knTahmin(t){
+    t=String(t||'').toLocaleLowerCase('tr');var en='',ep=2;
+    KN_IP.forEach(function(x){var p=(t.match(x[1])||[]).length;if(p>ep){ep=p;en=x[0];}});
+    return en;
+  }
+  var KN=null;
+  function knSor(g,metin,elle){
+    if(G!==g||KN||(!elle&&(g.knSoruldu||g.m.kanun)))return;
+    g.knSoruldu=true;
+    var tah=elle?(varsK(g)||''):knTahmin(metin);
+    KN={g:g,sec:tah};
+    $('kt-kn-ac').textContent=elle?'Bu dosyada kanun adı yazmayan “m. 62” gibi atıflar bu kanundan açılır.':'Bu sayfada kanun adı yazmayan “m. 62” gibi atıflar var. Kanunu seçersen onlara da dokunup maddeyi açabilirsin. Bir kez sorulur.';
+    var KL=KAN_AD.slice();if(tah)KL.sort(function(x,y){return (y[0]===tah)-(x[0]===tah);});
+    $('kt-kn-l').innerHTML=KL.map(function(x){var no=x[0],on=no===tah;return '<button type="button" class="kt-eb'+(on?' on':'')+'" role="radio" aria-checked="'+(on?'true':'false')+'" data-k="'+no+'">'+esc(kanAd(no))+(on&&!elle?'<small>tahmin</small>':'')+'</button>';}).join('');
+    $('kt-kn').hidden=false;
+    if(window.LEX_GERI)window.LEX_GERI.ekle('kt-kn',function(){knKapat(null,true);});
+  }
+  function knKapat(no,geriden){
+    if(!KN)return;var k=KN;KN=null;$('kt-kn').hidden=true;
+    if(!geriden&&window.LEX_GERI)window.LEX_GERI.dus('kt-kn');
+    var g=k.g;if(no==null||G!==g)return;
+    g.m.kanun=no;metaYaz(g.m).catch(function(){});
+    // sayfaları yeniden tara (OCR sonuçları korunur; yalın atıflar tıklamada güncel kanunu kullanır)
+    var eski=g.atif;g.atif={};
+    tumS(g).forEach(function(s){var L=eski[s.n];if(L&&L.okundu){var A=(g.m.ocr&&g.m.ocr[s.n])||[];A=A.slice();A.taranmis=true;A.okundu=true;g.atif[s.n]=A;}});
+    tumS(g).forEach(function(s){if(s.canvas){if(s.atk){s.atk.innerHTML='';}if(!g.atif[s.n]&&!g.pdf){var R=[];R.taranmis=true;g.atif[s.n]=R;}atifKatman(g,s);}});
+    if(no!=='-')bildir('Yalın “m.” atıfları artık '+kanAd(no)+' maddesi olarak açılır.');
+  }
+  $('kt-kn-l').addEventListener('click',function(e){var b=e.target.closest('[data-k]');if(!b||!KN)return;KN.sec=b.getAttribute('data-k');[].forEach.call(this.querySelectorAll('[data-k]'),function(x){var on=x===b;x.classList.toggle('on',on);x.setAttribute('aria-checked',on?'true':'false');});});
+  $('kt-kn-tamam').addEventListener('click',function(){if(KN)knKapat(KN.sec||'-');});
+  $('kt-kn-yok').addEventListener('click',function(){knKapat('-');});
+  $('kt-kn').addEventListener('click',function(e){if(e.target.getAttribute('data-kapat'))knKapat(null);});
 
   // ---------- notlu paylaşım: PDF (notlu sayfalar / tümü) ya da bu sayfa resim ----------
   function notSay(m){var n=0,o=m&&m.not;if(o&&typeof o==='object')for(var k in o)if(o[k]&&o[k].length)n++;return n;}

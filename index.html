@@ -1277,6 +1277,32 @@ html.mf-gece .tb-top div{background:#3A2328}html.mf-gece .tb-top b{color:#F2DDA8
 html.mf-gece .tb-ders b,html.mf-gece .tb-prg b{color:#F5EAEB}html.mf-gece .tb-prg{color:#D9C3C7;border-color:#4A2D33}
 html.mf-gece .tb-hedef,html.mf-gece .tb-ders em{background:#4A2D33}html.mf-gece .tb-ders em i{background:#C9962B}
 html.mf-gece #pg-mevzuat:has(#mv-kanun-k[hidden])::after{border-color:#4A2D33;color:#C9AEB3}
+
+.sb-ac{display:block;width:100%;margin-top:8px;border:0;background:linear-gradient(135deg,#762B37,#4D1A22);color:#F6E7C1;border-radius:14px;padding:12px;font:inherit;font-size:15px;font-weight:700;cursor:pointer}
+.sb-k{max-height:88vh;overflow-y:auto}
+.sb-aciklama{margin:0 0 12px;font-size:13.5px;color:#625356;line-height:1.45}
+.sb-kart{border:1.5px solid #F0E3E5;border-radius:16px;padding:12px 12px 10px;margin-bottom:10px;background:#fff}
+.sb-kart.sec{border-color:#C99A2E;box-shadow:0 0 0 3px rgba(201,154,46,.18)}
+.sb-bas{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.sb-bas b{font-size:16.5px;color:#351E22}
+.sb-bas span{font-size:13px;font-weight:800;color:#762B37;white-space:nowrap;font-variant-numeric:tabular-nums}
+.sb-kart p{margin:4px 0 10px;font-size:13px;color:#625356;line-height:1.4}
+.sb-gunler{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.sb-g{background:#FCF7F8;border-radius:10px;padding:6px 2px;text-align:center}
+.sb-g b{display:block;font-size:11.5px;color:#351E22}
+.sb-g small{display:block;font-size:11px;color:#762B37;font-weight:700;font-variant-numeric:tabular-nums}
+.sb-g.bos small{color:#B9AEB0;font-weight:500}
+.sb-detay{margin:10px 0 0;padding:0;list-style:none;display:none}
+.sb-kart.sec .sb-detay{display:block}
+.sb-detay li{display:flex;gap:8px;font-size:13px;padding:5px 0;border-top:1px solid #F3EAEB;color:#351E22}
+.sb-detay li i{font-style:normal;flex:none;width:34px;font-weight:800;color:#762B37}
+.sb-detay li span{flex:1;min-width:0}
+.sb-uygula{display:none;width:100%;margin-top:10px;border:0;border-radius:12px;background:#762B37;color:#fff;font:inherit;font-size:15px;font-weight:800;padding:12px;cursor:pointer}
+.sb-kart.sec .sb-uygula{display:block}
+.sb-kart p.sb-uyari{margin:-4px 0 10px;font-size:12.5px;color:#9A5B12;background:#FFF6E3;border-radius:10px;padding:7px 9px}
+.sb-not{margin:4px 0 0;font-size:12px;color:#8A7B7E;text-align:center}
+html.mf-gece .sb-kart{background:#2A1E21;border-color:#3B2A2E}html.mf-gece .sb-bas b,html.mf-gece .sb-g b,html.mf-gece .sb-detay li{color:#F1E6E8}
+html.mf-gece .sb-g{background:#33252A}html.mf-gece .sb-detay li{border-top-color:#3B2A2E}
 </style>
 <script>try{if(localStorage.getItem('mf-tema')==='gece')document.documentElement.classList.add('mf-gece');}catch(e){}</script>
 </head>
@@ -1621,6 +1647,7 @@ setTimeout(kapat,max);})();</script>
 <div class="pr-gun-ust"><b id="pr-gun-ad"></b><span id="pr-gun-ozet"></span></div>
 <div id="pr-liste"></div>
 <button type="button" class="pr-ekle" id="pr-ekle">+ Ders ekle</button>
+<button type="button" class="sb-ac" id="sb-ac">✨ Hazır program şablonları</button>
 </div>
 <div class="kart">
 <div class="pr-ust"><b class="pr-bas">🗓️ Sınav takvimim</b></div>
@@ -2201,7 +2228,7 @@ function lexDersler(){
   function copOku(){var c=oku(COP_K,null);if(c&&Date.now()-c.t>COP_GUN*864e5){try{localStorage.removeItem(COP_K);}catch(e){}return null;}return c;}
   function copArayuz(){var c=copOku(),b=$('pm-gerial');if(!c){b.hidden=true;return;}
     var kal=Math.max(1,COP_GUN-Math.floor((Date.now()-c.t)/864e5));b.hidden=false;b.textContent='↩︎ Silinen kayıtları geri getir ('+kal+' gün kaldı)';}
-  function toast(m,geri){var t=$('mf-toast');$('mf-toast-m').textContent=m;$('mf-toast-b').hidden=!geri;t.classList.add('acik');clearTimeout(toastT);toastT=setTimeout(function(){t.classList.remove('acik');},geri?10000:3500);}
+  window.MF_TOAST=function(m){toast(m);};function toast(m,geri){var t=$('mf-toast');$('mf-toast-m').textContent=m;$('mf-toast-b').hidden=!geri;t.classList.add('acik');clearTimeout(toastT);toastT=setTimeout(function(){t.classList.remove('acik');},geri?10000:3500);}
   function geriGetir(){var c=copOku();if(!c)return;yaz(KAYIT_K,birlestir(oku(KAYIT_K,{}),c.k));try{localStorage.removeItem(COP_K);}catch(e){}
     istatistik();if(window.MF_PR)window.MF_PR();copArayuz();$('mf-toast').classList.remove('acik');toast('Kayıtların geri geldi ✓',false);}
   $('pm-temizle').addEventListener('click',function(){
@@ -2430,6 +2457,7 @@ function lexDersler(){
     var PR_K='mf-program',GUNLER=['Pazartesi','Salı','Çarşamba','Perşembe','Cuma','Cumartesi','Pazar'],GK=['Pzt','Sal','Çar','Per','Cum','Cmt','Paz'];
     var pr=oku(PR_K,null);if(!pr||!pr.g)pr={g:[[],[],[],[],[],[],[]]};
     function prYaz(){yaz(PR_K,pr);}
+    window.MF_PR_SABLON=function(g){pr.g=g;prYaz();secGun=bugunI();ciz2();};window.MF_PR_VAR=function(){return pr.g.some(function(x){return x.length;});};
     function bugunI(){return (new Date().getDay()+6)%7;}
     var secGun=bugunI(),gunZip=false;
     function gunTarih(i){var t=new Date();t.setHours(12,0,0,0);t.setDate(t.getDate()-bugunI()+i);return t.getTime();}
@@ -5630,6 +5658,93 @@ function lexDersler(){
   },15000);
   var sbc=document.querySelector('#pm-odak-c [data-v=serbest]');if(sbc){sbc.setAttribute('aria-label','Serbest çalışma (kronometre)');sbc.title='Serbest çalışma (kronometre)';}
   setInterval(guncelle,1000);guncelle();
+})();
+</script>
+<div id="sb-p" class="pm-sheet" role="dialog" aria-modal="true" aria-labelledby="sb-p-b"><div class="sheet-k sb-k">
+<div class="sheet-tut"></div>
+<div class="sheet-ust"><b id="sb-p-b">✨ Hazır programlar</b><span id="sb-p-a"></span></div>
+<p class="sb-aciklama" id="sb-p-ac"></p>
+<div id="sb-liste"></div>
+<p class="sb-not">Uyguladıktan sonra her dersi dokunup değiştirebilir, silebilir ya da yenisini ekleyebilirsin.</p>
+</div></div>
+<script>
+// ---- Program: hazır şablonlar ----
+(function(){
+  function $(i){return document.getElementById(i);}
+  var p=$('sb-p');if(!p||!$('sb-ac'))return;
+  var GK=['Pzt','Sal','Çar','Per','Cum','Cmt','Paz'],GUN=['Pazartesi','Salı','Çarşamba','Perşembe','Cuma','Cumartesi','Pazar'];
+  var GENEL=/^(genel|diğer|genel \/ diğer|serbest|genel çalışma)$/i;
+  function dersler(){
+    var l=[].map.call(($('pm-ders')||{options:[]}).options,function(o){return o.value;}).filter(function(x){return x&&!GENEL.test(x.trim());});
+    var g={};return l.filter(function(x){if(g[x])return false;g[x]=1;return true;});
+  }
+  function sinavlar(){var l=[];try{l=JSON.parse(localStorage.getItem('lex-sinavlar')||'[]');}catch(e){}if(!Array.isArray(l))l=[];
+    var b=new Date();b.setHours(0,0,0,0);
+    return l.map(function(x){var q=String(x.tarih||'').split('-');var t=new Date(+q[0],+q[1]-1,+q[2]);return {ders:x.ders,tur:x.tur,gun:Math.round((t-b)/864e5)};}).filter(function(x){return x.gun>=0;});}
+  function sk(dk){var h=Math.floor(dk/60),m=dk%60;return h?(h+(m?','+Math.round(m/6):'')+' sa'):(m+' dk');}
+  // ağırlıklı, dengeli dağıtım: aynı gün aynı ders iki kez gelmesin
+  function dagit(D,W,gunler){
+    var cur=D.map(function(){return 0;}),top=W.reduce(function(a,b){return a+b;},0),g=[[],[],[],[],[],[],[]];
+    gunler.forEach(function(dkl,gi){
+      var bugun={};
+      dkl.forEach(function(dk){
+        for(var i=0;i<D.length;i++)cur[i]+=W[i];
+        var en=-1;
+        for(i=0;i<D.length;i++){if(bugun[D[i]]&&D.length>dkl.length-1)continue;if(en<0||cur[i]>cur[en])en=i;}
+        if(en<0)en=0;cur[en]-=top;
+        var var_=null;g[gi].forEach(function(o){if(o.ders===D[en])var_=o;});
+        if(var_)var_.dk+=dk;else g[gi].push({ders:D[en],dk:dk});bugun[D[en]]=1;
+      });
+    });
+    return g;
+  }
+  function sablonlar(){
+    var D=dersler();if(!D.length)return [];
+    var S=sinavlar(),yak={};S.forEach(function(x){if(x.ders&&(yak[x.ders]==null||x.gun<yak[x.ders]))yak[x.ders]=x.gun;});
+    // kamp: sınavı yakın olan önce ve daha ağır
+    var DK=D.slice().sort(function(a,b){var x=yak[a]==null?999:yak[a],y=yak[b]==null?999:yak[b];return x-y;});
+    var WK=DK.map(function(d){var f=yak[d];return f==null?1:f<=7?4:f<=14?3:f<=28?2:1;});
+    var W1=D.map(function(){return 1;});
+    var hafif=[[45],[45],[45],[45],[45],[60,60],[]];
+    var duzen=[[60,60],[60,60],[60,60],[60,60],[60,60],[60,60,60],[60]];
+    var kamp=[[90,60,60],[90,60,60],[90,60,60],[90,60,60],[90,60,60],[90,90,60],[90,60]];
+    var yakS=S.filter(function(x){return x.gun<=28;}).length;
+    return [
+      {id:'hafif',ad:'🌿 Hafif tempo',ac:'İşte çalışanlar ya da dönem başı için. Hafta içi günde tek ders, Cumartesi iki ders, Pazar dinlenme.',g:dagit(D,W1,hafif)},
+      {id:'duzen',ad:'⚖️ Düzenli dönem',ac:'Dönem boyunca sürdürülebilir tempo. Her gün iki ders, Cumartesi üç ders, Pazar hafif tekrar.',g:dagit(D,W1,duzen)},
+      {id:'kamp',ad:'🔥 Vize / Final kampı',ac:(yakS?'Sınav takvimine göre: sınavı yaklaşan dersler öne alındı ve daha sık geliyor. ':'Sınav takviminde yakın tarih yok; dersler eşit dağıtıldı. Sınav eklersen yaklaşanlar öne alınır. ')+'Günde üç blok, ilki 90 dk.',g:dagit(DK,WK,kamp)}
+    ];
+  }
+  var SB=[],SEC='';
+  function toplam(g){var t=0;g.forEach(function(x){x.forEach(function(o){t+=o.dk;});});return t;}
+  function esc(t){return String(t).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+  function ciz(){
+    var D=dersler();
+    $('sb-p-a').textContent=D.length?D.length+' dersine göre':'';
+    $('sb-p-ac').textContent=D.length?(D.length<=8?'Seçtiğin dersler: '+D.join(', ')+'. ':'')+'Birine dokun, gün gün nasıl dağıldığını gör.':'';
+    if(!D.length){$('sb-liste').innerHTML='<p class="sb-aciklama">Önce derslerini seçmelisin. Çalışma ekranında ders listesini düzenle, sonra buraya dön.</p>';return;}
+    $('sb-liste').innerHTML=SB.map(function(s){
+      var gun=s.g.map(function(x,i){var t=0;x.forEach(function(o){t+=o.dk;});return '<div class="sb-g'+(t?'':' bos')+'"><b>'+GK[i]+'</b><small>'+(t?t+'′':'–')+'</small></div>';}).join('');
+      var det=s.g.map(function(x,i){return x.length?'<li><i>'+GK[i]+'</i><span>'+x.map(function(o){return esc(o.ders)+' '+o.dk+' dk';}).join(' · ')+'</span></li>':'';}).join('');
+      var var_={};s.g.forEach(function(x){x.forEach(function(o){var_[o.ders]=1;});});
+      var dis=D.filter(function(d){return !var_[d];}),uy=dis.length?'<p class="sb-uyari">'+D.length+' dersin var; bu programa '+(D.length-dis.length)+' tanesi sığdı. Dışarıda kalan: '+esc(dis.join(', '))+'</p>':'';
+      return '<div class="sb-kart'+(SEC===s.id?' sec':'')+'" data-id="'+s.id+'" role="button" tabindex="0"><div class="sb-bas"><b>'+s.ad+'</b><span>haftada '+sk(toplam(s.g))+'</span></div><p>'+esc(s.ac)+'</p>'+uy+'<div class="sb-gunler">'+gun+'</div><ul class="sb-detay">'+det+'</ul><button type="button" class="sb-uygula" data-u="'+s.id+'">Bu programı uygula</button></div>';
+    }).join('');
+  }
+  function ac(){SB=sablonlar();SEC='';ciz();p.classList.add('acik');requestAnimationFrame(function(){requestAnimationFrame(function(){p.classList.add('gor');});});
+    if(window.LEX_GERI)window.LEX_GERI.ekle('sb-p',function(){kapat(true);});}
+  function kapat(geriden){if(!p.classList.contains('acik'))return;p.classList.remove('gor');setTimeout(function(){p.classList.remove('acik');},280);if(!geriden&&window.LEX_GERI)window.LEX_GERI.dus('sb-p');}
+  $('sb-ac').addEventListener('click',ac);
+  p.addEventListener('click',function(e){
+    if(e.target===p){kapat();return;}
+    var u=e.target.closest('[data-u]');
+    if(u){var s=null;SB.forEach(function(x){if(x.id===u.dataset.u)s=x;});if(!s||!window.MF_PR_SABLON)return;
+      if(window.MF_PR_VAR&&window.MF_PR_VAR()&&!confirm('Mevcut haftalık programın silinip yerine “'+s.ad.replace(/^\S+\s/,'')+'” konsun mu?'))return;
+      window.MF_PR_SABLON(JSON.parse(JSON.stringify(s.g)));kapat();
+      if(window.MF_TOAST)window.MF_TOAST(s.ad.replace(/^\S+\s/,'')+' uygulandı. Dersleri dokunarak değiştirebilirsin.');
+      return;}
+    var k=e.target.closest('.sb-kart');if(k){SEC=SEC===k.dataset.id?'':k.dataset.id;ciz();}
+  });
 })();
 </script>
 </body>

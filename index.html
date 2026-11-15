@@ -1077,6 +1077,7 @@ html.mf-gece .kt-yan{background:#22161A;border-left-color:#000}
 .kt-kn-l{flex-wrap:wrap;overflow:visible}
 .kt-kn-l .kt-eb.on small{color:#F2DDA8}
 .kt-kn-l .kt-eb small{display:block;font-size:11px;font-weight:600;color:#B07A12}
+.kt-ds-uyari{margin:12px 0 0;padding:8px 10px;border-radius:8px;background:#F7F1E6;color:#6B5A3E;line-height:1.45}
 .kt-ds-cubuk{height:8px;border-radius:4px;background:#EEE9E1;overflow:hidden}
 .kt-ds-cubuk i{display:block;height:100%;width:0;background:#C9962B;transition:width .2s}
 .kt-mn-b:disabled{opacity:.45}
@@ -1237,6 +1238,7 @@ body:not(.s-program):not(.s-istat):not(.s-mantik):not(.s-mevzuat):not(.s-kutupha
 @media (min-width:1000px) and (orientation:landscape){.tb-mini{bottom:16px;right:16px}}
 body:has(#kt-gor:not([hidden])) .tb-mini{bottom:calc(16px + env(safe-area-inset-bottom))}
 body:has(#kt-gor.ciz:not([hidden])) .tb-mini{bottom:calc(158px + env(safe-area-inset-bottom))}
+body:has(.kt-ort:not([hidden])) .tb-mini,body:has(.pm-sheet.acik) .tb-mini{display:none!important}
 .tb-hat{position:fixed;z-index:9600;left:50%;transform:translateX(-50%);top:calc(14px + env(safe-area-inset-top));width:min(420px,calc(100vw - 24px));box-sizing:border-box;display:flex;flex-direction:column;gap:6px;padding:14px 16px;border-radius:16px;background:#FFF8E8;border:1.5px solid #E2B95A;color:#3B2A2D;box-shadow:0 10px 30px rgba(40,10,15,.18);font-size:14px;line-height:1.45}
 .tb-hat[hidden]{display:none}.tb-hat b{font-size:15px}.tb-hat button{align-self:flex-end;min-height:40px;padding:0 18px;border:0;border-radius:10px;background:#762B37;color:#fff;font:inherit;font-weight:800;cursor:pointer}
 html.mf-gece .tb-hat{background:#3A2A14;border-color:#A8651F;color:#F5EAEB}
@@ -4108,6 +4110,7 @@ function lexDersler(){
       <button type="button" class="kt-mn-b" data-s="tum" id="kt-ds-tum">📚 Bütün PDF · notlarla</button>
       <button type="button" class="kt-mn-b" data-s="resim" id="kt-ds-resim">🖼️ Bu sayfa · resim</button>
     </div>
+    <p class="pm-kucuk kt-ds-uyari">⚖️ Kitap sayfaları gibi telifli içerikleri başkalarıyla paylaşmak yayıncının iznine bağlıdır. Yalnız kendi notlarını ya da paylaşma hakkın olan belgeleri paylaş.</p>
     <div id="kt-ds-is" hidden>
       <div class="kt-ds-cubuk"><i id="kt-ds-dolu"></i></div>
       <p class="pm-kucuk" id="kt-ds-durum" style="margin:8px 0 0"></p>

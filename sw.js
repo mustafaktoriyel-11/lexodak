@@ -1,5 +1,5 @@
 // Lex Odak - service worker
-var SURUM = 'lex-odak-v60';
+var SURUM = 'lex-odak-v61';
 var MEVZUAT = 'lex-mevzuat-2';
 var OCR = 'lex-ocr-1';  // taranmış PDF okuma motoru (jsdelivr), bir kez iner  // kanun metinleri sürüm değişse de silinmez
 var DOSYALAR = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png', './gizlilik.html'];
@@ -46,7 +46,7 @@ self.addEventListener('fetch', function (e) {
   if (e.request.method !== 'GET' || u.origin !== location.origin) return;
   if (/\/mevzuat\.json$/.test(u.pathname)) { e.respondWith(mevzuatAl(e.request)); return; }
   e.respondWith(
-    fetch(e.request).then(function (r) {
+    fetch(e.request.mode === 'navigate' ? new Request(e.request.url, { cache: 'no-cache', credentials: 'same-origin' }) : new Request(e.request, { cache: 'no-cache' })).then(function (r) {
       var kopya = r.clone();
       if (r.ok) caches.open(SURUM).then(function (c) { c.put(e.request, kopya); });
       return r;

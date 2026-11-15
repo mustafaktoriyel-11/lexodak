@@ -1128,6 +1128,60 @@ html.mf-gece .kt-mn-b.kt-sil{color:#FF8A80}
 html.mf-gece .kt-sh-uyari{color:#FF9C94}
 .not-ipucu{margin:6px 0 0;font-size:12px;color:#8A6A70;text-align:center}.not-olay{display:none;margin-top:10px}.not-olay.acik{display:block}.not-olay label{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:14px;font-weight:700}.not-olay input{width:90px;text-align:center}
 
+/* ---- On İki Levha kadranı ---- */
+.pm-saat>svg:not(.lv){display:none}
+.pm-saat::before{display:none!important}
+.pm-saat svg.lv{transform:none;position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+.lv .lv-z{fill:none;stroke:#DCCDB9;stroke-width:1.2}
+.lv .lv-d{fill:#762B37;stroke:#C99A2E;stroke-width:1;opacity:0;transition:opacity .4s}
+.lv g.bitti .lv-d{opacity:1}
+.lv .lv-k{fill:#762B37}
+.lv g.simdi .lv-z{stroke:#C99A2E;stroke-width:1.4}
+.lv .lv-r{font-family:'Cormorant Garamond',Georgia,'Noto Serif',serif;font-weight:600;font-size:13.5px;fill:#7A6A5E;text-anchor:middle}
+.lv g.bitti .lv-r{fill:#E8C877}.lv g.simdi .lv-r{fill:#B08524}
+.lv .lv-c{fill:none;stroke:#C99A2E;stroke-width:1;opacity:.7}
+.lv .lv-i{fill:none;stroke:#C99A2E;stroke-width:.8;opacity:.55}
+.lv .lv-y,.lv .lv-ym{font-family:'Cormorant Garamond',Georgia,'Noto Serif',serif;font-weight:600;font-size:10.5px;letter-spacing:1.6px;fill:#B08524}
+.pm-saat .pm-yazi{padding-top:7%;box-sizing:border-box}
+.lv .lv-ym{display:none}
+.pm-saat.mola .lv .lv-y{display:none}.pm-saat.mola .lv .lv-ym{display:inline}
+.pm-saat.mola .lv .lv-d{fill:#2F8A5F;stroke:#2F8A5F}.pm-saat.mola .lv .lv-k{fill:#2F8A5F}.pm-saat.mola .lv g.simdi .lv-r{fill:#2F8A5F}
+.pm-saat.mola .lv .lv-c,.pm-saat.mola .lv .lv-i,.pm-saat.mola .lv g.simdi .lv-z{stroke:#2F8A5F}
+.pm-saat.mola .lv .lv-ym{fill:#2F8A5F}.pm-saat.mola .lv g.bitti .lv-r{fill:#F3E6CF}
+.pm-saat .pm-sure{font-weight:500;letter-spacing:-1px;color:#2E1F22}
+.pm-saat .pm-sure{font-size:46px}
+html.mf-gece .lv .lv-z{stroke:#4A2C32}
+html.mf-gece .lv .lv-d,html.mf-gece .lv .lv-k{fill:#7E2C3A}
+html.mf-gece .lv .lv-r{fill:#8E7A70}html.mf-gece .lv g.bitti .lv-r{fill:#C99A2E}html.mf-gece .lv g.simdi .lv-r{fill:#D9B04A}
+html.mf-gece .lv .lv-y{fill:#C99A2E}
+html.mf-gece .pm-saat.mola .lv .lv-d{fill:#245E44;stroke:#3E9C6E}html.mf-gece .pm-saat.mola .lv .lv-k{fill:#245E44}html.mf-gece .pm-saat.mola .lv g.simdi .lv-r{fill:#7FD1A8}
+html.mf-gece .pm-saat.mola .lv .lv-c,html.mf-gece .pm-saat.mola .lv .lv-i,html.mf-gece .pm-saat.mola .lv g.simdi .lv-z{stroke:#3E9C6E}
+html.mf-gece .pm-saat.mola .lv .lv-ym{fill:#3E9C6E}
+html.mf-gece .pm-saat .pm-sure{color:#F3E6CF}
+.lv g.parla{animation:lvParla 1.8s ease-in-out}
+@keyframes lvParla{0%{filter:none}35%{filter:drop-shadow(0 0 3px #F6D98A) drop-shadow(0 0 9px #E2B13F)}100%{filter:none}}
+.lv g.parla .lv-d,.lv g.parla .lv-z{animation:lvKenar 1.8s ease-in-out}
+@keyframes lvKenar{35%{stroke-width:2.4;stroke:#F2CF72}}
+.pm-saat.mola .lv g.parla{animation-name:lvParlaM}
+@keyframes lvParlaM{0%{filter:none}35%{filter:drop-shadow(0 0 3px #BFEFD5) drop-shadow(0 0 9px #3E9C6E)}100%{filter:none}}
+@media (prefers-reduced-motion:reduce){.lv g.parla,.lv g.parla .lv-d{animation:none}}
+.lv-bilgi{position:absolute;left:28%;width:44%;top:6%;height:16%;min-height:44px;z-index:2;border:0;background:transparent;padding:0;cursor:help;-webkit-tap-highlight-color:transparent;border-radius:999px}
+.lv-bilgi:focus-visible{outline:2px solid #C99A2E;outline-offset:2px}
+
+.pm-domates{display:flex;justify-content:center;gap:8px;line-height:1}
+.lv-tur{width:24px;height:24px;display:block}
+.lv-tur circle{fill:none;stroke:#C9B9A3;stroke-width:1.2}
+.lv-tur path{fill:none;stroke:#B7A68F;stroke-width:1.5;stroke-linecap:round}
+.lv-tur.on circle{fill:#762B37;stroke:#C99A2E}.lv-tur.on path{stroke:#E8C877}
+html.mf-gece .lv-tur circle{stroke:#5A3A40}html.mf-gece .lv-tur path{stroke:#8E7A70}
+html.mf-gece .lv-tur.on circle{fill:#7E2C3A;stroke:#C99A2E}html.mf-gece .lv-tur.on path{stroke:#E8C877}
+
+.pm-sifir.tut::before{background:#5E1F2A;box-shadow:inset 0 0 0 1.5px #C99A2E;border-radius:inherit}
+.pm-sifir.tut.basili{color:#F3DFA6}
+#pm-sinav-k,#pm-sinav-k.acik{display:none}
+html.mf-gece .pm-sifir.tut::before{background:#6E2432}
+html.mf-gece .pm-sifir.tut.basili{color:#E8C877}
+
 .tb-bugun{display:block;margin-top:12px}
 .tb-hafta,.tb-ders-ad,.ust-ic .tb-sayfa,.tb-tumu{display:none}
 .tb-ders-ad{margin-top:6px;font-size:14px;font-weight:700;color:#762B37;max-width:62%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-left:auto;margin-right:auto}html.mf-gece .tb-ders-ad{color:#F2DDA8}
@@ -1466,13 +1520,13 @@ setTimeout(kapat,max);})();</script>
 <section class="kart">
 <div class="pm-kutu">
 <div class="pm-mod">
-<button type="button" class="aktif" data-m="odak">🍅 Odak</button>
-<button type="button" data-m="deneme">📝 Deneme</button>
+<button type="button" class="aktif" data-m="odak">§ Odak</button>
+<button type="button" data-m="deneme">📝 HMGS</button>
 </div>
 <label class="pm-sinav" id="pm-sinav-k">Hangi sınav?
 <select id="pm-sinav"><option value="HMGS">HMGS · 120 soru · 155 dk</option></select></label>
 <div class="pm-saat" id="pm-saat">
-<button type="button" class="pm-muzik" id="pm-muzik" aria-label="Arka plan sesi" aria-haspopup="dialog"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M12 3a9 9 0 0 0-9 9v6a3 3 0 0 0 3 3h1a1 1 0 0 0 1-1v-6a1 1 0 0 0-1-1H5v-1a7 7 0 0 1 14 0v1h-2a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h1a3 3 0 0 0 3-3v-6a9 9 0 0 0-9-9z"/></svg><i><s></s><s></s><s></s></i></button>
+<button type="button" class="pm-muzik" id="pm-muzik" aria-label="Arka plan sesi" aria-haspopup="dialog"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><g fill="currentColor"><ellipse cx="7" cy="17.6" rx="3.1" ry="2.4"/><ellipse cx="17.2" cy="15.6" rx="3.1" ry="2.4"/></g><path d="M9.9 17.6V6.4L20.1 4.4v11.2" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/><path d="M9.9 9.2l10.2-2" fill="none" stroke="currentColor" stroke-width="1.9"/></svg><i><s></s><s></s><s></s></i></button>
 <svg viewBox="0 0 120 120"><circle class="iz" cx="60" cy="60" r="52"/><circle class="dolu" id="pm-halka" cx="60" cy="60" r="52"/></svg>
 <div class="pm-yazi"><div class="pm-sure" id="pm-sure">25:00</div><div class="pm-etiket" id="pm-etiket">Odaklanma zamanı</div></div>
 </div>
@@ -1494,7 +1548,7 @@ setTimeout(kapat,max);})();</script>
 <div class="pm-sik-ic" id="pm-sik-ic" hidden><div class="sik-ic-satir">
 <div class="sik-sahne" id="sik-sahne" data-g="k" aria-hidden="true"><i class="sk-flas"></i><svg class="sk-k" viewBox="0 0 120 120"><use href="#mf-kedi"/></svg><svg class="sk-a" viewBox="0 0 120 120"><use href="#mf-aslan"/></svg>
 <span class="sk-p" style="--x:-46px;--y:-38px">✦</span><span class="sk-p" style="--x:44px;--y:-42px">✦</span><span class="sk-p" style="--x:-50px;--y:22px">✦</span><span class="sk-p" style="--x:50px;--y:26px">✦</span><span class="sk-p" style="--x:0px;--y:-56px">✦</span></div>
-<div><p>Odak süresince ekran açık kalır. Başka bir uygulamaya 10 saniyeden uzun geçersen 🍅 çürür. Telefonu kilitleyip bırakmak sorun değil.</p>
+<div><p>Odak süresince ekran açık kalır. Başka bir uygulamaya 10 saniyeden uzun geçersen o tur geçersiz sayılır. Telefonu kilitleyip bırakmak sorun değil.</p>
 <label class="pm-anahtar"><input type="checkbox" id="pm-siki" role="switch"><span class="ray" aria-hidden="true"></span><b>Sıkı modu kullan</b></label><small class="sik-izin" id="sik-izin" hidden></small></div>
 </div></div></div>
 
@@ -1522,39 +1576,39 @@ setTimeout(kapat,max);})();</script>
 </details>
 
 
-<details class="kart"><summary>🍅 Pomodoro nedir, nasıl çalışmalıyım?</summary>
-<h3>🍅 Pomodoro Tekniği nedir?</h3>
-<p>1980'lerde Francesco Cirillo'nun geliştirdiği bu yöntemde çalışma, kısa molalarla bölünmüş odak bloklarına ayrılır. Adını, Cirillo'nun kullandığı domates şeklindeki mutfak sayacından alır.</p>
+<details class="kart"><summary>§ Odak turları nasıl işler?</summary>
+<h3>Odak turu nedir?</h3>
+<p>Lex Odak'ta çalışma, kısa molalarla bölünmüş odak turlarına ayrılır. Her tur kadranda 12 levhaya bölünür; levhalar doldukça turun ne kadarını tamamladığını görürsün.</p>
 <ol>
 <li><b>Çalışacağın dersi seç</b> ve sayacı başlat (25 dakika).</li>
 <li>Süre boyunca <b>yalnızca o işe odaklan.</b> Aklına başka bir şey gelirse not al, sonra dön.</li>
-<li>Zil çalınca <b>mola kendiliğinden başlar</b> (25 dk odakta 5, 40–50 dk odakta 10 dakika): kalk, su iç, gözlerini dinlendir.</li>
-<li><b>4 pomodoroda bir</b> 15–30 dakikalık <b>uzun mola</b> otomatik gelir. Mola istemezsen <b>Molayı atla</b>'ya dokun.</li>
+<li>Süre bitince <b>mola kendiliğinden başlar</b> (25 dk odakta 5, 40–50 dk odakta 10 dakika): kalk, su iç, gözlerini dinlendir.</li>
+<li><b>4 turda bir</b> 15–30 dakikalık <b>uzun mola</b> otomatik gelir. Mola istemezsen <b>Molayı atla</b>'ya dokun.</li>
 </ol>
 
 <h3>💡 Neden işe yarar?</h3>
 <ul>
 <li><b>Başlamayı kolaylaştırır:</b> "3 saat çalışacağım" yerine "sadece 25 dakika" demek erteleme isteğini azaltır.</li>
 <li><b>Dikkati tazeler:</b> Düzenli molalar, uzun oturuşlarda düşen konsantrasyonu geri getirir.</li>
-<li><b>Ölçülebilir hale getirir:</b> Günde kaç pomodoro yaptığını görmek, ilerlemeni somutlaştırır.</li>
+<li><b>Ölçülebilir hale getirir:</b> Günde kaç tur tamamladığını görmek, ilerlemeni somutlaştırır.</li>
 </ul>
 
 <h3>📌 Verimli çalışma için ipuçları</h3>
 <ul>
 <li><b>Telefonu başka odaya koy</b> ya da en azından bildirimleri kapat. Sayacı bilgisayarda açabilirsin.</li>
-<li><b>Bir pomodoroda tek konu:</b> Borçlar çalışırken araya Ceza sıkıştırma.</li>
+<li><b>Bir turda tek konu:</b> Borçlar çalışırken araya Ceza sıkıştırma.</li>
 <li><b>Molada ekrana bakma:</b> Sosyal medya molası seni yeniden odaklanmaktan uzaklaştırır.</li>
 <li><b>Zor dersi güne erken başla:</b> Zihnin en dinç olduğu saatleri en zorlandığın derse ayır.</li>
 <li><b>Kanunu yanında tut:</b> Konuyu okurken ilgili maddeyi mevzuattan aç; madde numarasıyla çalışmak pratik ve test çözümünü hızlandırır.</li>
 <li><b>Soru çözümünü sürelendir:</b> HMGS denemesinde soru başına yaklaşık 75 saniyen var; gerçek sınav temposunu yakalamaya çalış.</li>
-<li><b>Yavaş yavaş artır:</b> Günde 4 pomodoro ile başla, alıştıkça 8–10'a çıkar.</li>
+<li><b>Yavaş yavaş artır:</b> Günde 4 tur ile başla, alıştıkça 8–10'a çıkar.</li>
 </ul>
 
 <h3>🎯 Örnek bir çalışma günü</h3>
 <ul>
-<li><b>Sabah:</b> 4 pomodoro Medeni Hukuk (konu + kanun maddeleri), uzun mola</li>
-<li><b>Öğleden sonra:</b> 3 pomodoro Borçlar ya da Ceza, 1 pomodoro pratik çalışma</li>
-<li><b>Akşam:</b> 2 pomodoro günün tekrarı ve günlük test</li>
+<li><b>Sabah:</b> 4 tur Medeni Hukuk (konu + kanun maddeleri), uzun mola</li>
+<li><b>Öğleden sonra:</b> 3 tur Borçlar ya da Ceza, 1 tur pratik çalışma</li>
+<li><b>Akşam:</b> 2 tur günün tekrarı ve günlük test</li>
 </ul>
 
 </details>
@@ -1757,11 +1811,11 @@ setTimeout(kapat,max);})();</script>
 <div class="onay-b"><button type="button" id="sil-vazgec">Vazgeç</button><button type="button" id="sil-tamam">Kayıtları sil</button></div>
 </div></div>
 <div class="mf-toast" id="mf-toast" role="status" aria-live="polite"><span id="mf-toast-m"></span><button type="button" id="mf-toast-b">Geri al</button></div>
-<div id="alarm" role="alertdialog"><div><b id="alarm-b">Süre bitti! 🍅</b><p id="alarm-p">Harika iş.</p><div class="alarm-pr" id="alarm-pr" hidden><div class="alarm-pr-u"><span>📅 Bugünkü program</span><b id="alarm-pr-y"></b></div><div class="alarm-pr-bar"><i id="alarm-pr-bar"></i></div><small id="alarm-pr-t"></small></div><button type="button" id="alarm-tamam">Tamam</button></div></div>
+<div id="alarm" role="alertdialog"><div><b id="alarm-b">Süre bitti!</b><p id="alarm-p">Harika iş.</p><div class="alarm-pr" id="alarm-pr" hidden><div class="alarm-pr-u"><span>📅 Bugünkü program</span><b id="alarm-pr-y"></b></div><div class="alarm-pr-bar"><i id="alarm-pr-bar"></i></div><small id="alarm-pr-t"></small></div><button type="button" id="alarm-tamam">Tamam</button></div></div>
 <div id="sik-izn" role="dialog" aria-modal="true" aria-labelledby="sik-izn-b"><div>
 <svg class="sik-sor-ik" viewBox="0 0 120 120" aria-hidden="true"><use href="#mf-aslan"/></svg>
 <b id="sik-izn-b">Aslan nöbette!</b>
-<p>Telefonu kilitlediğinde pomodoron çürümesin diye küçük bir izin isteyeceğiz.</p>
+<p>Telefonu kilitlediğinde turun geçersiz sayılmasın diye küçük bir izin isteyeceğiz.</p>
 <ul><li>🔒 Sadece ekranın kilitli olup olmadığını öğreniriz.</li><li>🙈 Ne yaptığını, hangi uygulamayı açtığını görmeyiz.</li><li>📵 Bu bilgi hiçbir yere kaydedilmez, gönderilmez.</li></ul>
 <p style="font-size:13px;margin-bottom:14px">Birazdan çıkacak pencerede <b style="display:inline;font-size:inherit;color:inherit">İzin ver</b>'e dokun.</p>
 <div class="sik-sor-b"><button type="button" id="sik-izn-devam">Devam</button><button type="button" id="sik-izn-sonra">Şimdi değil</button></div></div></div>
@@ -1770,7 +1824,7 @@ setTimeout(kapat,max);})();</script>
 <b id="sik-sor-b">Neredeydin?</b><p id="sik-sor-p"></p>
 <div class="sik-sor-b"><button type="button" id="sik-sor-kilit">🔒 Telefonu kilitledim</button><button type="button" id="sik-sor-baktim">📱 Başka bir şeye baktım</button></div>
 <small>Dürüst cevap, en iyi çalışma alışkanlığıdır. 🦁</small></div></div>
-<div id="pm-curu" role="alertdialog"><div><div class="ikon">🍅</div><b id="pm-curu-b"></b><p id="pm-curu-p"></p><button type="button" id="pm-curu-tamam">Yeniden başla</button></div></div>
+<div id="pm-curu" role="alertdialog"><div><div class="ikon">§</div><b id="pm-curu-b"></b><p id="pm-curu-p"></p><button type="button" id="pm-curu-tamam">Yeniden başla</button></div></div>
 <div id="pm-not" role="dialog" aria-modal="true"><div class="onay-k not-k">
 <b class="onay-t">📝 Bu seansta ne yaptın?</b>
 <p class="not-alt" id="not-alt"></p>
@@ -1838,7 +1892,7 @@ function lexDersler(){
 
 (function(){
   var kok=document.getElementById('pm');if(!kok)return;
-  var T={"odak": "Odaklanma zamanı", "odakCalis": "Odaklan", "kisa": "☕ Kısa mola", "uzun": "🛋️ Uzun mola", "duraklat": "Duraklat", "baslat": "Başlat", "devam": "Devam et", "bos": "Henüz kayıt yok. Sayacı başlattığında burada görünecek.", "gunler": ["Paz", "Pzt", "Sal", "Çar", "Per", "Cum", "Cmt"], "silSor": "Tüm çalışma kayıtları silinsin mi?", "ort": "{n} gün çalıştın, günlük ortalama {d} dk", "bugunK": "Bugün", "son7": "Son 7 gün", "son30": "Son 30 gün", "aylar": ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"], "rBaslik": "📊 Günlük çalışma raporum", "rToplam": "Toplam", "rGun": "gün çalıştım", "rBos": "Bugün sayacı henüz kullanmadım, bir plan yapabilir miyiz?", "curuB": "Odaktan çıktın! Bu tur geçersiz sayıldı ⚖️", "curuP": "Sıkı moddayken uygulamadan çıktığın için bu tur sayılmadı; aslan tutanağa geçirdi. {dk} dakikalık çalışman yine de kaydedildi. Hadi yeniden başla!", "rCikis": "Sıkı modda odaktan çıkış", "ozetK": "Bugün {dk} dk · {p} 🍅", "bitOdak": "Odak süresi bitti! 🍅", "bitOdakM": "Harika iş. Şimdi kısa bir mola zamanı.", "bitOdakU": "4 tur tamam! Şimdi uzun mola zamanı.", "bitMola": "Mola bitti", "bitMolaM": "Hazırsan yeni bir odak turuna başla.", "atla": "Molayı atla", "son3": "Son 3 ay", "son6": "Son 6 ay", "buHafta": "Bu hafta", "aylarK": ["Oca", "Şub", "Mar", "Nis", "May", "Haz", "Tem", "Ağu", "Eyl", "Eki", "Kas", "Ara"]};
+  var T={"odak": "Odaklanma zamanı", "odakCalis": "Odaklan", "kisa": "☕ Kısa mola", "uzun": "🛋️ Uzun mola", "duraklat": "Duraklat", "baslat": "Başlat", "devam": "Devam et", "bos": "Henüz kayıt yok. Sayacı başlattığında burada görünecek.", "gunler": ["Paz", "Pzt", "Sal", "Çar", "Per", "Cum", "Cmt"], "silSor": "Tüm çalışma kayıtları silinsin mi?", "ort": "{n} gün çalıştın, günlük ortalama {d} dk", "bugunK": "Bugün", "son7": "Son 7 gün", "son30": "Son 30 gün", "aylar": ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"], "rBaslik": "📊 Günlük çalışma raporum", "rToplam": "Toplam", "rGun": "gün çalıştım", "rBos": "Bugün sayacı henüz kullanmadım, bir plan yapabilir miyiz?", "curuB": "Odaktan çıktın! Bu tur geçersiz sayıldı ⚖️", "curuP": "Sıkı moddayken uygulamadan çıktığın için bu tur sayılmadı; aslan tutanağa geçirdi. {dk} dakikalık çalışman yine de kaydedildi. Hadi yeniden başla!", "rCikis": "Sıkı modda odaktan çıkış", "ozetK": "Bugün {dk} dk · {p} tur", "bitOdak": "Odak süresi bitti!", "bitOdakM": "Harika iş. Şimdi kısa bir mola zamanı.", "bitOdakU": "4 tur tamam! Şimdi uzun mola zamanı.", "bitMola": "Mola bitti", "bitMolaM": "Hazırsan yeni bir odak turuna başla.", "atla": "Molayı atla", "son3": "Son 3 ay", "son6": "Son 6 ay", "buHafta": "Bu hafta", "aylarK": ["Oca", "Şub", "Mar", "Nis", "May", "Haz", "Tem", "Ağu", "Eyl", "Eki", "Kas", "Ara"]};
   var $=function(id){return document.getElementById(id);};
   // eski kayitlardaki TYT/AYT Matematik tek 'Matematik' olarak gosterilir
   function dersAd(x){return /^(TYT|AYT) Matematik$/.test(x)?'Matematik':x;}
@@ -1877,8 +1931,8 @@ function lexDersler(){
     $('pm-etiket').textContent=d.mod==='deneme'?denemeEtiket():d.mod==='odak'?(d.calisiyor?T.odakCalis+' · '+(d.ders||$('pm-ders').value):T.odak):(d.mod==='kisa'?T.kisa:T.uzun);
     $('pm-basla').textContent=d.calisiyor?T.duraklat:(k===d.toplam?T.baslat:T.devam);
     $('pm-muzik').classList.toggle('cal',d.calisiyor&&!!$('pm-ses').value);seansGizle(d.mod==='odak'&&k!==d.toplam);
-    var dm='';for(var i=0;i<4;i++)dm+=i<(d.tur%4)?'🍅':'○';
-    $('pm-domates').textContent=dm;
+    var lvM=function(on){return '<svg class="lv-tur'+(on?' on':'')+'" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10.6"/><path d="M14.7 6.9C14.2 5.6 13.2 5 12 5C10.4 5 9.3 5.9 9.3 7.2C9.3 10 14.9 9.9 14.9 13C14.9 14.3 14 15.2 12.6 15.5M9.3 17.1C9.8 18.4 10.8 19 12 19C13.6 19 14.7 18.1 14.7 16.8C14.7 14 9.1 14.1 9.1 11C9.1 9.7 10 8.8 11.4 8.5"/></svg>';},dm='';for(var i=0;i<4;i++)dm+=lvM(i<(d.tur%4));
+    $('pm-domates').innerHTML=dm;$('pm-domates').setAttribute('aria-label',(d.tur%4)+' / 4 tur');
     var bs=kok.querySelectorAll('.pm-mod button');for(var j=0;j<bs.length;j++){var dn=bs[j].getAttribute('data-m')==='deneme';bs[j].classList.toggle('aktif',dn===(d.mod==='deneme'));bs[j].classList.toggle('molada',!dn&&mola);}
     document.title=(d.calisiyor?bicim(k)+' – ':'')+BASLIK;
     if(d.mod==='odak'&&(d.serbest||(!d.calisiyor&&k===d.toplam&&$('pm-odak').value==='serbest'))){
@@ -2104,7 +2158,7 @@ function lexDersler(){
   // erken bitirince: sessiz bilgi penceresi (zil ve titresim yok)
   function erkenBitti(dk,ders,sb){
     $('alarm-b').textContent='Çalışman kaydedildi ✓';
-    $('alarm-p').textContent=ders+' · '+(dk>=60?Math.floor(dk/60)+' sa '+Math.round(dk%60):Math.round(dk))+' dk\n'+(sb?'Serbest çalışma olarak kaydedildi.':'Tam tur olmadığı için 🍅 sayılmadı.');
+    $('alarm-p').textContent=ders+' · '+(dk>=60?Math.floor(dk/60)+' sa '+Math.round(dk%60):Math.round(dk))+' dk\n'+(sb?'Serbest çalışma olarak kaydedildi.':'Tam tur olmadığı için tur sayılmadı.');
     prKutu(window.MF_PR_OZET?window.MF_PR_OZET(ders):null);
     var a=$('alarm');a.classList.add('acik','sakin');
   }
@@ -2149,12 +2203,12 @@ function lexDersler(){
     if(dk>=10)dnmAc(sinavKod(),Math.round(dk));
   }
   var GUN_S={1:'ilk adım atıldı',2:'iki taraf da dinlendi',3:'üç dereceli yargı kadar sağlam',4:'dört dörtlük gidiyorsun',6:'yarım düzine oldu',8:'sekizde sekiz, mesai tamam',10:'çift haneler!',12:'bir düzine, emsal karar gibi'};
-  var TOP_S={25:'çeyrek yüz',50:'yarım yüz',100:'yüzde yüz emek',250:'istikrar bozulmuyor',500:'beş yüz, yerleşik içtihat',1000:'bin pomodoro, kürsü senin'};
+  var TOP_S={25:'çeyrek yüz',50:'yarım yüz',100:'yüzde yüz emek',250:'istikrar bozulmuyor',500:'beş yüz, yerleşik içtihat',1000:'bin tur, kürsü senin'};
   function kutlama(){
     var k=oku(KAYIT_K,{}),b=(k[gun(Date.now())]||{}).p||0,t=0,m='';
     for(var g in k)t+=k[g].p||0;
-    if(TOP_S[t])m='🎉 Toplam '+t+'. pomodoro: '+TOP_S[t];
-    else if(GUN_S[b])m='🍅 Bugünün '+b+'. pomodorosu: '+GUN_S[b];
+    if(TOP_S[t])m='🎉 Toplam '+t+'. tur: '+TOP_S[t];
+    else if(GUN_S[b])m='§ Bugünün '+b+'. turu: '+GUN_S[b];
     
     if(m)$('alarm-p').textContent=$('alarm-p').textContent+'\n'+m;
   }
@@ -2167,7 +2221,7 @@ function lexDersler(){
         else{kayitEkle(sv.oturum[0],sv.ad+' Deneme',false,true);d.lgsDk=sv.oturum[0];d.faz='ara';alarmBaslat(true,false,'1. oturum bitti! ☕',sv.ara+' dakika ara. Ara bitince 2. oturum kendiliğinden başlayacak.');}
         d.toplam=d.kalan=sure('deneme');d.calisiyor=false;d.bitis=null;basla();return;
       }
-      alarmBaslat(true,false,'Deneme bitti! 📝','Kalemleri bırak. Sonuçlarını girelim.');denemeBitti(true);return;}
+      alarmBaslat(true,false,'HMGS denemesi bitti!','Kalemleri bırak. Sonuçlarını girelim.');denemeBitti(true);return;}
     if(eski==='odak'){odakKaydet(true);d.tur+=1;}
     var yeni=eski==='odak'?((d.tur%4===0)?'uzun':'kisa'):'odak';
     d.mod=yeni;d.toplam=sure(yeni);d.kalan=d.toplam;d.bitis=null;d.calisiyor=false;kaydet();
@@ -2289,7 +2343,7 @@ function lexDersler(){
     var m=T.rBaslik+' ('+bu.getDate()+' '+T.aylar[bu.getMonth()]+')\n';
     if(!x.dk){m+=T.rBos;}
     else{
-      m+=T.rToplam+': '+sureYaz(x.dk)+' · '+x.p+' 🍅\n';
+      m+=T.rToplam+': '+sureYaz(x.dk)+' · '+x.p+' tur\n';
       var lt={},l=[];for(var z in x.d)lt[dersAd(z)]=(lt[dersAd(z)]||0)+x.d[z];for(var z2 in lt)l.push([z2,lt[z2]]);l.sort(function(a,b){return b[1]-a[1];});
       for(var n=0;n<l.length;n++)m+='• '+l[n][0]+': '+sureYaz(l[n][1])+'\n';
       if(x.c)m+='⚠️ '+T.rCikis+': '+x.c+'\n';
@@ -2474,7 +2528,7 @@ function lexDersler(){
     window.MF_DNM_YENILE();
     var l=oku(DNM_K,[]),el=$('pm-dnm-liste');if(!el)return;
     $('pm-dnm-o').textContent=l.length?(l.length+' deneme'):'';
-    if(!l.length){el.innerHTML='<p class="pm-kucuk" style="margin:0">Henüz deneme yok. Çalışma ekranında <b>📝 Deneme</b> sekmesiyle HMGS denemesi çöz ya da dışarıda çözdüğün denemeyi yukarıdaki butonla ekle.</p>';return;}
+    if(!l.length){el.innerHTML='<p class="pm-kucuk" style="margin:0">Henüz deneme yok. Çalışma ekranında <b>📝 HMGS</b> sekmesiyle gerçek sınav süresinde deneme çöz ya da dışarıda çözdüğün denemeyi yukarıdaki butonla ekle.</p>';return;}
     var son={},satir=[];
     l.forEach(function(x){var g=grup(x),o=son[g];x._f=(o===undefined)?null:x.net-o;son[g]=x.net;});
     l.slice().reverse().slice(0,20).forEach(function(x){
@@ -3131,8 +3185,8 @@ function lexDersler(){
     var once_ad={bugun:'düne',hafta:'önceki 7 güne',ay:'önceki 30 güne',ay3:'önceki 3 aya',yil:'önceki yıla'}[ARALIK];
     var fark=top0?Math.round((top-top0)*100/top0):null;
     var kpi='<div><span>Toplam çalışma</span><b>'+kpiS(top)+'</b><small class="'+(fark===null?'':fark>0?'art':fark<0?'azal':'')+'">'+(fark===null?(top?'İlk kayıtlar':'Henüz kayıt yok'):(fark>0?'▲ %'+fark:fark<0?'▼ %'+(-fark):'= aynı')+' '+once_ad+' göre')+'</small></div>';
-    kpi+=GUN>1?'<div><span>Günlük ortalama</span><b>'+sk(aktif?top/aktif:0)+'</b><small>'+aktif+' / '+GUN+' gün çalıştın</small></div>':'<div><span>Bugünkü oturum</span><b>'+(g[0].p)+' 🍅</b><small>tamamlanan pomodoro</small></div>';
-    kpi+='<div><span>Pomodoro</span><b>'+pom+' 🍅</b><small>'+(GUN>1?'bu aralıkta':'bugün')+'</small></div>';
+    kpi+=GUN>1?'<div><span>Günlük ortalama</span><b>'+sk(aktif?top/aktif:0)+'</b><small>'+aktif+' / '+GUN+' gün çalıştın</small></div>':'<div><span>Bugünkü oturum</span><b>'+(g[0].p)+' tur</b><small>tamamlanan tur</small></div>';
+    kpi+='<div><span>Tamamlanan tur</span><b>'+pom+'</b><small>'+(GUN>1?'bu aralıkta':'bugün')+'</small></div>';
     kpi+='<div><span>Seri</span><b>'+seri+' gün 🔥</b><small>'+(seri?'aralıksız çalıştığın gün':'bugün başla, seri başlasın')+'</small></div>';
     kpi+='<div class="genis"><span>Çözülen soru</span><b>'+sq+' ✏️</b><small>'+(sq?(sd+sy?'%'+Math.round(sd*100/(sd+sy))+' doğru · '+sd+' D, '+sy+' Y':'doğru/yanlış girilmedi'):'Seans sonunda soru sayını girersen burada görünür')+'</small></div>';
     $('st-kpi').innerHTML=kpi;
@@ -3688,7 +3742,7 @@ function lexDersler(){
     var b=$('mv-sayac'),d=null;try{d=JSON.parse(localStorage.getItem('pm-durum')||'null');}catch(e){}
     if(!d||!d.calisiyor||!d.bitis||!document.body.classList.contains('s-mevzuat')){b.hidden=true;return;}
     var k=Math.max(0,d.bitis-Date.now()),s=Math.ceil(k/1000),m=Math.floor(s/60);s%=60;
-    var ad=d.mod==='odak'?(d.ders||'Odak'):d.mod==='deneme'?'Deneme':'Mola';
+    var ad=d.mod==='odak'?(d.ders||'Odak'):d.mod==='deneme'?'HMGS':'Mola';
     b.hidden=false;b.innerHTML='<span>⏱ '+(m<10?'0':'')+m+':'+(s<10?'0':'')+s+' · '+esc(ad)+'</span><small>Çalışmaya dön ›</small>';
   }
   $('mv-sayac').addEventListener('click',function(){if(window.MF_SAYFA)window.MF_SAYFA('sayac');});
@@ -5594,6 +5648,44 @@ function lexDersler(){
 })();
 </script>
 <script>
+(function(){
+  var h=document.getElementById('pm-saat'),hl=document.getElementById('pm-halka');if(!h||!hl)return;
+  var ROM=['I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII'],C=2*Math.PI*52;
+  function pt(r,a){a=a*Math.PI/180;return (150+r*Math.sin(a)).toFixed(2)+' '+(150-r*Math.cos(a)).toFixed(2);}
+  function sek(r1,r2,a1,a2){var b=a2-a1>180?1:0;return 'M'+pt(r2,a1)+' A'+r2+' '+r2+' 0 '+b+' 1 '+pt(r2,a2)+' L'+pt(r1,a2)+' A'+r1+' '+r1+' 0 '+b+' 0 '+pt(r1,a1)+' Z';}
+  var o='<defs><path id="lv-yay" d="M'+pt(93,-50)+' A93 93 0 0 1 '+pt(93,50)+'"/></defs>';
+  o+='<circle class="lv-c" cx="150" cy="150" r="143"/>';
+  for(var i=0;i<12;i++){var a1=i*30+2.2,a2=(i+1)*30-2.2,p=sek(114,134,a1,a2),m=pt(124,(i+.5)*30).split(' ');
+    o+='<g data-i="'+i+'"><path class="lv-z" d="'+p+'"/><path class="lv-d" d="'+p+'"/><path class="lv-k" d=""/><text class="lv-r" dominant-baseline="central" x="'+m[0]+'" y="'+(+m[1]+.6).toFixed(2)+'">'+ROM[i]+'</text></g>';}
+  o+='<circle class="lv-i" cx="150" cy="150" r="104"/>';
+  o+='<text><textPath href="#lv-yay" startOffset="50%" text-anchor="middle" class="lv-y">LEX · XII · TABULARUM</textPath><textPath href="#lv-yay" startOffset="50%" text-anchor="middle" class="lv-ym">MOLA · OTIUM</textPath></text>';
+  var NS='http://www.w3.org/2000/svg',s=document.createElementNS(NS,'svg');s.setAttribute('viewBox','0 0 300 300');s.setAttribute('class','lv');s.setAttribute('aria-hidden','true');s.innerHTML=o;
+  h.insertBefore(s,h.querySelector('.pm-yazi'));
+  var G=s.querySelectorAll('g[data-i]'),son=-1,oncCu=-1;
+  function guncelle(){
+    var off=parseFloat(hl.style.strokeDashoffset);if(isNaN(off))off=0;var fr=off/C;if(h.classList.contains('serbest'))fr=1-fr;
+    fr=Math.max(0,Math.min(1,fr));var dn=fr*12,cu=Math.floor(dn);if(fr>=1)cu=12;
+    var anah=Math.round(fr*2400);if(anah===son)return;son=anah;
+    for(var i=0;i<12;i++){var g=G[i],a1=i*30+2.2,a2=(i+1)*30-2.2;
+      g.classList.toggle('bitti',i<cu);g.classList.toggle('simdi',i===cu&&fr>0);
+      g.querySelector('.lv-k').setAttribute('d',(i===cu&&dn-cu>0.004)?sek(114,134,a1,a1+(a2-a1)*(dn-cu)):'');}
+  }
+  new MutationObserver(guncelle).observe(hl,{attributes:true,attributeFilter:['style']});
+  new MutationObserver(function(){son=-1;guncelle();}).observe(h,{attributes:true,attributeFilter:['class']});
+  guncelle();
+  // yalnız tamamen dolmuş levhalar (kenar + rakam) 15 saniyede bir parlar
+  var azHar=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(!azHar)setInterval(function(){if(document.hidden)return;
+    var L=s.querySelectorAll('g.bitti');if(!L.length)return;
+    for(var i=0;i<L.length;i++)L[i].classList.remove('parla');void s.getBBox();
+    for(var j=0;j<L.length;j++)L[j].classList.add('parla');
+    setTimeout(function(){for(var k=0;k<L.length;k++)L[k].classList.remove('parla');},1900);},15000);
+  var b=document.createElement('button');b.type='button';b.className='lv-bilgi';b.setAttribute('aria-label','On İki Levha hakkında');
+  b.addEventListener('click',function(e){e.stopPropagation();var t='On İki Levha (Lex XII Tabularum): Roma’nın ilk yazılı kanunu, MÖ 450 civarı. Her levha turun on ikide biri.';if(window.MF_TOAST)MF_TOAST(t);});
+  h.appendChild(b);
+})();
+</script>
+<script>
 // ---- Tablet: Çalışma ekranında "Bugün" kartı ----
 (function(){
   var sayfa=document.getElementById('pg-sayac');if(!sayfa)return;
@@ -5726,7 +5818,7 @@ function lexDersler(){
     var k=d.calisiyor?Math.max(0,(d.bitis||0)-Date.now()):d.kalan;
     m.hidden=false;sure.textContent=d.serbest?bicU(d.toplam-k):bic(k);
     var mola=d.mod!=='odak'&&d.mod!=='deneme';
-    ad.textContent=mola?'Mola':d.mod==='deneme'?'Deneme':(d.ders||'Odak');
+    ad.textContent=mola?'Mola':d.mod==='deneme'?'HMGS':(d.ders||'Odak');
     m.classList.toggle('mola',mola);m.classList.toggle('durdu',!d.calisiyor);
     dur.textContent=d.calisiyor?'❚❚':'▶';dur.setAttribute('aria-label',d.calisiyor?'Duraklat':'Devam et');
   }

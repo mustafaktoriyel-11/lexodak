@@ -4174,7 +4174,7 @@ function lexDersler(){
 <script>
 // ================= DERS DOSYALARI KÜTÜPHANESİ =================
 (function(){
-  var DB_AD='lex-kutuphane', MAX=50*1024*1024;
+  var DB_AD='lex-kutuphane', MAX=100*1024*1024,BUYUK=50*1024*1024;
   var VARSAYILAN=['Borçlar Genel','Borçlar Özel','Ceza Genel','Ceza Özel','İcra ve İflas','İş Hukuku','Ticaret Hukuku','Eşya Hukuku','Medeni Hukuk','Anayasa Hukuku','MÖHUK'];
   var DIGER='Genel / Diğer';
   var AY=['Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'];
@@ -4454,7 +4454,8 @@ function lexDersler(){
       var t=(f.type||'').toLowerCase(), pdf=t==='application/pdf'||(!t&&/\.pdf$/i.test(f.name));
       var res=t.indexOf('image/')===0;
       if(!pdf&&!res){red.push('"'+f.name+'" PDF ya da resim olmadığı için eklenmedi.');return;}
-      if(f.size>MAX){red.push('"'+f.name+'" '+boyutYaz(f.size)+' olduğu için eklenmedi (en çok 50 MB).');return;}
+      if(f.size>MAX){red.push('"'+f.name+'" '+boyutYaz(f.size)+' olduğu için eklenmedi (en çok 100 MB).');return;}
+      if(f.size>BUYUK)red.push('"'+f.name+'" '+boyutYaz(f.size)+': büyük dosya, eski telefonlarda yavaş açılabilir.');
       gecerli.push({file:f,tur:pdf?'pdf':'resim',mime:pdf?'application/pdf':t,ad:uzantisiz(f.name)||'Dosya'});
     });
     inp.value='';

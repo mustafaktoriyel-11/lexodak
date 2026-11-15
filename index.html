@@ -1303,6 +1303,7 @@ html.mf-gece #pg-mevzuat:has(#mv-kanun-k[hidden])::after{border-color:#4A2D33;co
 .sb-not{margin:4px 0 0;font-size:12px;color:#8A7B7E;text-align:center}
 html.mf-gece .sb-kart{background:#2A1E21;border-color:#3B2A2E}html.mf-gece .sb-bas b,html.mf-gece .sb-g b,html.mf-gece .sb-detay li{color:#F1E6E8}
 html.mf-gece .sb-g{background:#33252A}html.mf-gece .sb-detay li{border-top-color:#3B2A2E}
+.ses-kunye{margin:10px 2px 0;font-size:13px;color:#351E22;line-height:1.45}.ses-kunye small{font-size:11px;color:#7A6A6D}.ses-kunye a{color:inherit}html.mf-gece .ses-kunye{color:#F4ECED}html.mf-gece .ses-kunye small{color:#BFAEB1}
 </style>
 <script>try{if(localStorage.getItem('mf-tema')==='gece')document.documentElement.classList.add('mf-gece');}catch(e){}</script>
 </head>
@@ -1693,8 +1694,9 @@ setTimeout(kapat,max);})();</script>
 <div id="pm-ses-p" class="pm-sheet" role="dialog" aria-modal="true" aria-labelledby="ses-bas"><div class="sheet-k">
 <div class="sheet-tut"></div>
 <div class="sheet-ust"><b id="ses-bas">Arka plan sesi</b><span id="ses-durum"></span></div>
-<select id="pm-ses" hidden><option value="">Kapalı</option><option value="yagmur">Yağmur, gök gürültüsü ve şömine</option><option value="kozmik">Kozmik odak (uzay ambiyansı)</option><option value="kahve">Kahverengi gürültü</option><option value="beyaz">Beyaz gürültü</option></select>
+<select id="pm-ses" hidden><option value="">Kapalı</option><option value="yagmur">Yağmur, gök gürültüsü ve şömine</option><option value="kozmik">Kozmik odak (uzay ambiyansı)</option><option value="kahve">Kahverengi gürültü</option><option value="beyaz">Beyaz gürültü</option><option value="debussy">Debussy (piyano)</option></select>
 <div class="ses-kartlar" id="ses-kartlar" role="radiogroup" aria-label="Ses seçimi"></div>
+<p class="ses-kunye" id="ses-kunye" hidden></p>
 <div class="ses-sev"><span class="ses-sev-b">Ses düzeyi</span><b id="ses-yuzde">40%</b></div>
 <div class="ses-sev-s"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M4 9v6h4l5 5V4L8 9H4z"/></svg><input type="range" id="pm-seviye" min="0" max="100" value="40" aria-label="Ses düzeyi"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M4 9v6h4l5 5V4L8 9H4zm11.5 3A4.5 4.5 0 0 0 13 8v8a4.5 4.5 0 0 0 2.5-4zM13 3.2v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6z"/></svg></div>
 <p class="ses-not">Dokunduğunda sesi dinleyebilirsin. Ses, sayaç çalışırken çalar.</p>
@@ -1991,12 +1993,31 @@ function lexDersler(){
   function sesGuncelle(){
     var tur=$('pm-ses').value,sev=+$('pm-seviye').value/100;hedefSes=sev;
     if(!tur||(!d.calisiyor&&!sesOnizle)){sesDur();return;}
-    if(!sesA){sesA=new Audio();sesA.preload='auto';sesA.loop=true;aktifSes=sesA;}
-    if(sesTur!==tur){sesDur();sesA.src=gurultu(tur,0);sesTur=tur;}
+    if(!sesA){sesA=new Audio();sesA.preload='auto';sesA.loop=true;aktifSes=sesA;sesA.addEventListener('ended',function(){if(sesTur==='debussy'){DEB_I=(DEB_I+1)%DEB.length;try{localStorage.setItem('lex-deb-i2',DEB_I);}catch(e){}debCal();}});}
+    if(sesTur!==tur){sesDur();sesTur=tur;if(tur==='debussy'){sesA.loop=false;debCal();sesA.volume=sev;return;}sesA.loop=true;sesA.src=gurultu(tur,0);}
     sesA.volume=sev;
-    if(sesA.paused){var p=sesA.play();if(p&&p.catch)p.catch(function(){});}
+    if(sesA.paused&&sesA.src){var p=sesA.play();if(p&&p.catch)p.catch(function(){});}
   }
   var sesOnizle=false,sesA=null,sesB=null,aktifSes=null,sesTur='',hedefSes=0.4,fadeT=null;
+  // --- Debussy: parçalar ilk seçimde bir kez iner, önbellekte kalır (internetsiz çalar) ---
+  var DEB=[['debussy-clair-de-lune','Clair de lune','gh'],['debussy-fille','La fille aux cheveux de lin'],['debussy-arabesk-1','Birinci Arabesk'],['debussy-danseuses','Danseuses de Delphes'],['debussy-arabesk-2','İkinci Arabesk']];
+  var DEB_I=0;try{DEB_I=(parseInt(localStorage.getItem('lex-deb-i2'),10)||0)%DEB.length;}catch(e){}
+  var DEB_URL=null,DEB_YUK=0;
+  function debBlob(i){var u=DEB[i][0]+'.m4a';
+    return caches.open('lex-muzik-1').then(function(c){return c.match(u).then(function(r){return r||fetch(u).then(function(y){if(!y.ok)throw 0;return c.put(u,y.clone()).then(function(){return y;},function(){return y;});});});}).then(function(r){return r.blob();});}
+  function debCal(){
+    var i=DEB_I,j=++DEB_YUK;sesKunye('yukleniyor');
+    debBlob(i).then(function(b){
+      if(j!==DEB_YUK||sesTur!=='debussy')return;
+      if(DEB_URL)URL.revokeObjectURL(DEB_URL);DEB_URL=URL.createObjectURL(b);
+      sesA.src=DEB_URL;sesA.volume=hedefSes;sesKunye('');
+      if(d.calisiyor||sesOnizle){var p=sesA.play();if(p&&p.catch)p.catch(function(){});}
+      debBlob((i+1)%DEB.length).catch(function(){});
+    }).catch(function(){if(j===DEB_YUK)sesKunye('hata');});
+  }
+  var DEB_D='';function sesKunye(dr){if(dr!==undefined)DEB_D=dr;dr=DEB_D;var k=$('ses-kunye');if(!k)return;
+    if($('pm-ses').value!=='debussy'){k.hidden=true;return;}k.hidden=false;
+    k.innerHTML=(dr==='yukleniyor'?'⏳ Parça indiriliyor (ilk seferde, ~3 MB)…':dr==='hata'?'⚠️ Parça indirilemedi. İnternete bağlanıp tekrar seç.':'▶ <b>'+DEB[DEB_I][1]+'</b>')+'<br><small>Claude Debussy · '+(DEB[DEB_I][2]==='gh'?'Piyano: Laurens Goedhart (2011) · <a href="https://creativecommons.org/licenses/by/3.0/deed.tr" target="_blank" rel="noopener">CC BY 3.0</a>':'Piyano: Patrizia Prati (canlı kayıt, Madrid 2016) · <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.tr" target="_blank" rel="noopener">CC BY-SA 4.0</a>')+' · Wikimedia Commons · sıkıştırılarak kullanıldı</small>';}
   function sesDur(){if(sesA)sesA.pause();}
   // --- ekran kilitliyken uyanik kalma ---
   // Telefon kilitlenince tarayici sessiz sayfalari uyutur ve sayac durur.
@@ -2197,7 +2218,7 @@ function lexDersler(){
   $('pm-sinav').addEventListener('change',function(){ayarKaydet();if(d.mod==='deneme'&&!d.calisiyor){d.toplam=d.kalan=sure('deneme');kaydet();}ciz();});
   $('pm-ses').addEventListener('change',function(){ayarKaydet();sesGuncelle();sesArayuz();});
   // --- muzik butonu ve alt pencere ---
-  var SES_K=[['','🔇','Kapalı','Sessiz çalış'],['yagmur','🌧️','Yağmur','Gök gürültüsü ve şömine'],['kozmik','🌌','Kozmik','Uzay ambiyansı'],['kahve','🟤','Kahverengi gürültü','Derin ve yumuşak'],['beyaz','⚪','Beyaz gürültü','Dış sesleri bastırır']];
+  var SES_K=[['','🔇','Kapalı','Sessiz çalış'],['yagmur','🌧️','Yağmur','Gök gürültüsü ve şömine'],['kozmik','🌌','Kozmik','Uzay ambiyansı'],['kahve','🟤','Kahverengi gürültü','Derin ve yumuşak'],['beyaz','⚪','Beyaz gürültü','Dış sesleri bastırır'],['debussy','🎹','Debussy','Sakin piyano · 5 parça']];
   SES_K.forEach(function(x){var b=document.createElement('button');b.type='button';b.setAttribute('role','radio');b.dataset.v=x[0];if(!x[0])b.className='kapali';
     b.innerHTML='<em>'+x[1]+'</em><span><b>'+x[2]+'</b><br><small>'+x[3]+'</small></span>';
     b.addEventListener('click',function(){var sel=$('pm-ses');if(sel.value===x[0])return;sel.value=x[0];sel.dispatchEvent(new Event('change'));});
@@ -2208,7 +2229,7 @@ function lexDersler(){
     $('pm-seviye').style.setProperty('--p',sv+'%');$('ses-yuzde').textContent='%'+sv;
     $('pm-seviye').closest('.ses-sev-s').classList.toggle('pasif',!v);
     var ad='Kapalı';SES_K.forEach(function(x){if(x[0]===v)ad=x[2];});
-    $('ses-durum').textContent=v?(ad+' · %'+sv):'Kapalı';
+    $('ses-durum').textContent=v?(ad+' · %'+sv):'Kapalı';sesKunye();
     $('pm-muzik').classList.toggle('on',!!v);$('pm-muzik').setAttribute('aria-label','Arka plan sesi: '+ad);
   }
   var sp=$('pm-ses-p');

@@ -1,5 +1,5 @@
 // Lex Odak - service worker
-var SURUM = 'lex-odak-v62';
+var SURUM = 'lex-odak-v64';
 var MEVZUAT = 'lex-mevzuat-2';
 var OCR = 'lex-ocr-1';  // taranmış PDF okuma motoru (jsdelivr), bir kez iner  // kanun metinleri sürüm değişse de silinmez
 var DOSYALAR = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png', './gizlilik.html'];
@@ -11,7 +11,7 @@ self.addEventListener('install', function (e) {
 
 self.addEventListener('activate', function (e) {
   e.waitUntil(caches.keys().then(function (ks) {
-    return Promise.all(ks.filter(function (k) { return k !== SURUM && k !== MEVZUAT && k !== OCR; }).map(function (k) { return caches.delete(k); }));
+    return Promise.all(ks.filter(function (k) { return k !== SURUM && k !== MEVZUAT && k !== OCR && k !== 'lex-muzik-1'; }).map(function (k) { return caches.delete(k); }));
   }));
   self.clients.claim();
 });

@@ -1423,6 +1423,39 @@ html.mf-gece .sb-g{background:#33252A}html.mf-gece .sb-detay li{border-top-color
 #pm-ses-p .ses-not{margin:8px 2px 10px;font-size:11.5px}
 #pm-ses-p #ses-tamam{padding:11px;font-size:15px;border-radius:12px}
 html.mf-gece #pm-ses-p .ses-kartlar button em,html.mf-gece #pm-ses-p .ses-pl summary .ses-ik-k{color:#E2BCC2}
+
+.lx-buyu{position:fixed;z-index:10050;pointer-events:none;transform-origin:50% 50%;will-change:transform}
+.lx-buyu svg{position:relative;width:100%;height:100%;display:block;overflow:visible;filter:drop-shadow(0 10px 26px rgba(60,20,10,.35))}
+.lx-buyu .lx-kitap{transform-box:fill-box;transform-origin:50% 50%}
+.lx-buyu-h{position:absolute;left:-30%;top:-30%;width:160%;height:160%;border-radius:50%;background:radial-gradient(circle,rgba(246,217,138,.85) 0,rgba(226,177,63,.35) 38%,rgba(226,177,63,0) 66%)}
+.sik-sahne.ucuyor .sk-a{visibility:hidden}
+
+#sik-sahne .gz{transform-box:fill-box;transform-origin:50% 50%;transition:transform 70ms ease-in}
+#sik-sahne.kirp .gz{transform:scaleY(.1)}
+@media (prefers-reduced-motion:reduce){#sik-sahne .gz{transition:none}}
+
+.sik-sahne .sk-sutun{position:absolute;inset:4px;width:90px;height:90px;color:#B08524;opacity:0;transition:opacity .6s ease .15s;pointer-events:none}
+.sik-sahne[data-g="a"]:not(.evr):not(.ucuyor) .sk-sutun{opacity:.5}
+html.mf-gece .sik-sahne .sk-sutun{color:#D9B04A}
+html.mf-gece .sik-sahne[data-g="a"]:not(.evr):not(.ucuyor) .sk-sutun{opacity:.45}
+@media (max-width:340px){.sik-sahne .sk-sutun{width:72px;height:72px}}
+/* odak ekranında yalnız maskot */
+.oe-maskot{display:flex;justify-content:center;padding:6px 0 0}
+.oe-maskot .om-i{position:relative;width:112px;height:112px;transform:scale(.8);opacity:0;transition:transform .6s var(--oeE),opacity .45s ease}
+body.lv-odak .oe-maskot .om-i{transform:none;opacity:1}
+.oe-maskot svg{position:absolute;inset:0;width:100%;height:100%}
+.oe-maskot .sk-sutun{color:#B08524;opacity:.5}
+html.mf-gece .oe-maskot .sk-sutun{color:#D9B04A;opacity:.45}
+/* odak ekranında müzik düğmesi gizli */
+.pm-saat .pm-muzik{transition:scale var(--oeT) var(--oeE),top var(--oeT) var(--oeE),right var(--oeT) var(--oeE),transform .16s,opacity .4s ease,visibility 0s}
+body.lv-odak .pm-saat .pm-muzik{opacity:0;visibility:hidden;pointer-events:none;transition:scale var(--oeT) var(--oeE),top var(--oeT) var(--oeE),right var(--oeT) var(--oeE),transform .16s,opacity .4s ease,visibility 0s linear .4s}
+
+#tema{position:relative;color:#F1D58C}
+#tema svg{position:absolute;left:50%;top:50%;width:20px;height:20px;margin:-10px 0 0 -10px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;transition:opacity .35s ease,transform .45s cubic-bezier(.22,.8,.26,1)}
+#tema .tm-gun{opacity:0;transform:rotate(-90deg) scale(.6)}
+html.mf-gece #tema .tm-ay{opacity:0;transform:rotate(90deg) scale(.6)}
+html.mf-gece #tema .tm-gun{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){#tema svg{transition:none}}
 </style>
 <script>try{if(localStorage.getItem('mf-tema')==='gece')document.documentElement.classList.add('mf-gece');}catch(e){}</script>
 </head>
@@ -1489,7 +1522,7 @@ setTimeout(kapat,max);})();</script>
 <svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" style="position:absolute" aria-hidden="true">
 <defs>
 <radialGradient id="mfk-gov" cx="50%" cy="40%" r="60%"><stop offset="0" stop-color="#FFB25E"/><stop offset="1" stop-color="#F28A2E"/></radialGradient>
-<radialGradient id="mfa-gov" cx="50%" cy="40%" r="60%"><stop offset="0" stop-color="#F9CB6A"/><stop offset="1" stop-color="#E9A43C"/></radialGradient>
+<linearGradient id="lxb-cub" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2E262E"/><stop offset="1" stop-color="#1A151C"/></linearGradient><linearGradient id="lxb-kol" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#16121A"/><stop offset=".6" stop-color="#2A222B"/><stop offset="1" stop-color="#1E1920"/></linearGradient><linearGradient id="lxb-kit" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9A3446"/><stop offset="1" stop-color="#5E1F2A"/></linearGradient><filter id="lxb-pf" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="1.2"/></filter><linearGradient id="lxb-bor" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9A3446"/><stop offset="1" stop-color="#6E2432"/></linearGradient><radialGradient id="mfa-gov" cx="50%" cy="40%" r="60%"><stop offset="0" stop-color="#F9CB6A"/><stop offset="1" stop-color="#E9A43C"/></radialGradient>
 <radialGradient id="mfa-yele" cx="50%" cy="50%" r="55%"><stop offset=".55" stop-color="#E0782A"/><stop offset="1" stop-color="#B9531B"/></radialGradient>
 </defs>
 <symbol id="mf-kedi" viewBox="0 0 120 120">
@@ -1521,20 +1554,47 @@ setTimeout(kapat,max);})();</script>
   
   <path d="M44 61 l-12 -2 M44 64 l-11 2 M76 61 l12 -2 M76 64 l11 2" stroke="#7A3B1A" stroke-width="1.2" stroke-linecap="round" opacity=".6"/>
 </symbol>
-<symbol id="mf-aslan" viewBox="0 0 120 120">
-  
-  <path d="M84 104 C104 104 112 88 106 74" stroke="#E9A43C" stroke-width="6" fill="none" stroke-linecap="round"/>
-  <path d="M106 74 c-6 -4 -4 -12 2 -12 c5 -1 9 6 5 11 c4 2 1 7 -3 5 Z" fill="#9C4416"/>
-  
-  <path d="M30 108 C28 84 38 70 60 70 C82 70 92 84 90 108 Z" fill="url(#mfa-gov)"/>
-  <path d="M48 108 C46 92 52 82 60 82 C68 82 74 92 72 108 Z" fill="#FBE0A8"/>
-  <path d="M30 108 C28 86 37 73 53 71 L57 108 Z" fill="#221C22"/><path d="M90 108 C92 86 83 73 67 71 L63 108 Z" fill="#221C22"/>
-  <path d="M53 72 L57 108 M67 72 L63 108" stroke="#8E2A3C" stroke-width="2.6" fill="none"/>
-  
-  <ellipse cx="45" cy="108" rx="11" ry="6.5" fill="#F4BA55"/><ellipse cx="75" cy="108" rx="11" ry="6.5" fill="#F4BA55"/>
-  <path d="M40 108 v3 M45 108.5 v3 M50 108 v3 M70 108 v3 M75 108.5 v3 M80 108 v3" stroke="#B8761F" stroke-width="1.6" stroke-linecap="round"/>
-  
-  <polygon fill="url(#mfa-yele)" points="60,6 68,18 80,10 82,24 96,22 91,35 104,40 93,49 103,60 90,63 95,76 81,74 80,88 69,79 60,90 51,79 40,88 39,74 25,76 30,63 17,60 27,49 16,40 29,35 24,22 38,24 40,10 52,18"/>
+<symbol id="mf-aslan" viewBox="0 0 240 240">
+<!-- kuyruk -->
+<path d="M176 222 C214 222 226 190 214 164" stroke="#E9A43C" stroke-width="10" fill="none" stroke-linecap="round"/>
+<path d="M214 164 c-11 -7 -8 -23 4 -23 c10 -2 17 11 9 21 c8 4 2 14 -6 10 Z" fill="#9C4416"/>
+<!-- cübbe gövde -->
+<path d="M66 156 C50 172 42 204 40 238 L200 238 C198 204 190 172 174 156 C150 142 90 142 66 156 Z" fill="url(#lxb-cub)"/>
+<!-- kıvrımlar -->
+<path d="M52 214 C49 224 47 232 46 238 M188 214 C191 224 193 232 194 238 M97 222 C96 228 96 233 96 238 M143 222 C144 228 144 233 144 238" stroke="#46394A" stroke-width="1.6" fill="none" stroke-linecap="round" opacity=".8"/>
+<!-- gömlek V -->
+<path d="M106 150 L134 150 L120 196 Z" fill="#FBF3E6"/>
+<!-- bordo yaka şeritleri -->
+<path d="M101 148 L111 148 L121 200 L115 238 L105 238 L108 198 Z" fill="url(#lxb-bor)"/>
+<path d="M139 148 L129 148 L119 200 L125 238 L135 238 L132 198 Z" fill="url(#lxb-bor)"/>
+<path d="M108 198 L105 238 M132 198 L135 238" stroke="#C99A2E" stroke-width="1.4" opacity=".75"/>
+<!-- beyaz yaka bantları -->
+<path d="M112.5 156 h7 v26 l-3.5 3 l-3.5 -3 Z M120.5 156 h7 v26 l-3.5 3 l-3.5 -3 Z" fill="#FFFFFF" stroke="#D9D2D4" stroke-width="1"/>
+<!-- kollar -->
+<path d="M62 168 C54 186 54 204 58 216 L92 216 C92 200 88 182 80 166 Z" fill="url(#lxb-kol)" stroke="#0E0A10" stroke-width="1.4"/>
+<path d="M178 168 C186 186 186 204 182 216 L148 216 C148 200 152 182 160 166 Z" fill="url(#lxb-kol)" stroke="#0E0A10" stroke-width="1.4"/>
+<rect x="55" y="208" width="39" height="13" rx="5" fill="url(#lxb-bor)"/><rect x="146" y="208" width="39" height="13" rx="5" fill="url(#lxb-bor)"/>
+<path d="M57 211 h35 M148 211 h35" stroke="#C99A2E" stroke-width="1.2" opacity=".7"/>
+<!-- kitap -->
+<g class="lx-kitap">
+<path d="M101 168 h44 a3 3 0 0 1 3 3 v62 a3 3 0 0 1 -3 3 h-44 Z" fill="#F3E6CF"/>
+<path d="M144.6 171 v62 M146.6 172 v60" stroke="#D9C9AE" stroke-width=".8"/>
+<rect x="92" y="166" width="12" height="70" rx="3" fill="#4A1820"/>
+<path d="M94 176 h8 M94 179 h8 M94 223 h8 M94 226 h8" stroke="#C99A2E" stroke-width="1.3"/>
+<rect x="98" y="165" width="46" height="69" rx="3" fill="url(#lxb-kit)"/>
+<path d="M99.5 166.5 v66" stroke="#B5485A" stroke-width="1" opacity=".6"/>
+<rect x="102.5" y="169.5" width="37.5" height="60" rx="1.6" fill="none" stroke="#C99A2E" stroke-width="1.1"/>
+<rect x="104.6" y="171.6" width="33.3" height="55.8" rx="1" fill="none" stroke="#C99A2E" stroke-width=".5" opacity=".7"/>
+<g transform="translate(105.6 184.8) scale(1.3)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="10.4" stroke="#E2B13F" stroke-width="1.25"><animate attributeName="stroke" values="#D4A23A;#F4D27A;#D4A23A" dur="3.2s" repeatCount="indefinite"/></circle>
+<path d="M14.7 6.9C14.2 5.6 13.2 5 12 5C10.4 5 9.3 5.9 9.3 7.2C9.3 10 14.9 9.9 14.9 13C14.9 14.3 14 15.2 12.6 15.5M9.3 17.1C9.8 18.4 10.8 19 12 19C13.6 19 14.7 18.1 14.7 16.8C14.7 14 9.1 14.1 9.1 11C9.1 9.7 10 8.8 11.4 8.5" stroke="#E2B13F" stroke-width="1.75"><animate attributeName="stroke" values="#D4A23A;#F4D27A;#D4A23A" dur="3.2s" repeatCount="indefinite"/></path>
+</g>
+</g>
+<!-- patiler -->
+<ellipse cx="82" cy="224" rx="17" ry="10.5" fill="#F4BA55"/><ellipse cx="158" cy="224" rx="17" ry="10.5" fill="#F4BA55"/>
+<path d="M75 225 v5 M83 226 v5 M91 225 v5 M149 225 v5 M157 226 v5 M165 225 v5" stroke="#B8761F" stroke-width="2.4" stroke-linecap="round"/>
+<!-- baş -->
+<g transform="translate(6 -6) scale(1.9)"><polygon fill="url(#mfa-yele)" points="60,6 68,18 80,10 82,24 96,22 91,35 104,40 93,49 103,60 90,63 95,76 81,74 80,88 69,79 60,90 51,79 40,88 39,74 25,76 30,63 17,60 27,49 16,40 29,35 24,22 38,24 40,10 52,18"/>
   <polygon fill="#F08A33" points="60,14 67,24 77,19 78,30 89,30 85,40 95,45 86,52 93,61 82,63 85,73 74,71 72,81 63,74 60,82 57,74 48,81 46,71 35,73 38,63 27,61 34,52 25,45 35,40 31,30 42,30 43,19 53,24"/>
   
   <circle cx="42" cy="32" r="7" fill="#E9A43C"/><circle cx="42" cy="32" r="3.6" fill="#C96E2A"/>
@@ -1552,7 +1612,7 @@ setTimeout(kapat,max);})();</script>
   <path d="M55 55 h10 l-5 5.5 Z" fill="#6B2E12" stroke="#6B2E12" stroke-width="1.4" stroke-linejoin="round"/>
   <path d="M60 60.5 v2.5 q-3 4 -7 2 M60 63 q3 4 7 2" stroke="#6B2E12" stroke-width="1.8" fill="none" stroke-linecap="round"/>
   <circle cx="51" cy="61" r=".9" fill="#B8761F"/><circle cx="48" cy="59" r=".9" fill="#B8761F"/><circle cx="69" cy="61" r=".9" fill="#B8761F"/><circle cx="72" cy="59" r=".9" fill="#B8761F"/>
-  <path d="M55.6 86 h4 v15 l-2 1.6 l-2 -1.6 Z M60.4 86 h4 v15 l-2 1.6 l-2 -1.6 Z" fill="#FFFFFF" stroke="#D9D2D4" stroke-width=".6"/>
+  </g>
 </symbol>
 </svg>
 
@@ -1561,7 +1621,7 @@ setTimeout(kapat,max);})();</script>
 <img src="icon-192.png" alt="">
 <h1>Lex Odak <small>Cebindeki çalışma asistanın</small></h1>
 <div class="bosluk"></div>
-<button class="ikon-btn" id="tema" type="button" aria-label="Gece modu">🌙</button>
+<button class="ikon-btn" id="tema" type="button" aria-label="Gece modu"><svg class="tm-ay" viewBox="0 0 24 24" aria-hidden="true"><path d="M19.5 14.6A7.8 7.8 0 1 1 9.4 4.5a6.2 6.2 0 0 0 10.1 10.1z"/></svg><svg class="tm-gun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2.8v2.1M12 19.1v2.1M2.8 12h2.1M19.1 12h2.1M5.5 5.5l1.5 1.5M17 17l1.5 1.5M5.5 18.5L7 17M17 7l1.5-1.5"/></svg></button>
 </div></header>
 
 <main class="ana pm" id="pm">
@@ -1578,7 +1638,7 @@ setTimeout(kapat,max);})();</script>
 <label class="pm-sinav" id="pm-sinav-k">Hangi sınav?
 <select id="pm-sinav"><option value="HMGS">HMGS · 120 soru · 155 dk</option></select></label>
 <div class="pm-saat" id="pm-saat">
-<button type="button" class="pm-muzik" id="pm-muzik" aria-label="Arka plan sesi" aria-haspopup="dialog"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><g fill="currentColor"><ellipse cx="7" cy="17.6" rx="3.1" ry="2.4"/><ellipse cx="17.2" cy="15.6" rx="3.1" ry="2.4"/></g><path d="M9.9 17.6V6.4L20.1 4.4v11.2" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/><path d="M9.9 9.2l10.2-2" fill="none" stroke="currentColor" stroke-width="1.9"/></svg><i><s></s><s></s><s></s></i></button>
+<button type="button" class="pm-muzik" id="pm-muzik" aria-label="Arka plan sesi" aria-haspopup="dialog"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M4 15.5V12a8 8 0 0 1 16 0v3.5" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/><rect x="2.6" y="13.2" width="4.6" height="7.4" rx="2.1" fill="currentColor"/><rect x="16.8" y="13.2" width="4.6" height="7.4" rx="2.1" fill="currentColor"/></svg><i><s></s><s></s><s></s></i></button>
 <svg viewBox="0 0 120 120"><circle class="iz" cx="60" cy="60" r="52"/><circle class="dolu" id="pm-halka" cx="60" cy="60" r="52"/></svg>
 <div class="pm-yazi"><div class="pm-sure" id="pm-sure">25:00</div><div class="pm-etiket" id="pm-etiket">Odaklanma zamanı</div></div>
 </div>
@@ -1598,7 +1658,7 @@ setTimeout(kapat,max);})();</script>
 <div class="tam pm-sik-k" id="pm-sik-k">
 <button type="button" class="pm-sik-bas" id="pm-sik-bas" aria-expanded="false" aria-controls="pm-sik-ic"><span class="sik-ad"><i class="sik-hayvan" id="sik-hayvan" aria-hidden="true"><svg class="kedi" viewBox="0 0 120 120"><use href="#mf-kedi"/></svg><svg class="aslan" viewBox="0 0 120 120"><use href="#mf-aslan"/></svg></i>Sıkı mod</span><em id="pm-sik-durum">Kapalı</em><i aria-hidden="true"></i></button>
 <div class="pm-sik-ic" id="pm-sik-ic" hidden><div class="sik-ic-satir">
-<div class="sik-sahne" id="sik-sahne" data-g="k" aria-hidden="true"><i class="sk-flas"></i><svg class="sk-k" viewBox="0 0 120 120"><use href="#mf-kedi"/></svg><svg class="sk-a" viewBox="0 0 120 120"><use href="#mf-aslan"/></svg>
+<div class="sik-sahne" id="sik-sahne" data-g="k" aria-hidden="true"><i class="sk-flas"></i><svg class="sk-sutun" viewBox="0 0 120 120" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"><g><path d="M8.0 22 h16 M9.0 24.4 h14"/><path d="M11.0 24.4 q-3 1.6 -1 4 q2 1.4 3 -1 M21.0 24.4 q3 1.6 1 4 q-2 1.4 -3 -1"/><path d="M11.5 28 V106 M20.5 28 V106"/><path d="M13.6 30 V104" stroke-width=".7"/><path d="M16.0 30 V104" stroke-width=".7"/><path d="M18.4 30 V104" stroke-width=".7"/><path d="M10.0 106 h12 M8.5 108.6 h15 M7.0 112 h18"/></g><g><path d="M96.0 22 h16 M97.0 24.4 h14"/><path d="M99.0 24.4 q-3 1.6 -1 4 q2 1.4 3 -1 M109.0 24.4 q3 1.6 1 4 q-2 1.4 -3 -1"/><path d="M99.5 28 V106 M108.5 28 V106"/><path d="M101.6 30 V104" stroke-width=".7"/><path d="M104.0 30 V104" stroke-width=".7"/><path d="M106.4 30 V104" stroke-width=".7"/><path d="M98.0 106 h12 M96.5 108.6 h15 M95.0 112 h18"/></g><path d="M5 20 H115 M8 20 L60 6 L112 20"/></g></svg><svg class="sk-k" viewBox="0 0 120 120"><use href="#mf-kedi"/></svg><svg class="sk-a" viewBox="0 0 120 120"><use href="#mf-aslan"/></svg>
 <span class="sk-p" style="--x:-46px;--y:-38px">✦</span><span class="sk-p" style="--x:44px;--y:-42px">✦</span><span class="sk-p" style="--x:-50px;--y:22px">✦</span><span class="sk-p" style="--x:50px;--y:26px">✦</span><span class="sk-p" style="--x:0px;--y:-56px">✦</span></div>
 <div><p>Odak süresince ekran açık kalır. Başka bir uygulamaya 10 saniyeden uzun geçersen o tur geçersiz sayılır. Telefonu kilitleyip bırakmak sorun değil.</p>
 <label class="pm-anahtar"><input type="checkbox" id="pm-siki" role="switch"><span class="ray" aria-hidden="true"></span><b>Sıkı modu kullan</b></label><small class="sik-izin" id="sik-izin" hidden></small></div>
@@ -2436,7 +2496,7 @@ function lexDersler(){
     if(istek){try{navigator.permissions.query({name:'idle-detection'}).then(function(p){
         if(p.state==='granted'){idleKur();idleNot();return;}
         if(p.state==='denied'){idleNot();return;}
-        setTimeout(function(){if($('pm-siki').checked)$('sik-izn').classList.add('acik');},2300);
+        setTimeout(function(){if($('pm-siki').checked)$('sik-izn').classList.add('acik');},4900);
       }).catch(function(){idleNot();});}catch(e){}return;}
     try{navigator.permissions.query({name:'idle-detection'}).then(function(p){if(p.state==='granted')idleKur();idleNot();}).catch(function(){});}catch(e){}
   }
@@ -2494,7 +2554,7 @@ function lexDersler(){
       navigator.vibrate(vp);}}catch(e){}
     evT.push(setTimeout(function(){sh.classList.add('titre');},t));
     ara.forEach(function(a,i){t+=a;evT.push(setTimeout(function(){var asl=i%2===0;sh.dataset.g=asl?'a':'k';haleYak(asl?(.55+i*.035).toFixed(2):'.12');},t));});
-    t+=60;evT.push(setTimeout(function(){sh.dataset.g='a';sh.classList.remove('evr','titre');void sh.offsetWidth;sh.classList.add('flas','gel');ik.classList.add('as');
+    t+=60;evT.push(setTimeout(function(){sh.dataset.g='a';sh.classList.remove('evr','titre');void sh.offsetWidth;sh.classList.add('flas','gel');ik.classList.add('as');if(window.LX_ASLAN_BUYU)LX_ASLAN_BUYU(sh);
       evrSur=false;haleBitir();document.body.classList.add('hale-patla');},t));
     evT.push(setTimeout(function(){sh.classList.remove('flas','gel');document.body.classList.remove('hale-patla');},t+1800));
   }
@@ -3289,7 +3349,7 @@ function lexDersler(){
 (function(){
   // gece modu
   var h=document.documentElement,b=document.getElementById('tema');
-  function boya(){var g=h.classList.contains('mf-gece');b.textContent=g?'☀️':'🌙';var m=document.querySelector('meta[name=color-scheme]');if(m)m.setAttribute('content',g?'dark':'light');}
+  function boya(){var g=h.classList.contains('mf-gece');b.setAttribute('aria-label',g?'Gündüz modu':'Gece modu');var m=document.querySelector('meta[name=color-scheme]');if(m)m.setAttribute('content',g?'dark':'light');}
   boya();b.addEventListener('click',function(){h.classList.toggle('mf-gece');try{localStorage.setItem('mf-tema',h.classList.contains('mf-gece')?'gece':'gunduz');}catch(e){}boya();if(window.MF_IST_YENILE)window.MF_IST_YENILE();if(window.MF_DNM_YENILE)window.MF_DNM_YENILE();});
   // service worker
   if('serviceWorker' in navigator)window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js');});
@@ -5928,8 +5988,13 @@ function lexDersler(){
     var l=[document.querySelector('header.ust'),document.querySelector('#pg-sayac .pm-mod'),$('pm-domates')];
     var ilk=sy.querySelector('section.kart');
     [].forEach.call(sy.children,function(c){if(c!==ilk)l.push(c);});
+    l.push($('pm-sik-k'));
     return l.filter(Boolean);
   }
+  var mk=document.createElement('div');mk.className='oe-maskot';mk.id='oe-maskot';mk.setAttribute('aria-hidden','true');
+  var dg=document.querySelector('#pg-sayac .pm-dugmeler');if(dg&&dg.parentNode)dg.parentNode.insertBefore(mk,dg.nextSibling);
+  function maskot(){var as=!!($('pm-siki')&&$('pm-siki').checked);
+    mk.innerHTML='<div class="om-i">'+(as?(window.LX_SUTUN||''):'')+'<svg viewBox="0 0 120 120"><use href="#'+(as?'mf-aslan':'mf-kedi')+'"/></svg></div>';}
   function olc(){
     var B=saat.offsetWidth||230,gen=innerWidth>=760,nav=$('alt-nav');
     var navH=(!gen&&nav)?nav.offsetHeight:0;
@@ -5946,6 +6011,7 @@ function lexDersler(){
     if(on===acik)return;var ilk=acik===null;acik=on;
     if(on)olc();
     hedefler().forEach(function(e){katla(e,on,aninda||ilk);});
+    if(on)maskot();katla(mk,!on,aninda||ilk);
     document.body.classList.toggle('lv-odak',on);
     if(on&&!ilk&&!aninda)window.scrollTo({top:0,behavior:az.matches?'auto':'smooth'});
   }
@@ -6059,5 +6125,47 @@ function lexDersler(){
   k.addEventListener('mousedown',bas);addEventListener('mousemove',function(e){if(y0!==null&&e.buttons)hareket(e);});addEventListener('mouseup',birak);
   k.addEventListener('click',function(e){if(yut){e.stopPropagation();e.preventDefault();}},true);
 })();
-</script></body>
+</script><script>var AB_P={"kuyruk": "\n<path d=\"M176 222 C214 222 226 190 214 164\" stroke=\"#E9A43C\" stroke-width=\"10\" fill=\"none\" stroke-linecap=\"round\"/>\n<path d=\"M214 164 c-11 -7 -8 -23 4 -23 c10 -2 17 11 9 21 c8 4 2 14 -6 10 Z\" fill=\"#9C4416\"/>\n", "cubbe": "\n<path d=\"M66 156 C50 172 42 204 40 238 L200 238 C198 204 190 172 174 156 C150 142 90 142 66 156 Z\" fill=\"url(#lxb-cub)\"/>\n\n<path d=\"M52 214 C49 224 47 232 46 238 M188 214 C191 224 193 232 194 238 M97 222 C96 228 96 233 96 238 M143 222 C144 228 144 233 144 238\" stroke=\"#46394A\" stroke-width=\"1.6\" fill=\"none\" stroke-linecap=\"round\" opacity=\".8\"/>\n\n<path d=\"M106 150 L134 150 L120 196 Z\" fill=\"#FBF3E6\"/>\n\n<path d=\"M101 148 L111 148 L121 200 L115 238 L105 238 L108 198 Z\" fill=\"url(#lxb-bor)\"/>\n<path d=\"M139 148 L129 148 L119 200 L125 238 L135 238 L132 198 Z\" fill=\"url(#lxb-bor)\"/>\n<path d=\"M108 198 L105 238 M132 198 L135 238\" stroke=\"#C99A2E\" stroke-width=\"1.4\" opacity=\".75\"/>\n\n<path d=\"M112.5 156 h7 v26 l-3.5 3 l-3.5 -3 Z M120.5 156 h7 v26 l-3.5 3 l-3.5 -3 Z\" fill=\"#FFFFFF\" stroke=\"#D9D2D4\" stroke-width=\"1\"/>\n\n<path d=\"M62 168 C54 186 54 204 58 216 L92 216 C92 200 88 182 80 166 Z\" fill=\"url(#lxb-kol)\" stroke=\"#0E0A10\" stroke-width=\"1.4\"/>\n<path d=\"M178 168 C186 186 186 204 182 216 L148 216 C148 200 152 182 160 166 Z\" fill=\"url(#lxb-kol)\" stroke=\"#0E0A10\" stroke-width=\"1.4\"/>\n<rect x=\"55\" y=\"208\" width=\"39\" height=\"13\" rx=\"5\" fill=\"url(#lxb-bor)\"/><rect x=\"146\" y=\"208\" width=\"39\" height=\"13\" rx=\"5\" fill=\"url(#lxb-bor)\"/>\n<path d=\"M57 211 h35 M148 211 h35\" stroke=\"#C99A2E\" stroke-width=\"1.2\" opacity=\".7\"/>\n", "kitap": "\n<g class=\"lx-kitap\">\n<path d=\"M101 168 h44 a3 3 0 0 1 3 3 v62 a3 3 0 0 1 -3 3 h-44 Z\" fill=\"#F3E6CF\"/>\n<path d=\"M144.6 171 v62 M146.6 172 v60\" stroke=\"#D9C9AE\" stroke-width=\".8\"/>\n<rect x=\"92\" y=\"166\" width=\"12\" height=\"70\" rx=\"3\" fill=\"#4A1820\"/>\n<path d=\"M94 176 h8 M94 179 h8 M94 223 h8 M94 226 h8\" stroke=\"#C99A2E\" stroke-width=\"1.3\"/>\n<rect x=\"98\" y=\"165\" width=\"46\" height=\"69\" rx=\"3\" fill=\"url(#lxb-kit)\"/>\n<path d=\"M99.5 166.5 v66\" stroke=\"#B5485A\" stroke-width=\"1\" opacity=\".6\"/>\n<rect x=\"102.5\" y=\"169.5\" width=\"37.5\" height=\"60\" rx=\"1.6\" fill=\"none\" stroke=\"#C99A2E\" stroke-width=\"1.1\"/>\n<rect x=\"104.6\" y=\"171.6\" width=\"33.3\" height=\"55.8\" rx=\"1\" fill=\"none\" stroke=\"#C99A2E\" stroke-width=\".5\" opacity=\".7\"/>\n<g transform=\"translate(105.6 184.8) scale(1.3)\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\">\n<circle cx=\"12\" cy=\"12\" r=\"10.4\" stroke=\"#E2B13F\" stroke-width=\"1.25\"><animate attributeName=\"stroke\" values=\"#D4A23A;#F4D27A;#D4A23A\" dur=\"3.2s\" repeatCount=\"indefinite\"/><\/circle>\n<path d=\"M14.7 6.9C14.2 5.6 13.2 5 12 5C10.4 5 9.3 5.9 9.3 7.2C9.3 10 14.9 9.9 14.9 13C14.9 14.3 14 15.2 12.6 15.5M9.3 17.1C9.8 18.4 10.8 19 12 19C13.6 19 14.7 18.1 14.7 16.8C14.7 14 9.1 14.1 9.1 11C9.1 9.7 10 8.8 11.4 8.5\" stroke=\"#E2B13F\" stroke-width=\"1.75\"><animate attributeName=\"stroke\" values=\"#D4A23A;#F4D27A;#D4A23A\" dur=\"3.2s\" repeatCount=\"indefinite\"/><\/path>\n<\/g>\n<\/g>\n", "pati": "\n<ellipse cx=\"82\" cy=\"224\" rx=\"17\" ry=\"10.5\" fill=\"#F4BA55\"/><ellipse cx=\"158\" cy=\"224\" rx=\"17\" ry=\"10.5\" fill=\"#F4BA55\"/>\n<path d=\"M75 225 v5 M83 226 v5 M91 225 v5 M149 225 v5 M157 226 v5 M165 225 v5\" stroke=\"#B8761F\" stroke-width=\"2.4\" stroke-linecap=\"round\"/>\n", "bas": "\n<g transform=\"translate(6 -6) scale(1.9)\"><polygon fill=\"url(#mfa-yele)\" points=\"60,6 68,18 80,10 82,24 96,22 91,35 104,40 93,49 103,60 90,63 95,76 81,74 80,88 69,79 60,90 51,79 40,88 39,74 25,76 30,63 17,60 27,49 16,40 29,35 24,22 38,24 40,10 52,18\"/>\n  <polygon fill=\"#F08A33\" points=\"60,14 67,24 77,19 78,30 89,30 85,40 95,45 86,52 93,61 82,63 85,73 74,71 72,81 63,74 60,82 57,74 48,81 46,71 35,73 38,63 27,61 34,52 25,45 35,40 31,30 42,30 43,19 53,24\"/>\n  \n  <circle cx=\"42\" cy=\"32\" r=\"7\" fill=\"#E9A43C\"/><circle cx=\"42\" cy=\"32\" r=\"3.6\" fill=\"#C96E2A\"/>\n  <circle cx=\"78\" cy=\"32\" r=\"7\" fill=\"#E9A43C\"/><circle cx=\"78\" cy=\"32\" r=\"3.6\" fill=\"#C96E2A\"/>\n  \n  <ellipse cx=\"60\" cy=\"49\" rx=\"21\" ry=\"22\" fill=\"url(#mfa-gov)\"/>\n  <ellipse cx=\"60\" cy=\"60\" rx=\"12.5\" ry=\"9.5\" fill=\"#FBE0A8\"/>\n  \n  <path d=\"M44 40 l10 1.6 M76 40 l-10 1.6\" stroke=\"#8A3D14\" stroke-width=\"2.8\" stroke-linecap=\"round\"/>\n  \n  <ellipse cx=\"50\" cy=\"47\" rx=\"4.6\" ry=\"5.4\" fill=\"#2A2140\"/><ellipse cx=\"70\" cy=\"47\" rx=\"4.6\" ry=\"5.4\" fill=\"#2A2140\"/>\n  <circle cx=\"51.6\" cy=\"45.4\" r=\"1.7\" fill=\"#fff\"/><circle cx=\"71.6\" cy=\"45.4\" r=\"1.7\" fill=\"#fff\"/>\n  <path d=\"M45 44.5 q5 -3 10 0 M65 44.5 q5 -3 10 0\" fill=\"#E9A43C\"/>\n  \n  <path d=\"M55 55 h10 l-5 5.5 Z\" fill=\"#6B2E12\" stroke=\"#6B2E12\" stroke-width=\"1.4\" stroke-linejoin=\"round\"/>\n  <path d=\"M60 60.5 v2.5 q-3 4 -7 2 M60 63 q3 4 7 2\" stroke=\"#6B2E12\" stroke-width=\"1.8\" fill=\"none\" stroke-linecap=\"round\"/>\n  <circle cx=\"51\" cy=\"61\" r=\".9\" fill=\"#B8761F\"/><circle cx=\"48\" cy=\"59\" r=\".9\" fill=\"#B8761F\"/><circle cx=\"69\" cy=\"61\" r=\".9\" fill=\"#B8761F\"/><circle cx=\"72\" cy=\"59\" r=\".9\" fill=\"#B8761F\"/>\n  <\/g>\n"};
+(function(){
+  window.LX_ASLAN_BUYU=function(sh){
+    try{if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;}catch(e){}
+    if(!sh||!sh.animate)return;var r=sh.getBoundingClientRect();if(!r.width||r.bottom<0||r.top>innerHeight)return;
+    var S=Math.round(Math.min(innerWidth*.8,innerHeight*.52,380)),cx=innerWidth/2,cy=innerHeight*.44;
+    var o=document.createElement('div');o.className='lx-buyu';o.setAttribute('aria-hidden','true');
+    o.innerHTML='<i class="lx-buyu-h"></i><svg viewBox="0 0 240 240">'+AB_P.kuyruk+AB_P.cubbe+'<g class="lx-alt" style="opacity:0">'+AB_P.kitap+'</g>'+AB_P.pati+AB_P.bas+'<g class="lx-ust">'+AB_P.kitap+'</g>'+'</svg>';
+    o.style.left=(cx-S/2)+'px';o.style.top=(cy-S/2)+'px';o.style.width=S+'px';o.style.height=S+'px';
+    var dx=(r.left+r.width/2)-cx,dy=(r.top+r.height/2)-cy,k=(r.width-8)/S;
+    var bas='translate('+dx+'px,'+dy+'px) scale('+k+')',T=2700;
+    o.style.transform=bas;document.body.appendChild(o);sh.classList.add('ucuyor');
+    var a=o.animate([
+      {transform:bas,easing:'cubic-bezier(.2,.9,.25,1.12)'},
+      {transform:'none',offset:.2,easing:'ease-in-out'},
+      {transform:'scale(1.015)',offset:.5,easing:'ease-out'},
+      {transform:'scale(1.045)',offset:.54,easing:'ease-in-out'},
+      {transform:'scale(1.03)',offset:.74,easing:'cubic-bezier(.55,0,.35,1)'},
+      {transform:bas}],{duration:T,fill:'forwards'});
+    o.firstChild.animate([{opacity:0},{opacity:.7,offset:.2},{opacity:.6,offset:.48},{opacity:1,offset:.54},{opacity:.8,offset:.74},{opacity:0}],{duration:T,fill:'forwards'});
+    var kt=o.querySelector('.lx-ust .lx-kitap'),yuk=(cy-S/2)/(S/240)+260;
+    kt.animate([{transform:'translateY(-'+yuk.toFixed(0)+'px) rotate(-14deg)',opacity:1},{transform:'translateY(6px) rotate(1.5deg)',offset:.78},{transform:'translateY(0) rotate(0)'}],{duration:900,delay:T*.2,easing:'cubic-bezier(.3,.7,.3,1)',fill:'both'});setTimeout(function(){o.querySelector('.lx-alt').style.opacity=1;o.querySelector('.lx-ust').style.opacity=0;},T*.2+900);
+    var pr=o.querySelector('.lx-parla');if(pr)pr.animate([{opacity:.4},{opacity:1,offset:.5},{opacity:.4}],{duration:900,delay:T*.5,easing:'ease-in-out'});
+    try{if(navigator.vibrate)setTimeout(function(){navigator.vibrate(35);},T*.2+720);}catch(e){}
+    var bit=function(){sh.classList.remove('ucuyor');if(o.parentNode)o.parentNode.removeChild(o);};
+    a.onfinish=bit;setTimeout(bit,T+400);
+  };
+})();
+</script><script>
+(function(){
+  var sh=document.getElementById('sik-sahne');if(!sh)return;
+  [].forEach.call(sh.querySelectorAll('svg'),function(sv){var u=sv.querySelector('use');if(!u)return;
+    var sym=document.getElementById((u.getAttribute('href')||'').slice(1));if(!sym)return;
+    if(sym.getAttribute('viewBox'))sv.setAttribute('viewBox',sym.getAttribute('viewBox'));sv.innerHTML=sym.innerHTML;
+    [].forEach.call(sv.querySelectorAll('ellipse[fill="#2A2140"],circle[fill="#fff"]'),function(e){e.classList.add('gz');});});
+  var az=matchMedia('(prefers-reduced-motion: reduce)');
+  function uygun(){var ic=document.getElementById('pm-sik-ic');
+    return !document.hidden&&!az.matches&&ic&&!ic.hidden&&!document.body.classList.contains('lv-odak')&&!/(^|\s)(evr|ucuyor|gel|geri|flas)(\s|$)/.test(sh.className);}
+  function kirp(){sh.classList.add('kirp');setTimeout(function(){sh.classList.remove('kirp');},140);}
+  function dongu(){setTimeout(function(){if(uygun()){kirp();if(Math.random()<.22)setTimeout(kirp,320);}dongu();},3500+Math.random()*4500);}
+  dongu();
+})();
+</script><script>window.LX_SUTUN="<svg class=\"sk-sutun\" viewBox=\"0 0 120 120\" aria-hidden=\"true\"><g fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.1\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><g><path d=\"M8.0 22 h16 M9.0 24.4 h14\"/><path d=\"M11.0 24.4 q-3 1.6 -1 4 q2 1.4 3 -1 M21.0 24.4 q3 1.6 1 4 q-2 1.4 -3 -1\"/><path d=\"M11.5 28 V106 M20.5 28 V106\"/><path d=\"M13.6 30 V104\" stroke-width=\".7\"/><path d=\"M16.0 30 V104\" stroke-width=\".7\"/><path d=\"M18.4 30 V104\" stroke-width=\".7\"/><path d=\"M10.0 106 h12 M8.5 108.6 h15 M7.0 112 h18\"/></g><g><path d=\"M96.0 22 h16 M97.0 24.4 h14\"/><path d=\"M99.0 24.4 q-3 1.6 -1 4 q2 1.4 3 -1 M109.0 24.4 q3 1.6 1 4 q-2 1.4 -3 -1\"/><path d=\"M99.5 28 V106 M108.5 28 V106\"/><path d=\"M101.6 30 V104\" stroke-width=\".7\"/><path d=\"M104.0 30 V104\" stroke-width=\".7\"/><path d=\"M106.4 30 V104\" stroke-width=\".7\"/><path d=\"M98.0 106 h12 M96.5 108.6 h15 M95.0 112 h18\"/></g><path d=\"M5 20 H115 M8 20 L60 6 L112 20\"/></g></svg>";</script></body>
 </html>

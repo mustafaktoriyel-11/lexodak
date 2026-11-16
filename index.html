@@ -1441,7 +1441,7 @@ html.mf-gece .sik-sahne[data-g="a"]:not(.evr):not(.ucuyor) .sk-sutun{opacity:.45
 @media (max-width:340px){.sik-sahne .sk-sutun{width:72px;height:72px}}
 /* odak ekranında yalnız maskot */
 .oe-maskot{display:flex;justify-content:center;padding:6px 0 0}
-.oe-maskot .om-i{position:relative;width:112px;height:112px;transform:scale(.8);opacity:0;transition:transform .6s var(--oeE),opacity .45s ease}
+.oe-maskot .om-i{position:relative;width:var(--omS,112px);height:var(--omS,112px);transform:scale(.8);opacity:0;transition:transform .6s var(--oeE),opacity .45s ease}
 body.lv-odak .oe-maskot .om-i{transform:none;opacity:1}
 .oe-maskot svg{position:absolute;inset:0;width:100%;height:100%}
 .oe-maskot .sk-sutun{color:#B08524;opacity:.5}
@@ -5999,19 +5999,21 @@ function lexDersler(){
     var B=saat.offsetWidth||230,gen=innerWidth>=760,nav=$('alt-nav');
     var navH=(!gen&&nav)?nav.offsetHeight:0;
     var avW=gen?(sy.clientWidth-60):(innerWidth-20);
-    var avH=innerHeight-navH-240;
-    var W=Math.max(B,Math.min(avW,avH,680)),S=W/B;
-    var bos=innerHeight-navH-(W+176);document.body.style.setProperty('--oeUst',Math.max(14,Math.round(bos/2-8))+'px');
+    var H=innerHeight-navH,EK=OE_EK,Wt=Math.min(avW,680),M;
+    if(H-EK-64-10>=Wt){M=Math.round(Math.min(112,H-EK-10-Wt));}else{M=0;}
+    maskotsuz=!M;document.body.style.setProperty('--omS',(M||64)+'px');
+    var W=Math.max(B,Math.min(Wt,H-EK-(M?M+10:0))),S=W/B;
+    var bos=H-(W+EK+(M?M+10:0));document.body.style.setProperty('--oeUst',Math.max(8,Math.round(bos/2))+'px');
     saat.style.setProperty('--lvS',S.toFixed(4));saat.style.setProperty('--lvI',(1/S).toFixed(4));saat.style.setProperty('--lvM',((W-B)/2).toFixed(1)+'px');
   }
-  var acik=null;
+  var acik=null,maskotsuz=false,OE_EK=150;
   function sayacSayfasi(){return !/(^|\s)s-(program|istat|mantik|mevzuat|kutuphane)(\s|$)/.test(document.body.className);}
   function guncelle(aninda){
     var on=/Duraklat/.test(bb.textContent)&&sayacSayfasi();
     if(on===acik)return;var ilk=acik===null;acik=on;
     if(on)olc();
     hedefler().forEach(function(e){katla(e,on,aninda||ilk);});
-    if(on)maskot();katla(mk,!on,aninda||ilk);
+    if(on)maskot();katla(mk,!on||maskotsuz,aninda||ilk);
     document.body.classList.toggle('lv-odak',on);
     if(on&&!ilk&&!aninda)window.scrollTo({top:0,behavior:az.matches?'auto':'smooth'});
   }

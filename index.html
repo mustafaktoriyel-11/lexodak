@@ -5390,14 +5390,15 @@ function lexDersler(){
   }
   acBtn.addEventListener('click',function(){if(CZ.acik)cizKapat();else cizAc();});
   $('kt-ciz-bitti').addEventListener('click',function(){cizKapat();});
-  bar.addEventListener('click',function(e){
+  function cizTik(e){
     var b=e.target.closest('[data-a]');
     if(b){CZ.arac=b.getAttribute('data-a');[].forEach.call(bar.querySelectorAll('[data-a]'),function(x){x.classList.toggle('sec',x===b);});renkCiz();ipucuYaz();return;}
     var r=e.target.closest('[data-r]');
     if(r){CZ.renk[CZ.arac]=r.getAttribute('data-r');renkCiz();return;}
     var d=e.target.closest('[data-dm]');
     if(d){CZ.damga=d.getAttribute('data-dm');damgaSatir();}
-  });
+  }
+  bar.addEventListener('click',cizTik);$('kt-ciz-fly').addEventListener('click',cizTik);
   $('kt-ciz-geri').addEventListener('click',function(){
     var g=G;if(!g)return;var x=CZ.geri.pop();if(!x){ipucuGoster('Geri alınacak bir şey yok');return;}
     var L=notlar(g)[x.n]=notlar(g)[x.n]||[];

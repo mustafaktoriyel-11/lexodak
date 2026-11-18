@@ -5441,7 +5441,7 @@ function lexDersler(){
     var ids=Object.keys(CZ.parmak);if(!ids.length)return null;
     var x=0,y=0;ids.forEach(function(k){x+=CZ.parmak[k].x;y+=CZ.parmak[k].y;});return {x:x/ids.length,y:y/ids.length,n:ids.length};
   }
-  function baski(e){var pr=e.pressure>0?e.pressure:.5;return .6+.7*Math.min(1,pr);}
+  function baski(e){var pr=e.pressure>0?e.pressure:.5;pr=Math.min(1,pr*1.5);return .35+1.15*Math.pow(pr,.8);}
   kaydir.addEventListener('contextmenu',function(e){if(CZ.acik)e.preventDefault();});
   kaydir.addEventListener('pointerdown',function(e){
     var g=G;if(!CZ.acik||!g)return;
@@ -5478,13 +5478,19 @@ function lexDersler(){
     if(!cv){cv=CZ.cv=document.createElement('canvas');cv.className='kt-not kt-canli';}
     if(cv.width!==W||cv.height!==H){cv.width=W;cv.height=H;}
     if(cv.parentNode!==s.el)s.el.appendChild(cv);
-    var ctx=cv.getContext('2d');ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,W,H);
+    var ctx=cv.getContext('2d',{desynchronized:true});ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,W,H);
     c.cv=cv;c.ctx=ctx;c.W=W;c.H=H;
+    if(c.st.t==='k'){ // kuyruk katmanı: çizginin ucu + kalemin tahmini yönü, her karede silinip yeniden çizilir
+      var c2=CZ.cv2;if(!c2){c2=CZ.cv2=document.createElement('canvas');c2.className='kt-not kt-canli';}
+      if(c2.width!==W||c2.height!==H){c2.width=W;c2.height=H;}
+      if(c2.parentNode!==s.el)s.el.appendChild(c2);
+      c.cv2=c2;c.ctx2=c2.getContext('2d',{desynchronized:true});c.ctx2.setTransform(1,0,0,1,0,0);c.ctx2.clearRect(0,0,W,H);c.kb=null;c.pr=null;
+    }
     ctx.lineCap=c.st.t==='f'?'butt':'round';ctx.lineJoin='round';ctx.strokeStyle=c.st.r;ctx.fillStyle=c.st.r;ctx.lineWidth=Math.max(1,c.st.w*W);
     if(c.st.t==='k'){var p=c.st.p;ctx.lineWidth=Math.max(1,c.st.w*W*c.qs);ctx.beginPath();ctx.moveTo(p[0]*W,p[1]*H);ctx.lineTo(p[0]*W+.1,p[1]*H);ctx.stroke();}
     else if(c.st.t==='d')canliCiz(c);
   }
-  function canliKaldir(c){if(c&&c.cv){c.ctx.clearRect(0,0,c.W,c.H);c.cv=null;c.ctx=null;}}
+  function canliKaldir(c){if(c&&c.cv){c.ctx.clearRect(0,0,c.W,c.H);c.cv=null;c.ctx=null;}if(c&&c.cv2){c.ctx2.clearRect(0,0,c.W,c.H);c.cv2=null;c.ctx2=null;}}
   function plan(c){if(c.raf)return;c.raf=requestAnimationFrame(function(){c.raf=0;canliCiz(c);});}
   // rAF başına bir kez: yalnız yeni parçalar çizilir
   function canliCiz(c){
@@ -5494,13 +5500,29 @@ function lexDersler(){
     var n=p.length/2;
     ctx.lineWidth=Math.max(1,st.w*W);
     while(c.di<=n-2){parca(ctx,p,st.q,c.di,W,H,st.w);c.di++;}
+    if(c.ctx2)kuyruk(c);
+  }
+  // kalıcı eğri son iki noktanın ortasında biter; ucu gerçek son noktaya ve tahmini yöne kadar uzat (gecikme hissi gider)
+  function kuyruk(c){
+    var x=c.ctx2,p=c.st.p,n=p.length/2,W=c.W,H=c.H;
+    if(c.kb){x.clearRect(c.kb[0],c.kb[1],c.kb[2],c.kb[3]);c.kb=null;}
+    if(n<2)return;
+    var w=Math.max(1,c.st.w*W*(c.pen?c.qs:1)),ax=(p[2*n-4]+p[2*n-2])/2*W,ay=(p[2*n-3]+p[2*n-1])/2*H;
+    var xs=[ax],ys=[ay];
+    x.lineCap='round';x.lineJoin='round';x.strokeStyle=c.st.r;x.lineWidth=w;
+    x.beginPath();x.moveTo(ax,ay);
+    var lx=p[2*n-2]*W,ly=p[2*n-1]*H;x.lineTo(lx,ly);xs.push(lx);ys.push(ly);
+    var P=c.pr||[];for(var i=0;i<P.length;i++){var qx=P[i][0]*W,qy=P[i][1]*H;x.lineTo(qx,qy);xs.push(qx);ys.push(qy);}
+    x.stroke();
+    var x0=Math.min.apply(null,xs)-w-2,y0=Math.min.apply(null,ys)-w-2,x1=Math.max.apply(null,xs)+w+2,y1=Math.max.apply(null,ys)+w+2;
+    c.kb=[x0,y0,x1-x0,y1-y0];
   }
   function ekleNokta(c,ev){
     var r=c.r,p=c.st.p,x=(ev.clientX-r.left)/r.width,y=(ev.clientY-r.top)/r.height;
     var lx=p[p.length-2],ly=p[p.length-1];
-    if(Math.abs((x-lx)*r.width)+Math.abs((y-ly)*r.height)<0.8)return false;
+    if(Math.abs((x-lx)*r.width)+Math.abs((y-ly)*r.height)<0.5)return false;
     p.push(Math.round(x*1e4)/1e4,Math.round(y*1e4)/1e4);
-    if(c.pen){c.qs=c.qs*.6+baski(ev)*.4;c.st.q.push(Math.round(c.qs*100)/100);}
+    if(c.pen){c.qs=c.qs*.45+baski(ev)*.55;c.st.q.push(Math.round(c.qs*100)/100);}
     return true;
   }
   function hareket(e){
@@ -5527,6 +5549,11 @@ function lexDersler(){
       plan(c);return;
     }
     var yeni=false;for(var i=0;i<L.length;i++)if(ekleNokta(c,L[i]))yeni=true;
+    if(c.ctx2){
+      var PE=(e.getPredictedEvents&&e.getPredictedEvents())||[];
+      c.pr=PE.slice(0,3).map(function(v){return [(v.clientX-r.left)/r.width,(v.clientY-r.top)/r.height];});
+      yeni=true;
+    }
     if(yeni)plan(c);
   }
   kaydir.addEventListener('pointermove',function(e){

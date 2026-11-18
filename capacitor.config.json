@@ -1,6 +1,6 @@
 {
   "appId": "com.lexodak.app",
-  "appName": "Lex Odak",
+  "appName": "Lex Odak Test",
   "webDir": "www",
   "android": {
     "backgroundColor": "#281619"

@@ -1,0 +1,10 @@
+{
+  "name": "lex-odak",
+  "private": true,
+  "description": "Lex Odak Android kabuğu (Capacitor). Web dosyaları depo kökünde; derleme GitHub Actions'ta.",
+  "dependencies": {
+    "@capacitor/android": "latest",
+    "@capacitor/cli": "latest",
+    "@capacitor/core": "latest"
+  }
+}

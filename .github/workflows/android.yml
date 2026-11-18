@@ -46,14 +46,38 @@ jobs:
           npx cap add android
           npx cap sync android
 
-      - name: Uygulama ikonu
-        continue-on-error: true
+      - name: Uygulama ikonu ve açılış ekranı
         run: |
+          pip install --quiet pillow
           mkdir -p assets
-          convert icon-512.png -resize 1024x1024 assets/icon-only.png || cp icon-512.png assets/icon-only.png
+          python3 - <<'PY'
+          from PIL import Image
+          ic = Image.open('icon-512.png').convert('RGBA')
+          ic.resize((1024, 1024), Image.LANCZOS).save('assets/icon-only.png')
+          for ad in ('splash.png', 'splash-dark.png'):
+              sp = Image.new('RGBA', (2732, 2732), (0x28, 0x16, 0x19, 255))
+              k = ic.resize((600, 600), Image.LANCZOS)
+              sp.paste(k, ((2732 - 600) // 2, (2732 - 600) // 2), k)
+              sp.convert('RGB').save('assets/' + ad)
+          PY
           npx --yes @capacitor/assets generate --android \
             --iconBackgroundColor '#762B37' --iconBackgroundColorDark '#762B37' \
             --splashBackgroundColor '#281619' --splashBackgroundColorDark '#281619'
+          # Android 8+ uyarlanabilir ikon: web sürümünün maskable ikonu, görünür alana tam oturur (PWA ile aynı görünüm)
+          R=android/app/src/main/res
+          mkdir -p $R/drawable-nodpi $R/drawable $R/mipmap-anydpi-v26
+          cp icon-maskable-512.png $R/drawable-nodpi/lex_ikon_tam.png
+          printf '%s\n' '<?xml version="1.0" encoding="utf-8"?>' \
+            '<inset xmlns:android="http://schemas.android.com/apk/res/android" android:drawable="@drawable/lex_ikon_tam" android:inset="18dp"/>' \
+            > $R/drawable/lex_ikon_on.xml
+          for f in ic_launcher ic_launcher_round; do
+            printf '%s\n' '<?xml version="1.0" encoding="utf-8"?>' \
+              '<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">' \
+              '  <background android:drawable="@android:color/black"/>' \
+              '  <foreground android:drawable="@drawable/lex_ikon_on"/>' \
+              '</adaptive-icon>' > $R/mipmap-anydpi-v26/$f.xml
+          done
+          cat $R/mipmap-anydpi-v26/ic_launcher.xml
 
       - name: APK derle
         working-directory: android

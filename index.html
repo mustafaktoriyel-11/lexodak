@@ -5478,13 +5478,13 @@ function lexDersler(){
     if(!cv){cv=CZ.cv=document.createElement('canvas');cv.className='kt-not kt-canli';}
     if(cv.width!==W||cv.height!==H){cv.width=W;cv.height=H;}
     if(cv.parentNode!==s.el)s.el.appendChild(cv);
-    var ctx=cv.getContext('2d',{desynchronized:true});ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,W,H);
+    var ctx=cv.getContext('2d');ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,W,H);
     c.cv=cv;c.ctx=ctx;c.W=W;c.H=H;
     if(c.st.t==='k'){ // kuyruk katmanı: çizginin ucu + kalemin tahmini yönü, her karede silinip yeniden çizilir
       var c2=CZ.cv2;if(!c2){c2=CZ.cv2=document.createElement('canvas');c2.className='kt-not kt-canli';}
       if(c2.width!==W||c2.height!==H){c2.width=W;c2.height=H;}
       if(c2.parentNode!==s.el)s.el.appendChild(c2);
-      c.cv2=c2;c.ctx2=c2.getContext('2d',{desynchronized:true});c.ctx2.setTransform(1,0,0,1,0,0);c.ctx2.clearRect(0,0,W,H);c.kb=null;c.pr=null;
+      c.cv2=c2;c.ctx2=c2.getContext('2d');c.ctx2.setTransform(1,0,0,1,0,0);c.ctx2.clearRect(0,0,W,H);c.kb=null;c.pr=null;
     }
     ctx.lineCap=c.st.t==='f'?'butt':'round';ctx.lineJoin='round';ctx.strokeStyle=c.st.r;ctx.fillStyle=c.st.r;ctx.lineWidth=Math.max(1,c.st.w*W);
     if(c.st.t==='k'){var p=c.st.p;ctx.lineWidth=Math.max(1,c.st.w*W*c.qs);ctx.beginPath();ctx.moveTo(p[0]*W,p[1]*H);ctx.lineTo(p[0]*W+.1,p[1]*H);ctx.stroke();}

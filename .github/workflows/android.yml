@@ -36,7 +36,7 @@ jobs:
           rsync -a ./ www/ \
             --exclude .git --exclude .github --exclude www --exclude node_modules --exclude android \
             --exclude package.json --exclude package-lock.json --exclude capacitor.config.json \
-            --exclude CNAME --exclude sitemap.xml --exclude robots.txt
+            --exclude android-ayar --exclude CNAME --exclude sitemap.xml --exclude robots.txt
           ls -la www | head -50
 
       - name: Capacitor kur
@@ -82,6 +82,8 @@ jobs:
       - name: APK derle
         working-directory: android
         run: |
+          # sabit test imzası: yeni sürüm eskisinin üzerine kurulabilsin (yalnız test içindir, Play imzası değildir)
+          mkdir -p ~/.android && cp ../android-ayar/test-imza.keystore ~/.android/debug.keystore
           chmod +x gradlew
           ./gradlew assembleDebug --no-daemon
           cp app/build/outputs/apk/debug/app-debug.apk ../lex-odak-test.apk

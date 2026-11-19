@@ -5,10 +5,11 @@
   if(!window.LEX_VERI){var VO={};window.LEX_VERI=function(a){if(!VO[a])VO[a]=fetch('veri/'+a+'.json').then(function(r){if(!r.ok)throw 0;return r.json();}).catch(function(e){delete VO[a];throw e;});return VO[a];};}
   var SETLER=[],GERCEK=null,BEKLE=window.LEX_VERI('mantik');
   window.MF_MT=function(){if(GERCEK)GERCEK();else BEKLE.then(function(){if(GERCEK)GERCEK();},function(){});};
-  BEKLE.then(function(v){SETLER=v||[];if(SETLER.length)KUR();},function(){});
+  BEKLE.then(function(v){SETLER=v||[];if(!SETLER.length)return;if(window.LEX_UFUK)KUR();else document.addEventListener('DOMContentLoaded',KUR);},function(){});
   function KUR(){
 
   var K='mf-mantik-g',NS=SETLER[0].length,SURE=72*NS,BAZ=new Date(2026,10,2);
+  window.LEX_UFUK.kur(NS);
   var TIPAD={kamu:'Kamu Hukuku',ozel:'Özel Hukuk',ceza:'Ceza Hukuku',usul:'Usul Hukuku',genel:'Genel Hukuk'};
   var AY=['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
   function oku(){try{return JSON.parse(localStorage.getItem(K)||'{}');}catch(e){return {};}}
@@ -77,27 +78,37 @@
   // ---- durum ----
   var aktif=null,zT=null;
   function kaydetAktif(){try{localStorage.setItem(K+'-aktif',JSON.stringify(aktif));}catch(e){}}
+  function ek3(n){var u=['ı','i','si','ü','ü','i','sı','si','i','u'],t=['','u','si','u','ı','si','ı','i','i','ı'];return n%10?u[n%10]:t[Math.floor(n/10)%10]||'ı';}
+  function gunAd(k){if(k===haftaNo()-1)return 'Dün';var t=new Date(BAZ);t.setDate(t.getDate()+k);return t.getDate()+' '+AY[t.getMonth()].slice(0,3);}
+  var BASLA_SOZ=['Bugün bir levha, '+NS+' soru. Acele etmeden okuyalım.','Hazırsan levhayı açalım. Her soru bir adım.','Tabula bugün de seni bekliyor. Metni dikkatle oku.','Kürsü hazır. Önce metni, sonra şıkları okuyalım.','Kısa bir tekrar, sağlam bir temel. Başlayalım.'];
+  var SORU_SOZ=['Metni dikkatle oku, sonra şıklara bak.','Acele yok. Her soru bir adım.','Emin değilsen sonraki soruya geçip dönebilirsin.','Kanunun lafzı çoğu zaman yolu gösterir.'];
+  /* unvan atlandiysa (kayitli unvan < hesaplanan) sonuc/ana ekrandan sonra tek seferlik tören */
+  function torenDene(){var U=window.LEX_UFUK;if(!U||U.aktifToren())return;var d=U.hesap(oku(),haftaNo()),r=U.kayitR();
+    if(d.r<=r||!document.body.classList.contains('s-mantik'))return;
+    U.toren(r,d.r,function(){var gi=$('mt-giris');if(gi&&!gi.hidden&&!aktif)giris();else yenileKartlar();});}
+  function yenileKartlar(){var U=window.LEX_UFUK,d=U.hesap(oku(),haftaNo());
+    [].forEach.call(document.querySelectorAll('#mt-sonuc .uf-unvan'),function(e){e.outerHTML=U.unvanKart(d);});
+    [].forEach.call(document.querySelectorAll('#mt-sonuc .uf-seri'),function(e){e.outerHTML=U.seriKart(d);});}
   function giris(){
-    var v=oku(),h=haftaNo(),bu=v[h],sn=setNo(h),ys=new Date();ys.setHours(24,0,0,0);var kalS=Math.ceil((ys-Date.now())/36e5),o='';
-    o+='<div class="mt-hero"><span class="mt-hafta">Günün testi · her gün yeni set</span><h2><svg class="lx-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v16M7.5 20h9M5 7.5h14M12 4.6l-7 2.9M12 4.6l7 2.9"/><path d="M5 7.5 2.6 13a2.4 2.4 0 0 0 4.8 0zM19 7.5 16.6 13a2.4 2.4 0 0 0 4.8 0z"/></svg>Günlük Hukuk Testi</h2>'+
-      '<p>'+NS+' soru, '+Math.round(SURE/60)+' dakika. HMGS tarzı sorular; her çözümde kanun ve madde numarası.</p>'+
-      '<div class="mt-tipler"><span><svg class="lx-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9h18M4 9l8-5 8 5"/><path d="M6 9v9M10 9v9M14 9v9M18 9v9M3.5 18h17M2.5 20.5h19"/></svg>Kamu</span><span><svg class="lx-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4h11a2 2 0 0 1 2 2v1h-4"/><path d="M16 7v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-1h10v1a2 2 0 0 0 2 2"/><path d="M7 4a2 2 0 0 0-2 2v11M9 9h4M9 12.5h4"/></svg>Özel</span><span><svg class="lx-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.2 18.5c-1-1.8-1.6-3.9-1.6-6.2a7.4 7.4 0 0 1 12.6-5.2"/><path d="M19.2 10.4c.2.6.3 1.2.3 1.9 0 2.1-.3 4.2-1 6"/><path d="M8.6 20.2C7.7 18 7.3 15.4 7.3 12.6a4.7 4.7 0 0 1 9.4 0c0 2.6-.3 5-1 7"/><path d="M11.8 20.6c-.9-2.4-1.4-5-1.4-7.8a1.6 1.6 0 0 1 3.2 0c0 1.8-.1 3.4-.4 4.9"/></svg>Ceza</span><span><svg class="lx-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m13.5 3.8 6.7 6.7M10.2 7.1l6.7 6.7M12 5.6l-3.6 3.6 6.4 6.4 3.6-3.6"/><path d="M11.2 12.4 4 19.6"/><path d="M3 21h9"/></svg>Usul</span><span><svg class="lx-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="4" height="15" rx="1"/><rect x="8.5" y="3.5" width="4" height="16.5" rx="1"/><path d="m13.6 6.2 3.8-1 3.9 14.4-3.8 1z"/><path d="M3.5 8.5h4M8.5 7h4M3.5 16.5h4M8.5 16.5h4"/></svg>Genel</span></div>';
-    if(!bu)o+='<button type="button" class="mt-btn" id="mt-basla">'+(aktif&&aktif.h===h?'Teste devam et':'Teste başla')+'</button>';
-    o+='<p class="mt-sonraki">Yeni set '+(kalS<=1?'1 saatten kısa süre sonra':kalS+' saat sonra')+' açılıyor.</p></div>';
-    if(bu){var sv=seviye(bu.d,bu.sn);
-      o+='<div class="mt-kart"><div class="mt-ozet"><span class="mt-ikon">'+LXE(sv.e)+'</span><div><b>'+sv.a+' · '+bu.d+'/'+NS+'</b><small>Bugünkü en iyi sonucun · '+sureYaz(bu.sn)+((bu.n||1)>1?' · '+bu.n+' deneme':'')+'</small></div></div>'+
-        '<button type="button" class="mt-btn" id="mt-gor" style="margin-top:14px">Sonucu ve çözümleri gör</button>'+
-        '<button type="button" class="mt-btn2" id="mt-tekrar">'+'<svg class="lx-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M19.5 12a7.5 7.5 0 0 1-13.1 5M4.5 12a7.5 7.5 0 0 1 13.1-5"/><path d="M17.8 3.5v3.7h-3.7M6.2 20.5v-3.7h3.7"/></svg>'+(bu.d<NS?'Tekrar çöz, rekorunu geliştir':'Tekrar çöz, süreni kısalt')+'</button></div>';}
-    var ks=Object.keys(v).map(Number).filter(function(x){return x!==h;}).sort(function(a,b){return b-a;}).slice(0,8);
-    if(ks.length){o+='<div class="mt-kart"><p class="mt-bas">Önceki günler</p><div class="mt-gec">';
-      ks.forEach(function(k){var x=v[k],sv=seviye(x.d,x.sn),t=new Date(BAZ);t.setDate(t.getDate()+k);
-        o+='<div><span>'+t.getDate()+' '+AY[t.getMonth()]+'</span><b>'+LXE(sv.e)+' '+x.d+'/'+NS+'</b></div>';});
-      o+='</div></div>';}
+    var U=window.LEX_UFUK,v=oku(),h=haftaNo(),bu=v[h],d=U.hesap(v,h),ys=new Date();ys.setHours(24,0,0,0);var kalS=Math.ceil((ys-Date.now())/36e5),o='',devam=!!(aktif&&aktif.h===h);
+    var soz=bu?'Tabula tamamlandı. Yarın yeni bir levha seni bekliyor.':devam?'Levha seni bekliyor. Kaldığın yerden devam edelim.':(d.seri===0&&d.set>0)?'Seri durdu, ama yolculuk bitmedi. Bugün yeniden başlayalım.':BASLA_SOZ[((h%5)+5)%5];
+    o+='<header class="uf-bas"><div class="uf-ust">LEX · XII · TABULARUM</div><h2>Hukukçunun Ufku</h2><p class="uf-tipsat" aria-label="Alanlar: kamu, özel, ceza, usul, genel">Kamu · Özel · Ceza · Usul · Genel</p></header>';
+    o+='<div class="uf-ikili">'+U.seriKart(d)+U.unvanKart(d)+'</div>';
+    o+='<div class="uf-konus">'+U.maskot(84)+'<div class="uf-balon" aria-live="polite">'+soz+'</div></div>';
+    o+='<div class="uf-yolk">'+U.yol(d,v,h,gunAd,devam)+'</div>';
+    o+='<p class="uf-bilgi">Yeni set '+(kalS<=1?'1 saatten kısa süre sonra':kalS+' saat sonra')+' açılıyor.</p>';
+    if(!bu)o+='<button type="button" class="uf-btn altin" id="mt-basla">'+(devam?'Teste devam et':'Bugünün setini başlat')+'</button>';
+    else{var sv=seviye(bu.d,bu.sn);
+      o+='<button type="button" class="uf-btn" id="mt-gor">Sonucu ve çözümleri gör</button>'+
+        '<button type="button" class="uf-btn2" id="mt-tekrar">'+(bu.d<NS?'Tekrar çöz, rekorunu geliştir':'Tekrar çöz, süreni kısalt')+((bu.n||1)>1?' · '+bu.n+'. deneme sonrası':'')+'</button>';}
     $('mt-giris').innerHTML=o;$('mt-giris').hidden=false;$('mt-test').hidden=true;$('mt-sonuc').hidden=true;
     var b=$('mt-basla');if(b)b.addEventListener('click',function(){basla(false);});
     var g=$('mt-gor');if(g)g.addEventListener('click',function(){sonucGoster(bu,h);});
     var tk=$('mt-tekrar');if(tk)tk.addEventListener('click',function(){basla(true);});
-    rozet();
+    [].forEach.call(document.querySelectorAll('#mt-giris .uf-dg[data-uk]'),function(e){var k=+e.getAttribute('data-uk');
+      function git(){if(k===h){if(bu)sonucGoster(bu,h);else basla(false);}else if(v[k])sonucGoster(v[k],k);}
+      e.addEventListener('click',git);e.addEventListener('keydown',function(ev){if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();git();}});});
+    rozet();setTimeout(torenDene,700);
   }
   function rozet(){var e=$('nav-mantik');if(!e)return;var r=oku()[haftaNo()],yeni=!r;e.textContent=yeni?'Yeni':'';e.className=yeni?'var':'';
     var b=e.parentNode,z=b.querySelector('.nav-roz');
@@ -114,19 +125,22 @@
   function kalan(){return Math.max(0,SURE-(Date.now()-aktif.bas)/1000);}
   function saat(){if(!aktif){clearInterval(zT);return;}var k=kalan(),e=$('mt-sure');if(e){e.textContent=sureYaz(k);e.classList.toggle('az',k<60);}if(k<=0)bitir();}
   function soru(){
-    var S=SETLER[aktif.set],i=aktif.i,q=S[i],fig=q.t==='sekil',o='';
-    o+='<div class="mt-ust"><div class="mt-ust-s"><span>Soru '+(i+1)+' / '+NS+'</span><span class="mt-sure" id="mt-sure">'+sureYaz(kalan())+'</span></div><div class="mt-ilerle"><i style="width:'+Math.round(aktif.cev.filter(function(x){return x!==null;}).length*100/NS)+'%"></i></div></div>';
-    o+='<div class="mt-kart"><span class="mt-tip">'+esc(q.d||TIPAD[q.t])+'</span><p class="mt-soru">'+esc(q.s)+'</p>';
+    var U=window.LEX_UFUK,S=SETLER[aktif.set],i=aktif.i,q=S[i],fig=q.t==='sekil',o='';
+    o+='<div class="uf-ust2"><button type="button" class="uf-geri" id="mt-kapat" aria-label="Başlangıç ekranına dön">‹</button><div class="uf-tabula">Tabula '+U.rom(i+1)+' / '+U.rom(NS)+'</div><span class="mt-sure" id="mt-sure" role="timer" aria-label="Kalan süre">'+sureYaz(kalan())+'</span></div>';
+    o+='<div class="uf-yoluz">'+U.yolIlerle(aktif.cev,i,NS)+'</div>';
+    o+='<div class="uf-kart"><span class="mt-tip">'+esc(q.d||TIPAD[q.t])+'</span><p class="mt-soru">'+esc(q.s)+'</p>';
     if(q.g&&q.g.tip==='dizi')o+=diziHtml(q.g.h);
     else if(q.g)o+='<div class="mt-fig">'+figur(q.g)+'</div>';
     o+='<div class="mt-sec'+(fig?' fig':'')+'">'+q.o.map(function(x,j){return '<button type="button" data-j="'+j+'" class="'+(aktif.cev[i]===j?'on':'')+'"><i>'+'ABCDE'[j]+'</i>'+(fig?secFig(q.g,x):'<span>'+esc(x)+'</span>')+'</button>';}).join('')+'</div>';
-    o+='<div class="mt-alt"><button type="button" class="geri" id="mt-geri"'+(i===0?' disabled':'')+'>‹ Önceki</button>'+(i<NS-1?'<button type="button" class="ileri" id="mt-ileri">Sonraki ›</button>':'<button type="button" class="bitir" id="mt-bitir">Testi bitir</button>')+'</div>';
-    o+='<div class="mt-noktalar">'+S.map(function(_,j){return '<button type="button" data-n="'+j+'" class="'+(aktif.cev[j]!==null?'dolu ':'')+(j===i?'su':'')+'">'+(j+1)+'</button>';}).join('')+'</div></div>';
+    o+='<div class="mt-alt"><button type="button" class="geri" id="mt-geri"'+(i===0?' disabled':'')+'>‹ Önceki</button>'+(i<NS-1?'<button type="button" class="ileri" id="mt-ileri">Sonraki ›</button>':'<button type="button" class="bitir" id="mt-bitir">Testi bitir</button>')+'</div></div>';
+    o+='<div class="uf-nok" role="group" aria-label="Sorular">'+S.map(function(_,j){return '<button type="button" data-n="'+j+'" aria-label="Soru '+(j+1)+(aktif.cev[j]!==null?', cevaplandı':'')+'" class="'+(aktif.cev[j]!==null?'dolu ':'')+(j===i?'su':'')+'">'+U.rom(j+1)+'</button>';}).join('')+'</div>';
+    o+='<div class="uf-maskr">'+U.maskot(64)+'<div class="uf-balon">'+(i===0?BASLA_SOZ[((aktif.h%5)+5)%5]:SORU_SOZ[i%SORU_SOZ.length])+'</div></div>';
     $('mt-test').innerHTML=o;$('mt-test').hidden=false;$('mt-giris').hidden=true;$('mt-sonuc').hidden=true;
     [].forEach.call(document.querySelectorAll('#mt-test .mt-sec button'),function(b){b.addEventListener('click',function(){aktif.cev[i]=+b.dataset.j;kaydetAktif();
       [].forEach.call(b.parentNode.children,function(x){x.classList.toggle('on',x===b);});
       setTimeout(function(){if(aktif&&aktif.i===i&&i<NS-1){aktif.i++;kaydetAktif();soru();}else soru();},250);});});
-    [].forEach.call(document.querySelectorAll('#mt-test .mt-noktalar button'),function(b){b.addEventListener('click',function(){aktif.i=+b.dataset.n;kaydetAktif();soru();});});
+    [].forEach.call(document.querySelectorAll('#mt-test .uf-nok button'),function(b){b.addEventListener('click',function(){aktif.i=+b.dataset.n;kaydetAktif();soru();});});
+    $('mt-kapat').addEventListener('click',function(){giris();window.scrollTo(0,0);});
     $('mt-geri').addEventListener('click',function(){if(aktif.i>0){aktif.i--;kaydetAktif();soru();}});
     var il=$('mt-ileri');if(il)il.addEventListener('click',function(){aktif.i++;kaydetAktif();soru();});
     var bt=$('mt-bitir');if(bt)bt.addEventListener('click',function(){var bos=aktif.cev.filter(function(x){return x===null;}).length;
@@ -145,28 +159,35 @@
     sonucGoster(gos,h,true);rozet();
   }
   function sonucGoster(r,h,yeni){
-    var S=SETLER[r.set],sv=seviye(r.d,r.sn),v=oku(),onceki=null;
+    var U=window.LEX_UFUK,S=SETLER[r.set],sv=seviye(r.d,r.sn),v=oku(),onceki=null,bugunH=haftaNo(),dd=U.hesap(v,bugunH);
     Object.keys(v).map(Number).filter(function(x){return x<h;}).sort(function(a,b){return b-a;}).slice(0,1).forEach(function(k){onceki=v[k];});
     var tip={};
     S.forEach(function(q,j){if(!tip[q.t])tip[q.t]=[0,0];tip[q.t][1]++;if(r.cev[j]===q.c)tip[q.t][0]++;});
     var en=null,zay=null;Object.keys(tip).forEach(function(t){if(!en||tip[t][0]>tip[en][0])en=t;if(!zay||tip[t][0]<tip[zay][0])zay=t;});
-    var o='<div class="mt-hero mt-seviye"><div class="e">'+sv.e+'</div><h2>'+sv.a+'</h2><div class="puan">'+r.d+' / '+NS+' doğru · '+sureYaz(r.sn)+'</div>';
-    if(r.rekor)o+='<span class="fark"><svg class="lx-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3.5 2.6 5.3 5.8.8-4.2 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.2-4.1 5.8-.8z"/></svg>Yeni rekor!</span>';
-    else if(r.enIyi&&r.enIyi!==r&&(r.enIyi.d>r.d||r.enIyi.sn<r.sn))o+='<span class="fark">Bugünkü en iyin: '+r.enIyi.d+'/'+NS+' · '+sureYaz(r.enIyi.sn)+'</span>';
-    else if(onceki){var f=r.d-onceki.d;o+='<span class="fark">'+(f>0?'Önceki testine göre +'+f+' doğru':f<0?'Önceki testine göre '+f+' doğru':'Önceki testinle aynı')+'</span>';}
-    o+='</div>';
-    o+='<button type="button" class="mt-btn" id="mt-paylas" style="margin-bottom:16px">Sonucumu paylaş</button>';
+    var alt=r.d===NS?NS+' levhanın hepsi doğru.':r.d*4>=NS*3?'İyi bir sonuç. Birkaç noktaya bakmak yeter.':r.d*2>NS?'Yarısından fazlası doğru. Yanlışlara birlikte göz atalım.':'Bu set zor geldi. Konuyu yeniden okumak iyi bir başlangıç.';
+    var fark='';
+    if(r.rekor)fark='Yeni rekor.';
+    else if(r.enIyi&&r.enIyi!==r&&(r.enIyi.d>r.d||r.enIyi.sn<r.sn))fark='Bugünkü en iyin: '+r.enIyi.d+'/'+NS+' · '+sureYaz(r.enIyi.sn);
+    else if(onceki){var f=r.d-onceki.d;fark=f>0?'Önceki testine göre +'+f+' doğru':f<0?'Önceki testine göre '+f+' doğru':'Önceki testinle aynı';}
+    var yanlis=[];S.forEach(function(q,j){if(r.cev[j]!==q.c)yanlis.push(j);});
+    var o='<div class="uf-sbas"><div><div class="uf-ust">'+(h===bugunH?'BUGÜNKÜ SET TAMAMLANDI':esc(gunAd(h).toUpperCase())+' · SET TAMAMLANDI')+'</div><h2>'+NS+' levhadan '+r.d+'\''+ek3(r.d)+' doğru</h2><p>'+alt+' Süre '+sureYaz(r.sn)+'.'+(fark?' '+esc(fark)+'.':'')+'</p></div>'+U.maskot(112,r.d===NS?'m-tam':(r.d*2>NS?'m-dogru':''))+'</div>';
+    o+='<div class="uf-yolk2">'+U.yolOzet(r.cev,S)+'</div>';
+    o+='<div class="uf-sat">'+U.seriKart(dd)+U.unvanKart(dd)+'</div>';
+    o+='<button type="button" class="uf-btn altin" id="mt-paylas" style="margin-bottom:14px">Sonucumu paylaş</button>';
+    if(yanlis.length){o+='<h3 class="uf-baslik">Yeniden bak</h3>'+yanlis.map(function(j){var q=S[j],c=r.cev[j],fig=q.t==='sekil';
+      return '<div class="uf-yk"><h4>Tabula '+U.rom(j+1)+' · '+esc(q.d||TIPAD[q.t])+'</h4><p class="s">'+esc(q.s)+'</p><p class="dg">'+(c===null?'Boş bıraktın. ':'Senin cevabın: <b style="color:#9B2C2C">'+'ABCDE'[c]+'</b>. ')+'Doğru cevap: <b>'+'ABCDE'[q.c]+'</b>'+(fig?'':' · '+esc(q.o[q.c]))+'</p><p class="ac">'+esc(q.a)+'</p>'+(q.k?'<span class="uf-kanun" data-k="'+esc(q.k)+'">Kaynak · '+esc(q.k)+'</span>':'')+'</div>';}).join('');}
     o+='<div class="mt-kart"><p class="mt-bas">Alanlara göre</p><div class="mt-tipsonuc">'+Object.keys(tip).map(function(t){return '<div><span>'+TIPAD[t]+'</span><i><u style="width:'+Math.round(tip[t][0]*100/tip[t][1])+'%"></u></i><b>'+tip[t][0]+'/'+tip[t][1]+'</b></div>';}).join('')+'</div>';
     o+='<p class="mt-yorum">'+(tip[en][0]===tip[zay][0]?'Bütün alanlarda dengelisin.':'En güçlü olduğun alan <b>'+TIPAD[en].toLowerCase()+'</b>, geliştirebileceğin alan <b>'+TIPAD[zay].toLowerCase()+'</b>.')+'</p></div>';
     o+='<div class="mt-kart mt-coz"><p class="mt-bas">Çözümler</p>'+S.map(function(q,j){var c=r.cev[j],ok=c===q.c,fig=q.t==='sekil';
       var ic='<p class="mt-soru" style="margin-top:10px">'+esc(q.s)+'</p>'+(q.g&&q.g.tip==='dizi'?diziHtml(q.g.h):(q.g?'<div class="mt-fig">'+figur(q.g)+'</div>':''))+
         '<div class="mt-sec'+(fig?' fig':'')+'">'+q.o.map(function(x,k){return '<button type="button" disabled class="'+(k===q.c?'dogru':(k===c?'yanlis':''))+'"><i>'+'ABCDE'[k]+'</i>'+(fig?secFig(q.g,x):'<span>'+esc(x)+'</span>')+'</button>';}).join('')+'</div><div class="acik"><svg class="lx-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 17.5h6M10 20.5h4"/><path d="M8.5 14.5a6 6 0 1 1 7 0c-.8.6-1.2 1.4-1.2 2.4v.6H9.7v-.6c0-1-.4-1.8-1.2-2.4z"/></svg>'+esc(q.a)+(q.k?'<small class="mt-kaynak" data-k="'+esc(q.k)+'"><svg class="lx-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6.5C10 5 7 4.5 3.5 5v13c3.5-.5 6.5 0 8.5 1.5 2-1.5 5-2 8.5-1.5V5c-3.5-.5-6.5 0-8.5 1.5z"/><path d="M12 6.5v13"/></svg>'+esc(q.k)+'</small>':'')+'</div>';
       return '<details><summary><em>'+(ok?'<svg class="lx-d ok" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8 12.3 2.7 2.7 5.5-5.5"/></svg>':(c===null?'<svg class="lx-d bos" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/></svg>':'<svg class="lx-d no" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/></svg>'))+'</em>'+(j+1)+'. '+esc(q.d||TIPAD[q.t])+'</summary>'+ic+'</details>';}).join('')+'</div>';
-    o+='<p class="pm-kucuk" style="text-align:center;margin:-4px 0 14px">Sorular eğitim amaçlıdır. Mevzuat değişebilir; esas olan yürürlükteki kanun metnidir.</p>';o+='<button type="button" class="mt-btn2" id="mt-don" style="margin-bottom:16px">‹ Sınav sayfasına dön</button>';
+    o+='<p class="pm-kucuk" style="text-align:center;margin:-4px 0 14px">Sorular eğitim amaçlıdır. Mevzuat değişebilir; esas olan yürürlükteki kanun metnidir.</p>';o+='<button type="button" class="uf-btn2" id="mt-don" style="margin-bottom:16px">‹ Sınav sayfasına dön</button>';
     $('mt-sonuc').innerHTML=o;$('mt-sonuc').hidden=false;$('mt-giris').hidden=true;$('mt-test').hidden=true;window.scrollTo(0,0);
     $('mt-don').addEventListener('click',giris);
-    if(window.LEX_MV_VAR)window.LEX_MV_VAR(function(set){[].forEach.call(document.querySelectorAll('#mt-sonuc .mt-kaynak[data-k]'),function(e){var m=/(\d{3,4}) sayılı[^\n]*? m\. ?(\d+)/.exec(e.dataset.k);if(!m||!set[m[1]])return;var b=document.createElement('button');b.type='button';b.className='mt-kaynak git';b.textContent=e.textContent+' · maddeyi aç ›';b.addEventListener('click',function(){window.LEX_MV_AC(m[1],m[2]);});e.replaceWith(b);});});
+    if(window.LEX_MV_VAR)window.LEX_MV_VAR(function(set){[].forEach.call(document.querySelectorAll('#mt-sonuc .mt-kaynak[data-k],#mt-sonuc .uf-kanun[data-k]'),function(e){var m=/(\d{3,4}) sayılı[^\n]*? m\. ?(\d+)/.exec(e.dataset.k);if(!m||!set[m[1]])return;var kn=e.classList.contains('uf-kanun'),b=document.createElement('button');b.type='button';b.className=kn?'uf-kanun git':'mt-kaynak git';b.textContent=kn?'Kanunda bak · '+e.dataset.k+' ›':e.textContent+' · maddeyi aç ›';b.addEventListener('click',function(){window.LEX_MV_AC(m[1],m[2]);});e.replaceWith(b);});});
     $('mt-paylas').addEventListener('click',function(){paylas(r,sv,h,tip);});
+    if(yeni)setTimeout(torenDene,1600);
   }
   // ---- paylasim karti ----
   function paylas(r,sv,h,tip){
@@ -190,6 +211,9 @@
       window.LEX_DOSYA(b,'lex-odak-sonucum.png','image/png',null,{baslik:'Lex Odak',yazi:metin+' '+url});
     },'image/png');
   }
+  /* oyun ilerlemesi eski gecmisten turetilir; ilk acilista unvan sessizce belirlenir */
+  window.LEX_UFUK.baslat(oku(),haftaNo());
+  ['mt-giris','mt-test','mt-sonuc'].forEach(function(i){$(i).classList.add('uf');});
   // devam eden test varsa geri yukle
   try{aktif=JSON.parse(localStorage.getItem(K+'-aktif')||'null');}catch(e){aktif=null;}
   if(aktif&&(aktif.h!==haftaNo()||kalan()<=0)){if(aktif.h===haftaNo())bitir();else{aktif=null;try{localStorage.removeItem(K+'-aktif');}catch(e){}}}

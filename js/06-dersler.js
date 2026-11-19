@@ -30,8 +30,7 @@
   function renkOf(ad){var h=0;for(var i=0;i<ad.length;i++)h=(h*31+ad.charCodeAt(i))>>>0;return PALET[h%PALET.length];}
   function rozet(o,kucuk){return '<i class="lex-roz'+(kucuk?' k':'')+(o.kisa.length>4?' u':'')+'" style="background:'+renkOf(o.ad)+'" aria-hidden="true">'+esc(o.kisa)+'</i>';}
   function norm(x){return String(x).toLocaleLowerCase('tr').replace(/[ıİ]/g,'i').replace(/ş/g,'s').replace(/ğ/g,'g').replace(/ü/g,'u').replace(/ö/g,'o').replace(/ç/g,'c').replace(/â/g,'a').replace(/î/g,'i').replace(/û/g,'u');}
-  var op=$('lex-ok-p'),okIlk=false,okSehirMod=false;
-  var ILLER='Adana,Adıyaman,Afyonkarahisar,Ağrı,Aksaray,Amasya,Ankara,Antalya,Ardahan,Artvin,Aydın,Balıkesir,Bartın,Batman,Bayburt,Bilecik,Bingöl,Bitlis,Bolu,Burdur,Bursa,Çanakkale,Çankırı,Çorum,Denizli,Diyarbakır,Düzce,Edirne,Elazığ,Erzincan,Erzurum,Eskişehir,Gaziantep,Giresun,Gümüşhane,Hakkari,Hatay,Iğdır,Isparta,İstanbul,İzmir,Kahramanmaraş,Karabük,Karaman,Kars,Kastamonu,Kayseri,Kilis,Kırıkkale,Kırklareli,Kırşehir,Kocaeli,Konya,Kütahya,Malatya,Manisa,Mardin,Mersin,Muğla,Muş,Nevşehir,Niğde,Ordu,Osmaniye,Rize,Sakarya,Samsun,Şanlıurfa,Siirt,Sinop,Şırnak,Sivas,Tekirdağ,Tokat,Trabzon,Tunceli,Uşak,Van,Yalova,Yozgat,Zonguldak'.split(',');
+  var op=$('lex-ok-p'),okIlk=false,okMod='sehir',okSehir='';
   window.LEX_OKUL=function(){var o=oku('lex-okul',null);return o&&o.ad?o:null;};
   var HK_OZEL={'İhsan Doğramacı Bilkent Üniversitesi':'Bilkent Hukuk','TOBB Ekonomi ve Teknoloji Üniversitesi':'TOBB ETÜ Hukuk','Bolu Abant İzzet Baysal Üniversitesi':'Abant İzzet Baysal Hukuk','Tekirdağ Namık Kemal Üniversitesi':'Namık Kemal Hukuk','Fatih Sultan Mehmet Vakıf Üniversitesi':'FSM Hukuk','Uluslararası Final Üniversitesi':'Final Hukuk','Uluslararası Kıbrıs Üniversitesi':'Kıbrıs Hukuk (UKÜ)'};
   window.LEX_HUKUK_AD=function(o){if(!o||!o.ad)return '';return HK_OZEL[o.ad]||(o.ad.replace(/\s+Üniversitesi$/,'')+' Hukuk');};
@@ -40,45 +39,60 @@
     if(o){h.className='lex-okul';h.innerHTML=rozet(o,true)+'<span>'+esc(window.LEX_HUKUK_AD(o))+'</span>';h.setAttribute('role','button');h.setAttribute('aria-label','Okulunu değiştir: '+o.ad);}
     else{h.className='';h.textContent='Cebindeki çalışma asistanın';h.removeAttribute('role');h.removeAttribute('aria-label');}
   }
-  function shListe(){
-    var q=norm($('lex-ok-ara').value.trim()),mev=oku('lex-sehir',''),o='',n=0;
-    ILLER.concat(['KKTC','Yurt dışı']).forEach(function(x){if(q&&norm(x).indexOf(q)<0)return;n++;
-      o+='<button type="button" class="lex-ok-s'+(mev===x?' on':'')+'" data-s="'+esc(x)+'" role="option"><span>'+esc(x)+'</span></button>';});
-    $('lex-ok-liste').innerHTML=o||'<p class="lex-bos">Bulunamadı.</p>';
-    $('lex-ok-say').textContent=q?n+' sonuç':'81 il';
-    [].forEach.call(document.querySelectorAll('#lex-ok-liste .lex-ok-s'),function(b){b.addEventListener('click',function(){shBitti(b.dataset.s);});});
+  var NOT_OKUL='Seçtiğin okul başlıkta görünür ve uygulamayı geliştirmek için yalnızca anonim olarak sayılır. Sonra değiştirebilirsin.';
+  function trSirala(a,b){return a.localeCompare(b,'tr');}
+  function sehirler(){var h={};OKULLAR.forEach(function(x){h[x.sehir]=(h[x.sehir]||0)+1;});return Object.keys(h).sort(trSirala).map(function(k){return {ad:k,n:h[k]};});}
+  function okulBtn(x,i,mev){return '<button type="button" class="lex-ok-s'+(mev&&mev.ad===x.ad?' on':'')+'" data-i="'+i+'" role="option">'+rozet(x)+'<span>'+esc(x.ad)+'<small>'+esc(x.sehir)+(x.tur&&x.tur!=='Devlet'?' · '+esc(x.tur):'')+'</small></span></button>';}
+  function ekBtn(tip,metin,alt){return '<button type="button" class="lex-ok-s lex-ok-ek" data-ek="'+tip+'" role="option"><span>'+esc(metin)+(alt?'<small>'+esc(alt)+'</small>':'')+'</span></button>';}
+  function kisaAd(ad){var k=ad.replace(/\s+(Üniversitesi|Universitesi|University)\b.*$/i,'').split(/\s+/).filter(Boolean).map(function(w){return w.charAt(0).toLocaleUpperCase('tr');}).join('').slice(0,4);return (k||'?')+'Ü';}
+  function okCiz(){
+    var ara=$('lex-ok-ara'),q=norm(ara.value.trim()),mev=window.LEX_OKUL(),o='',n=0;
+    ara.hidden=false;
+    if(okMod==='yaz'){
+      $('lex-ok-b').textContent='Okulunun adını yaz';$('lex-ok-not').textContent='Okulunu listeye eklememize yardım eder. Yalnızca okul adı anonim olarak sayılır.';
+      ara.placeholder='Örn. … Üniversitesi Hukuk Fakültesi';ara.setAttribute('aria-label','Okul adı');
+      o='<button type="button" class="lex-ok-kaydet" id="lex-ok-kaydet"'+(ara.value.trim().length<3?' disabled':'')+'>Kaydet</button>'+ekBtn('geri','‹ Listeye dön');
+      $('lex-ok-say').textContent='';
+    }else if(okMod==='okul'){
+      $('lex-ok-b').textContent=okSehir;$('lex-ok-not').textContent=NOT_OKUL;
+      ara.placeholder=okSehir+' içinde ara';ara.setAttribute('aria-label','Okul ara');
+      o+=ekBtn('sehirler','‹ Şehirler');
+      OKULLAR.forEach(function(x,i){if(x.sehir!==okSehir)return;if(q&&norm(x.ad+' '+x.kisa).indexOf(q)<0)return;n++;o+=okulBtn(x,i,mev);});
+      o+=ekBtn('yaz','Okulum listede yok','Adını yazabilirsin');
+      $('lex-ok-say').textContent=n+' fakülte';
+    }else{
+      $('lex-ok-b').textContent='Hangi şehirde okuyorsun?';$('lex-ok-not').textContent=NOT_OKUL;
+      ara.placeholder='Şehir ya da okul ara';ara.setAttribute('aria-label','Şehir ya da okul ara');
+      var sh=sehirler();
+      sh.forEach(function(x){if(q&&norm(x.ad).indexOf(q)<0)return;n++;o+='<button type="button" class="lex-ok-s" data-sh="'+esc(x.ad)+'" role="option"><span>'+esc(x.ad)+'<small>'+x.n+' fakülte</small></span><b class="lex-ok-ok" aria-hidden="true">›</b></button>';});
+      if(q){OKULLAR.forEach(function(x,i){if(norm(x.ad+' '+x.kisa).indexOf(q)<0)return;n++;o+=okulBtn(x,i,mev);});}
+      o+=ekBtn('yaz','Şehrim ya da okulum listede yok','Okulunun adını yazabilirsin');
+      $('lex-ok-say').textContent=q?n+' sonuç':sh.length+' şehir · '+OKULLAR.length+' fakülte';
+    }
+    $('lex-ok-liste').innerHTML=o;
+    [].forEach.call(document.querySelectorAll('#lex-ok-liste .lex-ok-s'),function(b){b.addEventListener('click',function(){
+      if(b.dataset.i!=null){var x=OKULLAR[+b.dataset.i];okBitti({ad:x.ad,kisa:x.kisa});return;}
+      if(b.dataset.sh){okSehir=b.dataset.sh;okMod='okul';ara.value='';okCiz();$('lex-ok-liste').scrollTop=0;return;}
+      var ek=b.dataset.ek;
+      if(ek==='sehirler'){okMod='sehir';okSehir='';ara.value='';okCiz();}
+      else if(ek==='yaz'){okMod='yaz';ara.value='';okCiz();try{ara.focus();}catch(e){}}
+      else if(ek==='geri'){okMod=okSehir?'okul':'sehir';ara.value='';okCiz();}
+    });});
+    var kb=$('lex-ok-kaydet');if(kb)kb.addEventListener('click',function(){var ad=ara.value.trim().replace(/\s+/g,' ').slice(0,80);if(ad.length<3)return;okBitti({ad:ad,kisa:kisaAd(ad),elle:true});});
+    $('lex-ok-atla').textContent=okIlk?'Şimdilik atla':(mev?'Okul seçimini kaldır':'Vazgeç');
   }
-  function shAc(){
-    okSehirMod=true;$('lex-ok-b').textContent='Hangi şehirdesin?';
-    $('lex-ok-not').textContent='İsteğe bağlı. Yalnızca hangi şehirlerden kullanıldığını anonim olarak görmek için; konumun alınmaz.';
-    $('lex-ok-ara').value='';$('lex-ok-ara').placeholder='Şehir ara';$('lex-ok-atla').textContent='Geç';shListe();
-    var l=$('lex-ok-liste');if(l)l.scrollTop=0;
-  }
-  function shSifirla(){
-    okSehirMod=false;$('lex-ok-b').textContent='Hangi fakültedesin?';
-    $('lex-ok-not').textContent='Seçtiğin okul başlıkta görünür ve uygulamayı geliştirmek için yalnızca anonim olarak sayılır. Sonra değiştirebilirsin.';
-    $('lex-ok-ara').placeholder='Okul ya da şehir ara';
-  }
-  function shBitti(x){
-    var eski=oku('lex-sehir','');if(x)yaz('lex-sehir',x);
-    okSehirMod=false;okBitti(null,x&&x!==eski);
-  }
-  function okListe(){
-    var q=norm($('lex-ok-ara').value.trim()),mev=window.LEX_OKUL(),o='',n=0;
-    OKULLAR.forEach(function(x,i){if(q&&norm(x.ad+' '+x.kisa+' '+x.sehir).indexOf(q)<0)return;n++;
-      o+='<button type="button" class="lex-ok-s'+(mev&&mev.ad===x.ad?' on':'')+'" data-i="'+i+'" role="option">'+rozet(x)+'<span>'+esc(x.ad)+'<small>'+esc(x.sehir)+(x.tur&&x.tur!=='Devlet'?' · '+esc(x.tur):'')+'</small></span></button>';});
-    $('lex-ok-liste').innerHTML=o||'<p class="lex-bos">Bulunamadı. Okulun listede yoksa aşağıdan atlayabilirsin.</p>';
-    $('lex-ok-say').textContent=q?n+' sonuç':OKULLAR.length+' fakülte';
-    [].forEach.call(document.querySelectorAll('#lex-ok-liste .lex-ok-s'),function(b){b.addEventListener('click',function(){var x=OKULLAR[+b.dataset.i];okBitti({ad:x.ad,kisa:x.kisa});});});
-  }
-  function okAc(ilkMi){OKSOZ.then(function(){shSifirla();okIlk=!!ilkMi;$('lex-ok-ara').value='';$('lex-ok-atla').textContent=ilkMi?'Listede yok / şimdilik atla':(window.LEX_OKUL()?'Okul seçimini kaldır':'Vazgeç');okListe();ac(op);});}
+  function okAc(ilkMi){OKSOZ.then(function(){okIlk=!!ilkMi;okMod='sehir';okSehir='';$('lex-ok-ara').value='';okCiz();ac(op);});}
   function okBitti(o,shDegisti){
     var eski=window.LEX_OKUL();yaz('lex-okul',o||{});okBaslik();kapat(op);
     if(((o&&o.ad)!==(eski&&eski.ad)||shDegisti)&&window.LEX_SAYAC_YENI)window.LEX_SAYAC_YENI();
     if(okIlk&&!oku('lex-dersler',null))setTimeout(function(){drAc(true);},320);
   }
-  $('lex-ok-ara').addEventListener('input',function(){if(okSehirMod)shListe();else okListe();});
-  $('lex-ok-atla').addEventListener('click',function(){if(okSehirMod){shBitti(null);return;}if(okIlk){shAc();return;}if(window.LEX_OKUL())okBitti(null);else kapat(op);});
+  $('lex-ok-ara').addEventListener('input',function(){if(okMod==='yaz'){var kb=$('lex-ok-kaydet');if(kb)kb.disabled=this.value.trim().length<3;}else okCiz();});
+  $('lex-ok-ara').addEventListener('keydown',function(e){if(e.key==='Enter'&&okMod==='yaz'){var kb=$('lex-ok-kaydet');if(kb&&!kb.disabled)kb.click();}});
+  $('lex-ok-atla').addEventListener('click',function(){
+    if(okIlk){var sh=okSehir,eskiSh=oku('lex-sehir','');if(sh)yaz('lex-sehir',sh);okBitti(null,!!sh&&sh!==eskiSh);return;}
+    if(window.LEX_OKUL())okBitti(null);else kapat(op);
+  });
   op.addEventListener('click',function(e){if(e.target===op&&!okIlk)kapat(op);});
   document.querySelector('.ust h1').addEventListener('click',function(e){if(e.target.closest('.lex-okul'))okAc(false);});
   okBaslik();

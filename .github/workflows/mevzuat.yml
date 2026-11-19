@@ -1,22 +1,30 @@
 # Lex Odak – mevzuat araçları
-# Şimdilik: mevzuat-arac/kanunlar.json'daki kanunların resmî PDF'lerini mevzuat.gov.tr'den indirir,
-# "mevzuat-kaynak" sürümüne mevzuat-pdf.zip olarak koyar (ayıklayıcı geliştirme ve doğrulama için).
+# Her gün: kanunlar.json'daki kanunların resmî PDF'lerini mevzuat.gov.tr'den indirir, ayikla.py ile ayrıştırıp
+# mevzuat/ ile karşılaştırır (guncelle.py). Değişiklik varsa 'mevzuat-guncelleme' dalına koyar ve issue açar;
+# yayına girmesi Mustafa'nın onayıyla (merge). Push'ta: PDF'ler 'mevzuat-kaynak' sürümüne zip olarak konur.
+# Commit mesajında [kontrol] varsa push'ta da kontrol çalışır.
 name: Mevzuat
 
 on:
   push:
     branches: [main]
     paths: ['mevzuat-arac/kanunlar.json', '.github/workflows/mevzuat.yml']
+  schedule:
+    - cron: '23 3 * * *'   # her gün 06:23 (Türkiye)
   workflow_dispatch:
 
 permissions:
   contents: write
+  issues: write
 
 jobs:
   pdf:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+      - name: Araçlar (poppler)
+        run: sudo apt-get install -y -qq poppler-utils >/dev/null && pdftohtml -v 2>&1 | head -1
+
       - name: Resmî PDF'leri indir
         run: |
           mkdir -p pdf
@@ -34,9 +42,41 @@ jobs:
           date -u +%Y-%m-%dT%H:%M:%SZ > pdf/indirme-zamani.txt
           cd pdf && zip -q -r ../mevzuat-pdf.zip . && cd .. && ls -la mevzuat-pdf.zip
       - uses: softprops/action-gh-release@v2
+        if: github.event_name == 'push'
         with:
           tag_name: mevzuat-kaynak
           name: Mevzuat kaynak PDF'leri (geliştirme)
           prerelease: true
           body: mevzuat.gov.tr resmî PDF'leri; yalnız ayıklayıcı geliştirme/doğrulama için.
           files: mevzuat-pdf.zip
+
+      - name: Değişiklik kontrolü (günlük)
+        if: github.event_name != 'push' || contains(github.event.head_commit.message, '[kontrol]')
+        id: kontrol
+        run: |
+          set +e
+          python3 mevzuat-arac/guncelle.py pdf rapor.md
+          kod=$?
+          set -e
+          echo "kod=$kod" >> $GITHUB_OUTPUT
+          [ "$kod" = "0" ] || [ "$kod" = "10" ]
+
+      - name: Değişiklikleri dala koy ve bildir
+        if: steps.kontrol.outputs.kod == '10'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          DAL=mevzuat-guncelleme
+          git config user.name "Lex Odak mevzuat botu"
+          git config user.email "actions@users.noreply.github.com"
+          if ! git diff --quiet -- mevzuat; then
+            v=$(grep -o "lex-odak-v[0-9]*" sw.js | head -1 | grep -o "[0-9]*$"); sed -i "s/lex-odak-v$v/lex-odak-v$((v+1))/" sw.js
+            git checkout -b $DAL
+            git add mevzuat sw.js
+            git commit -q -m "Mevzuat güncellemesi $(date -u +%Y-%m-%d) (otomatik; onay bekliyor)"
+            git push -f origin $DAL
+            echo "" >> rapor.md
+            echo "👉 İncele ve yayına al: https://github.com/${{ github.repository }}/compare/main...$DAL?expand=1 (Create pull request → Merge)" >> rapor.md
+          fi
+          NO=$(gh issue list --state open --search "Mevzuat güncellemesi in:title" --json number -q '.[0].number')
+          if [ -n "$NO" ]; then gh issue comment "$NO" --body-file rapor.md; else gh issue create --title "Mevzuat güncellemesi bekliyor" --body-file rapor.md; fi

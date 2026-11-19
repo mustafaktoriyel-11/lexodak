@@ -760,7 +760,9 @@ html.mf-gece #pm-koc{border-color:rgba(201,154,46,.35);box-shadow:0 10px 28px rg
 .lex-sel,.lex-in{width:100%;box-sizing:border-box}
 .lex-iki{display:flex;gap:10px}.lex-iki label{flex:1;display:flex;flex-direction:column;gap:7px;min-width:0}
 .lex-ekle{display:flex;gap:8px}.lex-ekle button{flex:none;border:0;border-radius:10px;background:#F7EBED;color:#762B37;font:inherit;font-size:15px;font-weight:700;padding:0 16px;cursor:pointer}
-#lex-sn-p .sheet-k,#lex-dr-p .sheet-k{max-height:92vh;overflow-y:auto}
+#lex-sn-p .sheet-k,#lex-dr-p .sheet-k{max-height:92vh;max-height:92dvh;overflow-y:auto;overscroll-behavior:contain}
+#lex-dr-p .pr-p-b,#lex-sn-p .pr-p-b{position:sticky;bottom:calc(-18px - env(safe-area-inset-bottom));z-index:2;background:#FDFCFC;margin:6px -18px calc(-18px - env(safe-area-inset-bottom));padding:10px 18px calc(12px + env(safe-area-inset-bottom));box-shadow:0 -6px 14px rgba(77,26,34,.08)}
+html.mf-gece #lex-dr-p .pr-p-b,html.mf-gece #lex-sn-p .pr-p-b{background:#392327;box-shadow:0 -6px 14px rgba(0,0,0,.25)}
 #lex-sn-sil,#lex-dr-vazgec{background:#F7EBED;color:#762B37;flex:.6}
 #lex-sn-kaydet,#lex-dr-kaydet{background:#762B37;color:#fff}
 #lex-sn-kaydet:disabled,#lex-dr-kaydet:disabled{opacity:.4}
@@ -3794,7 +3796,7 @@ function lexDersler(){
   function drAc(ilkMi){
     ilk=!!ilkMi;sec=lexDersler().slice();var t=tumu();ozel=sec.filter(function(x){return t.indexOf(x)<0;});
     if(ilk)sec=[];secSinif=ilk?null:(oku('lex-sinif',null)||sinifBul());
-    $('lex-dr-b').textContent=ilk?(window.LEX_OKUL()?'Kaçıncı sınıftasın?':'Hoş geldin! Kaçıncı sınıftasın?'):'Derslerim';$('lex-dr-vazgec').hidden=ilk;
+    $('lex-dr-b').textContent=ilk?(window.LEX_OKUL()?'Kaçıncı sınıftasın?':'Hoş geldin! Kaçıncı sınıftasın?'):'Derslerim';$('lex-dr-vazgec').hidden=false;$('lex-dr-vazgec').textContent=ilk?'Şimdilik atla':'Vazgeç';
     $('lex-dr-yeni').value='';$('lex-dr-hata').textContent='';drCiz();ac(dp);
   }
   $('lex-dr-ekle').addEventListener('click',function(){
@@ -3805,7 +3807,8 @@ function lexDersler(){
     $('lex-dr-hata').textContent=h;if(h)return;
     ozel.push(v);sec.push(v);$('lex-dr-yeni').value='';drCiz();
   });
-  $('lex-dr-vazgec').addEventListener('click',function(){kapat(dp);});
+  // ilk açılışta 'Şimdilik atla': tüm dersler (varsayılan liste) kaydedilir, sonra Derslerim'den değiştirilebilir
+  $('lex-dr-vazgec').addEventListener('click',function(){if(ilk){yaz('lex-dersler',LEX_SINIF.H.slice());location.reload();return;}kapat(dp);});
   $('lex-dr-kaydet').addEventListener('click',function(){
     if(!sec.length)return;
     var sira=tumu().concat(ozel).filter(function(x){return sec.indexOf(x)>=0;});

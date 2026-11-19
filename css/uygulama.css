@@ -1243,7 +1243,7 @@ html.mf-gece .pm-sifir.tut.basili{color:#E8C877}
   .tb-yan>*{margin:0!important}
   .tb-yan>#tb-hafta{flex:1;display:flex;flex-direction:column}
   .tb-yan>#tb-hafta .tb-hf{flex:1;display:flex;flex-direction:column}
-  .tb-yan>#tb-hafta .tb-cubuk{flex:1;min-height:120px;max-height:340px;height:auto;margin-top:auto}
+  .tb-yan>#tb-hafta .tb-hf{flex:1;display:flex;flex-direction:column;min-height:0}.tb-yan>#tb-hafta .tb-cubuk{flex:1 1 0;min-height:140px;height:auto;margin-top:8px;grid-template-rows:100%}.tb-yan>#tb-hafta .tb-cubuk i{height:max(3px,calc(var(--o,0)*(100% - 40px)))!important}
   #pg-sayac>.pm-rehber{grid-column:1;grid-row:3}
   #pg-sayac>details.kart{grid-column:2;grid-row:3}
   #pm-ders-c.kaydir:not(.tb-tum){max-height:84px;overflow:hidden}

@@ -18,6 +18,12 @@ concurrency:
 jobs:
   apk:
     runs-on: ubuntu-latest
+    env:
+      # Play yükleme anahtarı (GitHub > Settings > Secrets and variables > Actions). Yoksa AAB geçici deneme anahtarıyla imzalanır.
+      LEX_JKS_B64: ${{ secrets.LEX_UPLOAD_KEYSTORE_B64 }}
+      LEX_KS_SIFRE: ${{ secrets.LEX_UPLOAD_STORE_PASSWORD }}
+      LEX_KEY_ALIAS: ${{ secrets.LEX_UPLOAD_KEY_ALIAS }}
+      LEX_KEY_SIFRE: ${{ secrets.LEX_UPLOAD_KEY_PASSWORD }}
     steps:
       - uses: actions/checkout@v5
 
@@ -128,6 +134,32 @@ jobs:
           JAVA
           head -5 "$F"
 
+      - name: Sürüm numarası ve imza ayarı (build.gradle)
+        run: |
+          SURUM=$(grep -o "lex-odak-v[0-9]*" sw.js | head -1 | grep -o "[0-9]*$")
+          echo "LEX_SURUM_KODU=$((SURUM * 100 + GITHUB_RUN_ATTEMPT))" >> $GITHUB_ENV
+          echo "LEX_SURUM_ADI=1.0.$SURUM" >> $GITHUB_ENV
+          cat >> android/app/build.gradle <<'GRADLE'
+
+          // ---- Lex Odak: sürüm numarası ve Play yükleme imzası (CI ortam değişkenlerinden) ----
+          android {
+              defaultConfig {
+                  versionCode Integer.parseInt(System.getenv('LEX_SURUM_KODU') ?: '1')
+                  versionName System.getenv('LEX_SURUM_ADI') ?: '1.0'
+              }
+              signingConfigs {
+                  lexYukleme {
+                      storeFile file('yukleme.jks')
+                      storePassword System.getenv('LEX_KS_SIFRE')
+                      keyAlias System.getenv('LEX_KEY_ALIAS')
+                      keyPassword System.getenv('LEX_KEY_SIFRE')
+                  }
+              }
+              buildTypes { release { signingConfig signingConfigs.lexYukleme } }
+          }
+          GRADLE
+          tail -20 android/app/build.gradle
+
       - name: APK derle
         working-directory: android
         run: |
@@ -136,6 +168,30 @@ jobs:
           chmod +x gradlew
           ./gradlew assembleDebug --no-daemon
           cp app/build/outputs/apk/debug/app-debug.apk ../lex-odak-test.apk
+
+      - name: Yayın paketi (AAB, Play için)
+        working-directory: android
+        run: |
+          if [ -n "$LEX_JKS_B64" ]; then
+            echo "$LEX_JKS_B64" | base64 -d > app/yukleme.jks; echo "IMZA=play" >> $GITHUB_ENV
+          else
+            # deneme: gizli anahtar yok -> geçici anahtar (Play'e YÜKLENEMEZ, yalnız düzenek testi)
+            export LEX_KS_SIFRE=deneme123 LEX_KEY_ALIAS=deneme LEX_KEY_SIFRE=deneme123
+            echo "LEX_KS_SIFRE=deneme123" >> $GITHUB_ENV; echo "LEX_KEY_ALIAS=deneme" >> $GITHUB_ENV; echo "LEX_KEY_SIFRE=deneme123" >> $GITHUB_ENV
+            keytool -genkeypair -keystore app/yukleme.jks -storepass deneme123 -keypass deneme123 -alias deneme -keyalg RSA -keysize 2048 -validity 30 -dname "CN=Deneme" >/dev/null
+            echo "IMZA=deneme" >> $GITHUB_ENV
+          fi
+          # yayın adı: Lex Odak (test APK'sı 'Lex Odak Test' kalır)
+          sed -i 's#<string name="app_name">[^<]*</string>#<string name="app_name">Lex Odak</string>#; s#<string name="title_activity_main">[^<]*</string>#<string name="title_activity_main">Lex Odak</string>#' app/src/main/res/values/strings.xml
+          ./gradlew bundleRelease --no-daemon
+          cp app/build/outputs/bundle/release/app-release.aab ../lex-odak.aab
+          ls -la ../lex-odak.aab
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: lex-odak-aab-${{ env.IMZA }}
+          path: lex-odak.aab
+          retention-days: 30
 
       - name: Sürüme koy (android-test)
         uses: softprops/action-gh-release@v2

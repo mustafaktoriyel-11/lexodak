@@ -30,7 +30,8 @@
   function renkOf(ad){var h=0;for(var i=0;i<ad.length;i++)h=(h*31+ad.charCodeAt(i))>>>0;return PALET[h%PALET.length];}
   function rozet(o,kucuk){return '<i class="lex-roz'+(kucuk?' k':'')+(o.kisa.length>4?' u':'')+'" style="background:'+renkOf(o.ad)+'" aria-hidden="true">'+esc(o.kisa)+'</i>';}
   function norm(x){return String(x).toLocaleLowerCase('tr').replace(/[ıİ]/g,'i').replace(/ş/g,'s').replace(/ğ/g,'g').replace(/ü/g,'u').replace(/ö/g,'o').replace(/ç/g,'c').replace(/â/g,'a').replace(/î/g,'i').replace(/û/g,'u');}
-  var op=$('lex-ok-p'),okIlk=false;
+  var op=$('lex-ok-p'),okIlk=false,okSehirMod=false;
+  var ILLER='Adana,Adıyaman,Afyonkarahisar,Ağrı,Aksaray,Amasya,Ankara,Antalya,Ardahan,Artvin,Aydın,Balıkesir,Bartın,Batman,Bayburt,Bilecik,Bingöl,Bitlis,Bolu,Burdur,Bursa,Çanakkale,Çankırı,Çorum,Denizli,Diyarbakır,Düzce,Edirne,Elazığ,Erzincan,Erzurum,Eskişehir,Gaziantep,Giresun,Gümüşhane,Hakkari,Hatay,Iğdır,Isparta,İstanbul,İzmir,Kahramanmaraş,Karabük,Karaman,Kars,Kastamonu,Kayseri,Kilis,Kırıkkale,Kırklareli,Kırşehir,Kocaeli,Konya,Kütahya,Malatya,Manisa,Mardin,Mersin,Muğla,Muş,Nevşehir,Niğde,Ordu,Osmaniye,Rize,Sakarya,Samsun,Şanlıurfa,Siirt,Sinop,Şırnak,Sivas,Tekirdağ,Tokat,Trabzon,Tunceli,Uşak,Van,Yalova,Yozgat,Zonguldak'.split(',');
   window.LEX_OKUL=function(){var o=oku('lex-okul',null);return o&&o.ad?o:null;};
   var HK_OZEL={'İhsan Doğramacı Bilkent Üniversitesi':'Bilkent Hukuk','TOBB Ekonomi ve Teknoloji Üniversitesi':'TOBB ETÜ Hukuk','Bolu Abant İzzet Baysal Üniversitesi':'Abant İzzet Baysal Hukuk','Tekirdağ Namık Kemal Üniversitesi':'Namık Kemal Hukuk','Fatih Sultan Mehmet Vakıf Üniversitesi':'FSM Hukuk','Uluslararası Final Üniversitesi':'Final Hukuk','Uluslararası Kıbrıs Üniversitesi':'Kıbrıs Hukuk (UKÜ)'};
   window.LEX_HUKUK_AD=function(o){if(!o||!o.ad)return '';return HK_OZEL[o.ad]||(o.ad.replace(/\s+Üniversitesi$/,'')+' Hukuk');};
@@ -38,6 +39,29 @@
     var o=window.LEX_OKUL(),h=document.querySelector('.ust h1 small');if(!h)return;
     if(o){h.className='lex-okul';h.innerHTML=rozet(o,true)+'<span>'+esc(window.LEX_HUKUK_AD(o))+'</span>';h.setAttribute('role','button');h.setAttribute('aria-label','Okulunu değiştir: '+o.ad);}
     else{h.className='';h.textContent='Cebindeki çalışma asistanın';h.removeAttribute('role');h.removeAttribute('aria-label');}
+  }
+  function shListe(){
+    var q=norm($('lex-ok-ara').value.trim()),mev=oku('lex-sehir',''),o='',n=0;
+    ILLER.concat(['KKTC','Yurt dışı']).forEach(function(x){if(q&&norm(x).indexOf(q)<0)return;n++;
+      o+='<button type="button" class="lex-ok-s'+(mev===x?' on':'')+'" data-s="'+esc(x)+'" role="option"><span>'+esc(x)+'</span></button>';});
+    $('lex-ok-liste').innerHTML=o||'<p class="lex-bos">Bulunamadı.</p>';
+    $('lex-ok-say').textContent=q?n+' sonuç':'81 il';
+    [].forEach.call(document.querySelectorAll('#lex-ok-liste .lex-ok-s'),function(b){b.addEventListener('click',function(){shBitti(b.dataset.s);});});
+  }
+  function shAc(){
+    okSehirMod=true;$('lex-ok-b').textContent='Hangi şehirdesin?';
+    $('lex-ok-not').textContent='İsteğe bağlı. Yalnızca hangi şehirlerden kullanıldığını anonim olarak görmek için; konumun alınmaz.';
+    $('lex-ok-ara').value='';$('lex-ok-ara').placeholder='Şehir ara';$('lex-ok-atla').textContent='Geç';shListe();
+    var l=$('lex-ok-liste');if(l)l.scrollTop=0;
+  }
+  function shSifirla(){
+    okSehirMod=false;$('lex-ok-b').textContent='Hangi fakültedesin?';
+    $('lex-ok-not').textContent='Seçtiğin okul başlıkta görünür ve uygulamayı geliştirmek için yalnızca anonim olarak sayılır. Sonra değiştirebilirsin.';
+    $('lex-ok-ara').placeholder='Okul ya da şehir ara';
+  }
+  function shBitti(x){
+    var eski=oku('lex-sehir','');if(x)yaz('lex-sehir',x);
+    okSehirMod=false;okBitti(null,x&&x!==eski);
   }
   function okListe(){
     var q=norm($('lex-ok-ara').value.trim()),mev=window.LEX_OKUL(),o='',n=0;
@@ -47,14 +71,14 @@
     $('lex-ok-say').textContent=q?n+' sonuç':OKULLAR.length+' fakülte';
     [].forEach.call(document.querySelectorAll('#lex-ok-liste .lex-ok-s'),function(b){b.addEventListener('click',function(){var x=OKULLAR[+b.dataset.i];okBitti({ad:x.ad,kisa:x.kisa});});});
   }
-  function okAc(ilkMi){OKSOZ.then(function(){okIlk=!!ilkMi;$('lex-ok-ara').value='';$('lex-ok-atla').textContent=ilkMi?'Listede yok / şimdilik atla':(window.LEX_OKUL()?'Okul seçimini kaldır':'Vazgeç');okListe();ac(op);});}
-  function okBitti(o){
+  function okAc(ilkMi){OKSOZ.then(function(){shSifirla();okIlk=!!ilkMi;$('lex-ok-ara').value='';$('lex-ok-atla').textContent=ilkMi?'Listede yok / şimdilik atla':(window.LEX_OKUL()?'Okul seçimini kaldır':'Vazgeç');okListe();ac(op);});}
+  function okBitti(o,shDegisti){
     var eski=window.LEX_OKUL();yaz('lex-okul',o||{});okBaslik();kapat(op);
-    if((o&&o.ad)!==(eski&&eski.ad)&&window.LEX_SAYAC_YENI)window.LEX_SAYAC_YENI();
+    if(((o&&o.ad)!==(eski&&eski.ad)||shDegisti)&&window.LEX_SAYAC_YENI)window.LEX_SAYAC_YENI();
     if(okIlk&&!oku('lex-dersler',null))setTimeout(function(){drAc(true);},320);
   }
-  $('lex-ok-ara').addEventListener('input',okListe);
-  $('lex-ok-atla').addEventListener('click',function(){if(okIlk||window.LEX_OKUL())okBitti(null);else kapat(op);});
+  $('lex-ok-ara').addEventListener('input',function(){if(okSehirMod)shListe();else okListe();});
+  $('lex-ok-atla').addEventListener('click',function(){if(okSehirMod){shBitti(null);return;}if(okIlk){shAc();return;}if(window.LEX_OKUL())okBitti(null);else kapat(op);});
   op.addEventListener('click',function(e){if(e.target===op&&!okIlk)kapat(op);});
   document.querySelector('.ust h1').addEventListener('click',function(e){if(e.target.closest('.lex-okul'))okAc(false);});
   okBaslik();

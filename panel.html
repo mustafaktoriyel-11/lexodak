@@ -98,7 +98,7 @@ pre{background:var(--kart);border:1px solid var(--cizgi);border-radius:10px;padd
     <div class="bas"><h2>Şehirler</h2><span class="alt" id="sehirSay"></span></div>
     <div id="sehirler"></div>
     <div class="satirbtn"><button class="btn ikincil gizli" id="tumuSehir" type="button">Tümünü göster</button></div>
-    <p class="alt" style="margin:8px 0 0">Konum toplanmaz; şehir, seçilen okulun bulunduğu şehirden çıkarılır. Okul seçmeyenler “Okul seçilmemiş” olarak görünür.</p>
+    <p class="alt" style="margin:8px 0 0">Konum toplanmaz; şehir, seçilen okulun şehrinden ya da okul seçmeyenin isteğe bağlı seçtiği şehirden gelir. İkisini de seçmeyenler “Belirtilmemiş”.</p>
   </div>
   <div class="kart"><h2>Platform</h2><div id="platform"></div></div>
   <div class="kart"><h2>Açılış biçimi</h2><div id="mod"></div></div>
@@ -231,7 +231,8 @@ function grafik(){
 }
 function okulListe(){
   var q=$('ara').value.toLocaleLowerCase('tr-TR').trim();
-  var hepsi=veri.okullar||[];
+  var hepsi=[],shSay=0;(veri.okullar||[]).forEach(function(o){if(o.ad.indexOf('Şehir: ')===0)shSay+=o.kisi;else hepsi.push(o)});
+  if(shSay){var se=hepsi.filter(function(o){return o.ad==='Seçilmemiş'})[0];if(se)se={ad:'Seçilmemiş',kisi:se.kisi+shSay};hepsi=hepsi.filter(function(o){return o.ad!=='Seçilmemiş'});hepsi.push(se||{ad:'Seçilmemiş',kisi:shSay});hepsi.sort(function(x,y){return y.kisi-x.kisi});}
   var l=hepsi.filter(function(o){return !q||o.ad.toLocaleLowerCase('tr-TR').indexOf(q)>-1});
   var goster=(tumOkul||q)?l:l.slice(0,15);
   var mx=hepsi.length?hepsi[0].kisi:1;
@@ -249,11 +250,11 @@ function sehirListe(){
   if(!OKUL_SEHIR){kap.appendChild(e('p','alt','Yükleniyor…'));return;}
   var h={};
   (veri.okullar||[]).forEach(function(o){
-    var ad=o.ad==='Seçilmemiş'?'Okul seçilmemiş':(OKUL_SEHIR[o.ad]||'Bilinmeyen şehir');
+    var ad=o.ad.indexOf('Şehir: ')===0?o.ad.slice(7):(o.ad==='Seçilmemiş'?'Belirtilmemiş':(OKUL_SEHIR[o.ad]||'Bilinmeyen şehir'));
     h[ad]=(h[ad]||0)+o.kisi;
   });
   var l=Object.keys(h).map(function(a){return {ad:a,kisi:h[a]}}).sort(function(a,b){return b.kisi-a.kisi});
-  var sehirSay=l.filter(function(x){return x.ad!=='Okul seçilmemiş'&&x.ad!=='Bilinmeyen şehir'}).length;
+  var sehirSay=l.filter(function(x){return x.ad!=='Belirtilmemiş'&&x.ad!=='Bilinmeyen şehir'}).length;
   $('sehirSay').textContent=sayi(sehirSay)+' şehir';
   var mx=l.length?l[0].kisi:1,goster=tumSehir?l:l.slice(0,12);
   if(!l.length)kap.appendChild(e('p','alt','Veri yok.'));
@@ -283,7 +284,7 @@ function ornekVeri(){
     if(havuz.length<40)havuz=yedek.concat(havuz);
     var sec=[];while(sec.length<40&&havuz.length){sec.push(havuz.splice(Math.floor(R()*havuz.length),1)[0])}
     var okullar=sec.map(function(ad,i){return {ad:ad,kisi:Math.max(1,Math.round(180*Math.pow(.88,i)*(0.6+R()*.8)))}});
-    okullar.push({ad:'Seçilmemiş',kisi:210});
+    okullar.push({ad:'Seçilmemiş',kisi:150});okullar.push({ad:'Şehir: Bursa',kisi:34});okullar.push({ad:'Şehir: Ankara',kisi:26});
     okullar.sort(function(a,b){return b.kisi-a.kisi});
     var bugun=new Date(),gunler=[],toplam=320;
     for(var i=89;i>=0;i--){

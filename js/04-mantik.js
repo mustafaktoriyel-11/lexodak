@@ -623,7 +623,7 @@
   if(typeof SAYAC_URL==='string'&&SAYAC_URL){
     var sayac=function(mod){
       var cid='';try{cid=localStorage.getItem('mf-cihaz')||'';if(!cid){cid='L-'+Math.random().toString(36).slice(2,8).toUpperCase();localStorage.setItem('mf-cihaz',cid);}}catch(e){return;}
-      var ok=null;try{ok=JSON.parse(localStorage.getItem('lex-okul')||'null');}catch(e){}var okAd=ok&&ok.ad?String(ok.ad).slice(0,80):'';
+      var ok=null;try{ok=JSON.parse(localStorage.getItem('lex-okul')||'null');}catch(e){}var okAd=ok&&ok.ad?String(ok.ad).slice(0,80):'';if(!okAd){var shr='';try{shr=JSON.parse(localStorage.getItem('lex-sehir')||'""');}catch(e){}if(shr)okAd=('Şehir: '+shr).slice(0,80);}
       var d=new Date(),gun=d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(),anahtar=gun+'|'+mod+'|'+okAd;
       try{if(localStorage.getItem('mf-sayac')===anahtar)return;}catch(e){}
       if(!navigator.onLine)return;

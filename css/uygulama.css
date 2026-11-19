@@ -1707,3 +1707,4 @@ body.s-mevzuat .mv-bayrak::after{animation:mvParla 5s ease-in-out 1}
 .kt-ipucu{position:absolute;left:50%;top:calc(70px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:20;max-width:min(92vw,460px);background:#FDFCFC;color:#351E22;border-radius:14px;padding:10px 34px 10px 14px;font-size:14px;line-height:1.35;box-shadow:0 8px 26px rgba(0,0,0,.28)}
 .kt-ipucu small{opacity:.7}.kt-ipucu button{position:absolute;right:6px;top:6px;border:0;background:none;font-size:20px;line-height:1;color:inherit;padding:2px 6px}
 .sb-bildir{display:block;margin:14px 4px 24px;text-align:center;font-size:13.5px;color:#7A2E3B;text-decoration:underline;text-underline-offset:3px}html.mf-gece .sb-bildir{color:#E6B9C1}
+.lex-ok-not{margin:-2px 2px 10px;font-size:13px;line-height:1.4;color:var(--soluk,#6B5A5D)}

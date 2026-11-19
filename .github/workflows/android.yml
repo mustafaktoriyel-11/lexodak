@@ -68,16 +68,54 @@ jobs:
           mkdir -p $R/drawable-nodpi $R/drawable $R/mipmap-anydpi-v26
           cp icon-maskable-512.png $R/drawable-nodpi/lex_ikon_tam.png
           printf '%s\n' '<?xml version="1.0" encoding="utf-8"?>' \
-            '<inset xmlns:android="http://schemas.android.com/apk/res/android" android:drawable="@drawable/lex_ikon_tam" android:inset="18dp"/>' \
+            '<inset xmlns:android="http://schemas.android.com/apk/res/android" android:drawable="@drawable/lex_ikon_tam" android:inset="9dp"/>' \
             > $R/drawable/lex_ikon_on.xml
+          printf '%s\n' '<?xml version="1.0" encoding="utf-8"?>' \
+            '<shape xmlns:android="http://schemas.android.com/apk/res/android"><gradient android:angle="270" android:startColor="#902739" android:endColor="#4D1A22"/></shape>' \
+            > $R/drawable/lex_ikon_zemin.xml
           for f in ic_launcher ic_launcher_round; do
             printf '%s\n' '<?xml version="1.0" encoding="utf-8"?>' \
               '<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">' \
-              '  <background android:drawable="@android:color/black"/>' \
+              '  <background android:drawable="@drawable/lex_ikon_zemin"/>' \
               '  <foreground android:drawable="@drawable/lex_ikon_on"/>' \
               '</adaptive-icon>' > $R/mipmap-anydpi-v26/$f.xml
           done
           cat $R/mipmap-anydpi-v26/ic_launcher.xml
+
+      - name: Sistem çubukları (MainActivity)
+        run: |
+          F=$(find android/app/src/main/java -name MainActivity.java)
+          cat > "$F" <<'JAVA'
+          package com.lexodak.app;
+
+          import android.graphics.Color;
+          import android.os.Bundle;
+          import android.view.View;
+          import androidx.core.graphics.Insets;
+          import androidx.core.view.ViewCompat;
+          import androidx.core.view.WindowInsetsCompat;
+          import com.getcapacitor.BridgeActivity;
+
+          // Web görünümü durum çubuğu, görev çubuğu ve klavyenin arasında kalır (Chrome'daki PWA gibi)
+          public class MainActivity extends BridgeActivity {
+              @Override
+              public void onCreate(Bundle savedInstanceState) {
+                  super.onCreate(savedInstanceState);
+                  View web = getBridge().getWebView();
+                  View kap = (View) web.getParent();
+                  kap.setBackgroundColor(Color.parseColor("#281619"));
+                  ViewCompat.setOnApplyWindowInsetsListener(kap, (v, ins) -> {
+                      Insets i = ins.getInsets(WindowInsetsCompat.Type.systemBars()
+                              | WindowInsetsCompat.Type.displayCutout()
+                              | WindowInsetsCompat.Type.ime());
+                      v.setPadding(i.left, i.top, i.right, i.bottom);
+                      return WindowInsetsCompat.CONSUMED;
+                  });
+                  ViewCompat.requestApplyInsets(kap);
+              }
+          }
+          JAVA
+          head -5 "$F"
 
       - name: APK derle
         working-directory: android

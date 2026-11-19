@@ -11,6 +11,11 @@
   var yan=document.createElement('div');yan.className='tb-yan';sayfa.insertBefore(yan,k);
   yan.appendChild(k);yan.appendChild(hk);
   /* günlük test (Hukukçunun Ufku) kısa kartı: sağ sütundaki boşluğu anlamlı doldurur */
+  /* günün hukuk sözü: yalnız tablet/masaüstü (telefonda gizli) */
+  var sk=document.createElement('section');sk.className='kart tb-soz';sk.id='tb-soz';sk.hidden=true;yan.appendChild(sk);
+  if(window.LEX_VERI)window.LEX_VERI('sozler').then(function(L){if(!L||!L.length)return;
+    var d=new Date(),n=Math.floor((Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()))/864e5),x=L[n%L.length];
+    sk.innerHTML='<span class="tb-soz-u">Günün sözü</span><b lang="la">'+esc(x.l)+'</b><span class="tb-soz-t">'+esc(x.t)+'</span>'+(x.a?'<small>'+esc(x.a)+'</small>':'');sk.hidden=false;},function(){});
   var uk=document.createElement('section');uk.className='kart tb-ufuk';uk.id='tb-ufuk';yan.insertBefore(uk,hk);
   function ufukYaz(){
     var U=window.LEX_UFUK,nm=document.getElementById('nav-mantik'),tamam=!!(nm&&/✓/.test(nm.textContent));

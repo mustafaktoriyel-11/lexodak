@@ -3866,6 +3866,65 @@ function lexDersler(){
 })();
 </script>
 <script>
+// ================= İÇERİK (orta yol) =================
+// Web'de içerik dosyaları service worker ile gelir. Android uygulamasında (Capacitor) uygulamanın içinden gelir;
+// lexodak.com'da daha yenisi varsa indirilir, doğrulanır (biçim + dizindeki özet) ve 'lex-icerik' önbelleğinde tutulur.
+// Uygulama yeni bir sürümle güncellenince önbellek sıfırlanır (içteki daha yeni içerik geride kalmasın).
+(function(){
+  var CAP=!!window.Capacitor,UZAK='https://lexodak.com/',ONB='lex-icerik-1',PK='lex-icerik-paket',ZK='lex-icerik-zaman';
+  function yerel(u){return fetch(u).then(function(r){if(!r.ok)throw 0;return r.json();});}
+  function yerelMetin(u){return fetch(u).then(function(r){if(!r.ok)throw 0;return r.text();});}
+  function kullan(){return CAP&&window.caches&&window.crypto&&crypto.subtle;}
+  function onbellekten(u){if(!kullan())return Promise.reject(0);return caches.open(ONB).then(function(c){return c.match(u);}).then(function(r){if(!r)throw 0;return r.json();});}
+  window.LEX_ICERIK=function(u){return onbellekten(u).catch(function(){return yerel(u);});};
+  function gecerli(u,j){
+    if(!j||typeof j!=='object')return false;
+    if(/mevzuat\/index\.json$/.test(u))return Array.isArray(j.index)&&j.index.length>0&&j.index.every(function(k){return k&&k.no&&k.h&&k.ad;});
+    if(/mevzuat\/\d+\.json$/.test(u))return Array.isArray(j.maddeler)&&j.maddeler.length>0&&j.maddeler.every(function(m){return m&&m.n!=null&&typeof m.m==='string';});
+    if(/(testler|klasik)\.json$/.test(u))return Array.isArray(j.dersler)&&j.dersler.length>0;
+    return false;
+  }
+  function ozet(t){return crypto.subtle.digest('SHA-1',new TextEncoder().encode(t)).then(function(b){return Array.prototype.map.call(new Uint8Array(b),function(x){return ('0'+x.toString(16)).slice(-2);}).join('');});}
+  function uzak(u){return fetch(UZAK+u,{cache:'no-cache'}).then(function(r){if(!r.ok)throw 0;return r.text();}).then(function(t){if(!gecerli(u,JSON.parse(t)))throw 0;return t;});}
+  function koy(c,u,t){return c.put(u,new Response(t,{headers:{'Content-Type':'application/json'}}));}
+  async function guncelle(){
+    var c=await caches.open(ONB);
+    var paket=await yerel('mevzuat/index.json');
+    // uygulama güncellendiyse eski indirilenler silinir
+    try{if(localStorage.getItem(PK)!==paket.surum){await caches.delete(ONB);c=await caches.open(ONB);localStorage.setItem(PK,paket.surum);}}catch(e){}
+    // mevzuat: yalnız özeti değişen kanunlar iner; hepsi sağlam inmeden dizin değişmez
+    var simdi=await onbellekten('mevzuat/index.json').catch(function(){return paket;});
+    var ut=await uzak('mevzuat/index.json'),uz=JSON.parse(ut);
+    if(uz.surum!==simdi.surum){
+      var H={};simdi.index.forEach(function(k){H[k.no]=k.h;});
+      for(var i=0;i<uz.index.length;i++){
+        var k=uz.index[i];if(H[k.no]===k.h)continue;
+        var t=await uzak('mevzuat/'+k.no+'.json');
+        if((await ozet(t)).slice(0,8)!==k.h)throw new Error('özet tutmadı: '+k.no);
+        await koy(c,'mevzuat/'+k.no+'.json',t);
+      }
+      await koy(c,'mevzuat/index.json',ut);
+    }
+    // ders testleri ve klasik sınavlar: tek dosya, içerik farklıysa
+    var D=['testler.json','klasik.json'];
+    for(var j=0;j<D.length;j++){
+      try{
+        var r=await c.match(D[j]),eski=r?await r.text():await yerelMetin(D[j]),yeni=await uzak(D[j]);
+        if(yeni!==eski)await koy(c,D[j],yeni);
+      }catch(e){}
+    }
+    try{localStorage.setItem(ZK,String(Date.now()));}catch(e){}
+  }
+  if(kullan()){
+    addEventListener('load',function(){setTimeout(function(){
+      var son=0;try{son=+localStorage.getItem(ZK)||0;}catch(e){}
+      if(!navigator.onLine||Date.now()-son<6*3600*1000)return;
+      guncelle().catch(function(){});
+    },8000);});
+  }
+})();
+</script>
+<script>
 // ================= MEVZUAT =================
 (function(){
   var $=function(id){return document.getElementById(id);};
@@ -3878,7 +3937,7 @@ function lexDersler(){
   function sorgu(q){return norm(q).split(/\s+/).filter(function(w){return w.length>=2;}).map(function(w){
     var v=[w],s=w.slice(-1);if(w.length>=4&&YUM[s]&&YUM[s]!==s)v.push(w.slice(0,-1)+YUM[s]);if(w.length>=5&&s==='k')v.push(w.slice(0,-1));return v;});}
   function eslesir(t,S){for(var i=0;i<S.length;i++){var ok=false;for(var j=0;j<S[i].length;j++)if(t.indexOf(S[i][j])>=0){ok=true;break;}if(!ok)return false;}return S.length>0;}
-  function al(u){return fetch(u).then(function(r){if(!r.ok)throw 0;return r.json();});}
+  function al(u){return window.LEX_ICERIK?LEX_ICERIK(u):fetch(u).then(function(r){if(!r.ok)throw 0;return r.json();});}
   var IDX=null,KAN={},KSOZ={},BSLK={},idxSoz=null,hepSoz=null,akt=null,goster=[],bas=0,sinir=0,PARCA=40,filtreli=false;
   // kanunlar kanun başına ayrı dosyada (mevzuat/<no>.json) + küçük bir dizin (mevzuat/index.json);
   // bir kanun/madde açmak için yalnız dizin + o kanun iner. Hepsi arka planda sessizce önbelleğe alınır (internetsiz açılsın diye).
@@ -4173,10 +4232,10 @@ function lexDersler(){
   var TUR={bilgi:'Bilgi',olay:'Olay',sure:'Süre'},NT=10;
   var K='lex-ders-test',AK='lex-dt-aktif',VERI=null,soz=null,aktif=oku(AK,null),mod=null,acik=null;
   function veri(){if(VERI)return Promise.resolve(VERI);if(soz)return soz;
-    soz=fetch('testler.json').then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(j){VERI={};(j.dersler||[]).forEach(function(d){VERI[d.kod]=d.sorular||[];});return VERI;}).catch(function(){soz=null;return {};});return soz;}
+    soz=(window.LEX_ICERIK?LEX_ICERIK('testler.json'):fetch('testler.json').then(function(r){if(!r.ok)throw 0;return r.json();})).then(function(j){VERI={};(j.dersler||[]).forEach(function(d){VERI[d.kod]=d.sorular||[];});return VERI;}).catch(function(){soz=null;return {};});return soz;}
   var KSV=null,ksSoz=null,KSK='lex-klasik';
   function ksVeri(){if(KSV)return Promise.resolve(KSV);if(ksSoz)return ksSoz;
-    ksSoz=fetch('klasik.json').then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(j){KSV={};(j.dersler||[]).forEach(function(d){KSV[d.kod]=d.sinavlar||[];});return KSV;}).catch(function(){ksSoz=null;return {};});return ksSoz;}
+    ksSoz=(window.LEX_ICERIK?LEX_ICERIK('klasik.json'):fetch('klasik.json').then(function(r){if(!r.ok)throw 0;return r.json();})).then(function(j){KSV={};(j.dersler||[]).forEach(function(d){KSV[d.kod]=d.sinavlar||[];});return KSV;}).catch(function(){ksSoz=null;return {};});return ksSoz;}
   function par(x){return String(x).split(/\n{2,}/).map(function(p){return '<p>'+esc(p).replace(/\n/g,'<br>')+'</p>';}).join('');}
   function mdBtn(ks){return (ks||[]).map(function(k){var m=/^(\d{4}) sayılı (.+?) m\. ?(.+)$/.exec(k);if(!m)return '';return '<button type="button" class="ks-md" data-no="'+m[1]+'" data-n="'+esc(m[3])+'"><svg class="lx-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6.5C10 5 7 4.5 3.5 5v13c3.5-.5 6.5 0 8.5 1.5 2-1.5 5-2 8.5-1.5V5c-3.5-.5-6.5 0-8.5 1.5z"/><path d="M12 6.5v13"/></svg>'+esc(m[2])+' m. '+esc(m[3])+' ›</button>';}).join('');}
   var TURAD={vize:'Vize',final:'Final'};

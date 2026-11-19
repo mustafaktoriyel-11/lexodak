@@ -1,5 +1,5 @@
 // Lex Odak - service worker
-var SURUM = 'lex-odak-v125';
+var SURUM = 'lex-odak-v126';
 var MEVZUAT = 'lex-mevzuat-3';
 var MEVZUAT_ESKI = 'lex-mevzuat-2';  // tek dosyalı eski mevzuat.json önbelleği; kanun dosyaları tamamen inene dek silinmez (aşağıda 'message')
 var OCR = 'lex-ocr-1';  // taranmış PDF okuma motoru (jsdelivr), bir kez iner  // kanun metinleri sürüm değişse de silinmez

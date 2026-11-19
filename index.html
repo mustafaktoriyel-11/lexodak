@@ -754,6 +754,7 @@ html.mf-gece #pm-koc{border-color:rgba(201,154,46,.35);box-shadow:0 10px 28px rg
 .lex-or{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #F3EAEB;font-size:14.5px;color:#351E22}
 .lex-or small{display:block;color:#625356;font-size:12px;margin-top:2px}
 .lex-or b{font-size:18px;color:#762B37}
+#bld-ic[hidden],#bld-saat-k[hidden]{display:none!important}
 .lex-agr{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:13px;font-weight:600;color:#555}
 .lex-agr select,.lex-sel,.lex-in{border:1px solid #E8D6D9;border-radius:10px;padding:10px;font:inherit;font-size:16px;background:#fff;color:#222}
 .lex-sel,.lex-in{width:100%;box-sizing:border-box}
@@ -2064,6 +2065,19 @@ setTimeout(kapat,max);})();</script>
 <div id="lex-sn-liste"></div>
 <button type="button" class="pr-ekle" id="lex-sn-ekle">+ Sınav ekle</button>
 </div>
+<div class="kart" id="bld-kart" hidden>
+<div class="pr-ust"><b class="pr-bas"><svg class="lx-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></svg>Bildirimler</b></div>
+<div class="pm-ayar" style="display:flex;flex-direction:column;gap:12px;margin-top:12px">
+<label class="pm-anahtar"><input type="checkbox" id="bld-ana" role="switch"><span class="ray" aria-hidden="true"></span><b>Hatırlatmaları aç</b></label>
+<div id="bld-ic" hidden style="display:flex;flex-direction:column;gap:12px">
+<label class="pm-anahtar"><input type="checkbox" id="bld-gun" role="switch"><span class="ray" aria-hidden="true"></span><b>Günlük hatırlatma</b></label>
+<label class="lex-agr" id="bld-saat-k" hidden style="flex-direction:row;align-items:center;justify-content:space-between;margin:0">Hatırlatma saati<input type="time" class="lex-in" id="bld-saat" value="20:00" style="width:auto;padding:8px 10px"></label>
+<label class="pm-anahtar"><input type="checkbox" id="bld-sin" role="switch"><span class="ray" aria-hidden="true"></span><b>Sınav hatırlatmaları (3 gün ve 1 gün önce)</b></label>
+<label class="pm-anahtar"><input type="checkbox" id="bld-prg" role="switch"><span class="ray" aria-hidden="true"></span><b>Program hatırlatması</b></label>
+</div></div>
+<p class="pm-kucuk" id="bld-mesaj" role="status" aria-live="polite" style="margin-top:8px"></p>
+<p class="pm-kucuk">Bildirimler telefonunda planlanır; hiçbir veri gönderilmez.</p>
+</div>
 <div class="kart" id="lex-ort-k" hidden>
 <div class="pr-ust"><b class="pr-bas"><svg class="lx-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h16"/><rect x="5.5" y="12" width="3" height="6" rx=".6"/><rect x="10.5" y="7" width="3" height="11" rx=".6"/><rect x="15.5" y="10" width="3" height="8" rx=".6"/></svg>Ders ortalamalarım</b></div>
 <div id="lex-ort-liste"></div>
@@ -2314,7 +2328,7 @@ function lexDersler(){
     var k=oku(KAYIT_K,{}),g=gun(Date.now());
     if(!k[g])k[g]={dk:0,p:0,d:{}};
     k[g].dk+=dk;if(tam)k[g].p+=1;k[g].d[ders]=(k[g].d[ders]||0)+dk;
-    yaz(KAYIT_K,k);istatistik();if(window.MF_PR)window.MF_PR();
+    yaz(KAYIT_K,k);istatistik();if(window.MF_PR)window.MF_PR();if(window.LEX_BILDIRIM_CALISTI)window.LEX_BILDIRIM_CALISTI();
     var kk={tarih:new Date().toISOString(),ders:ders,dk:Math.round(dk*10)/10,tam:!!tam,notsuz:!!dnm};if(window.MF_KOC)window.MF_KOC(kk);else(window.MF_KOC_ON=window.MF_KOC_ON||[]).push(kk);
   }
   var ARALIK='bugun';
@@ -2886,7 +2900,7 @@ function lexDersler(){
   (function(){
     var PR_K='mf-program',GUNLER=['Pazartesi','Salı','Çarşamba','Perşembe','Cuma','Cumartesi','Pazar'],GK=['Pzt','Sal','Çar','Per','Cum','Cmt','Paz'];
     var pr=oku(PR_K,null);if(!pr||!pr.g)pr={g:[[],[],[],[],[],[],[]]};
-    function prYaz(){yaz(PR_K,pr);}
+    function prYaz(){yaz(PR_K,pr);if(window.LEX_BILDIRIM_YENILE)window.LEX_BILDIRIM_YENILE();}
     window.MF_PR_SABLON=function(g){pr.g=g;prYaz();secGun=bugunI();ciz2();};window.MF_PR_VAR=function(){return pr.g.some(function(x){return x.length;});};
     function bugunI(){return (new Date().getDay()+6)%7;}
     var secGun=bugunI(),gunZip=false;
@@ -3857,9 +3871,9 @@ function lexDersler(){
     if(!/^\d{4}-\d{2}-\d{2}$/.test(t)){$('lex-sn-hata').textContent='Sınav tarihini seç.';return;}
     if(n!==null&&(isNaN(n)||n<0||n>100)){$('lex-sn-hata').textContent='Not 0 ile 100 arasında olmalı.';return;}
     var l=liste(),k={id:sDuz||Date.now(),ders:sTur==='HMGS'?'':$('lex-sn-ders').value,tur:sTur,tarih:t,not:n};
-    l=l.filter(function(x){return x.id!==k.id;});l.push(k);yaz(SN_K,l.slice(-200));kapat(sp);snCiz();
+    l=l.filter(function(x){return x.id!==k.id;});l.push(k);yaz(SN_K,l.slice(-200));kapat(sp);snCiz();if(window.LEX_BILDIRIM_YENILE)window.LEX_BILDIRIM_YENILE();
   });
-  $('lex-sn-sil').addEventListener('click',function(){if(sDuz===null)return;yaz(SN_K,liste().filter(function(x){return x.id!==sDuz;}));kapat(sp);snCiz();});
+  $('lex-sn-sil').addEventListener('click',function(){if(sDuz===null)return;yaz(SN_K,liste().filter(function(x){return x.id!==sDuz;}));kapat(sp);snCiz();if(window.LEX_BILDIRIM_YENILE)window.LEX_BILDIRIM_YENILE();});
   var yk=$('lex-yakin');if(yk)yk.addEventListener('click',function(){if(window.MF_SAYFA)window.MF_SAYFA('program');window.scrollTo(0,document.body.scrollHeight);});
   document.addEventListener('visibilitychange',function(){if(!document.hidden)snCiz();});
   snCiz();
@@ -4368,6 +4382,125 @@ function lexDersler(){
   window.LEX_TAKIP=function(){try{var t=localStorage.getItem('lex-takip');return t==='istat'?'istat':'program';}catch(e){return 'program';}};
   var b=document.querySelector('#alt-nav button[data-takip]');if(b)b.dataset.s=window.LEX_TAKIP();
   [].forEach.call(document.querySelectorAll('.tk-sek button'),function(x){x.addEventListener('click',function(){if(window.MF_SAYFA)window.MF_SAYFA(x.dataset.t);});});
+})();
+</script>
+<script>
+// ================= YEDEKLE-DIŞI: YEREL BİLDİRİMLER (yalnız Android uygulaması) =================
+(function(){
+  var LN=window.Capacitor&&window.Capacitor.Plugins&&window.Capacitor.Plugins.LocalNotifications;
+  if(!LN)return; // web'de tamamen pasif
+  var K='lex-bildirim',KANAL='calisma';
+  var VARSAYILAN={acik:false,gunluk:{acik:false,saat:'20:00'},sinav:{acik:true},program:{acik:false}};
+  function oku(k,v){try{var x=localStorage.getItem(k);return x?JSON.parse(x):v;}catch(e){return v;}}
+  function ayarOku(){var a=oku(K,null)||{};return {acik:!!a.acik,
+    gunluk:{acik:!!(a.gunluk&&a.gunluk.acik),saat:(a.gunluk&&/^\d{1,2}:\d{2}$/.test(a.gunluk.saat))?a.gunluk.saat:'20:00'},
+    sinav:{acik:!(a.sinav&&a.sinav.acik===false)},program:{acik:!!(a.program&&a.program.acik)}};}
+  function ayarYaz(a){try{localStorage.setItem(K,JSON.stringify(a));}catch(e){}}
+  function gunAnahtar(t){var x=new Date(t);return x.getFullYear()+'-'+(x.getMonth()+1)+'-'+x.getDate();}
+  function saatAyir(s){var p=String(s).split(':');return [Math.min(23,Math.max(0,+p[0]||0)),Math.min(59,Math.max(0,+p[1]||0))];}
+  function gunSaat(off,h,m){var t=new Date();t.setHours(0,0,0,0);t.setDate(t.getDate()+off);t.setHours(h,m,0,0);return t;}
+  function bugunCalisti(){var k=oku('pm-kayit',{}),b=k[gunAnahtar(Date.now())];return !!(b&&(b.dk>0||b.p>0));}
+  function iki(n){return (n<10?'0':'')+n;}
+  function programGun(off){ // 0=Pzt..6=Paz
+    var pr=oku('mf-program',null),i=(new Date(gunSaat(off,12,0)).getDay()+6)%7;
+    return (pr&&pr.g&&Array.isArray(pr.g[i]))?pr.g[i]:[];}
+  function dersListe(l){return l.map(function(o){return o.ders;}).filter(function(x,i,a){return x&&a.indexOf(x)===i;}).slice(0,4).join(', ');}
+  function sinavAd(x){var d=x.ders||'',t=(x.tur&&x.tur!=='Diğer')?x.tur:'';return (d+(d&&t?' ':'')+t)||'Sınav';}
+  var GUNLUK_ID=1000,PROGRAM_ID=2000,SINAV_ID=3000;
+  function hepsiIdler(){var l=[],i;for(i=0;i<7;i++){l.push({id:GUNLUK_ID+i});l.push({id:PROGRAM_ID+i});}for(i=0;i<100;i++)l.push({id:SINAV_ID+i});return l;}
+  function kendiMi(id){return (id>=1000&&id<1007)||(id>=2000&&id<2007)||(id>=3000&&id<3100);}
+  function planla(){
+    var a=ayarOku(),simdi=Date.now()+10000,liste=[],i;
+    if(!a.acik)return liste;
+    var calisti=bugunCalisti(),sd=saatAyir(a.gunluk.saat);
+    function ekle(id,at,baslik,govde){if(at.getTime()>simdi)liste.push({id:id,title:baslik,body:govde,channelId:KANAL,schedule:{at:at,allowWhileIdle:true}});}
+    // 1+3: gunluk (programla birlesik) ve program
+    for(i=0;i<7;i++){
+      var pg=programGun(i),at=gunSaat(i,sd[0],sd[1]),atla=(i===0&&calisti),bas='Lex Odak ⚖️';
+      var zamanli=pg.filter(function(o){return o&&/^\d{1,2}:\d{2}$/.test(o.saat||'');}).sort(function(x,y){var p=saatAyir(x.saat),q=saatAyir(y.saat);return p[0]*60+p[1]-q[0]*60-q[1];});
+      var zamansiz=pg.length&&!zamanli.length;
+      if(a.program.acik&&zamanli.length){
+        var f=zamanli[0],fs=saatAyir(f.saat),ft=gunSaat(i,fs[0],fs[1]);ft.setMinutes(ft.getMinutes()-10);
+        ekle(PROGRAM_ID+i,ft,bas,'Programına göre '+iki(fs[0])+':'+iki(fs[1])+"'de "+f.ders+' var.');
+      }
+      if(atla)continue;
+      if(a.gunluk.acik){
+        var g='Bugün henüz çalışmadın.';
+        if(a.program.acik&&zamansiz)g+=' Programında: '+dersListe(pg)+'.';else g+=' Kısa bir odak oturumu yeter.';
+        ekle(GUNLUK_ID+i,at,bas,g);
+      }else if(a.program.acik&&zamansiz){
+        ekle(PROGRAM_ID+i,at,bas,'Bugünkü programın: '+dersListe(pg)+'.');
+      }
+    }
+    // 2: sinavlar
+    if(a.sinav.acik){
+      var sl=oku('lex-sinavlar',[]);if(!Array.isArray(sl))sl=[];
+      var b=new Date();b.setHours(0,0,0,0);
+      var gel=sl.map(function(x){var q=String(x.tarih||'').split('-'),t=new Date(+q[0],+q[1]-1,+q[2]);return {ad:sinavAd(x),t:t,id:x.id};})
+        .filter(function(x){return !isNaN(x.t.getTime())&&x.t>=b;}).sort(function(x,y){return x.t-y.t;}).slice(0,50);
+      gel.forEach(function(x,n){
+        var d3=new Date(x.t);d3.setDate(d3.getDate()-3);d3.setHours(19,0,0,0);
+        var d1=new Date(x.t);d1.setDate(d1.getDate()-1);d1.setHours(19,0,0,0);
+        ekle(SINAV_ID+n*2,d3,'Sınav yaklaşıyor',x.ad+' sınavına 3 gün kaldı.');
+        ekle(SINAV_ID+n*2+1,d1,'Sınav yaklaşıyor','Yarın '+x.ad+' sınavın var — kısa bir tekrar?');
+      });
+    }
+    return liste;
+  }
+  var sira=Promise.resolve();
+  function yenile(){sira=sira.then(function(){return isle();}).catch(function(){});return sira;}
+  function isle(){
+    var liste=planla();
+    return Promise.resolve().then(function(){return LN.getPending();}).then(function(r){
+        var ids=((r&&r.notifications)||[]).filter(function(n){return kendiMi(+n.id);}).map(function(n){return {id:+n.id};});return ids;
+      },function(){return hepsiIdler();})
+      .then(function(ids){return ids.length?LN.cancel({notifications:ids}):null;})
+      .then(function(){return liste.length?LN.schedule({notifications:liste}):null;});
+  }
+  function bugunuIptal(){sira=sira.then(function(){
+    var a=ayarOku();if(!a.acik)return null;
+    return LN.cancel({notifications:[{id:GUNLUK_ID},{id:PROGRAM_ID}]});
+  }).then(function(){return isle();}).catch(function(){});}
+  window.LEX_BILDIRIM_YENILE=yenile;
+  window.LEX_BILDIRIM_CALISTI=bugunuIptal;
+  function kanalAc(){try{var p=window.Capacitor.getPlatform?window.Capacitor.getPlatform():'android';
+    if(p==='android'&&LN.createChannel)return Promise.resolve(LN.createChannel({id:KANAL,name:'Çalışma hatırlatmaları',description:'Günlük, sınav ve program hatırlatmaları',importance:3,visibility:1})).catch(function(){});}catch(e){}return Promise.resolve();}
+  function izinIste(){return Promise.resolve(LN.checkPermissions()).then(function(r){
+    if(r&&r.display==='granted')return true;
+    return Promise.resolve(LN.requestPermissions()).then(function(q){return !!(q&&q.display==='granted');});
+  }).catch(function(){return false;});}
+  // --- arayuz ---
+  var kart=document.getElementById('bld-kart');
+  function $(i){return document.getElementById(i);}
+  function ciz(){
+    var a=ayarOku();
+    $('bld-ana').checked=a.acik;$('bld-ic').hidden=!a.acik;
+    $('bld-gun').checked=a.gunluk.acik;$('bld-saat').value=iki(saatAyir(a.gunluk.saat)[0])+':'+iki(saatAyir(a.gunluk.saat)[1]);$('bld-saat-k').hidden=!a.gunluk.acik;
+    $('bld-sin').checked=a.sinav.acik;$('bld-prg').checked=a.program.acik;
+  }
+  function kaydetYenile(a){ayarYaz(a);ciz();yenile();}
+  function mesaj(t){var m=$('bld-mesaj');m.textContent=t||'';}
+  if(kart){
+    kart.hidden=false;
+    $('bld-ana').addEventListener('change',function(){
+      var a=ayarOku(),acik=this.checked;mesaj('');
+      if(!acik){a.acik=false;kaydetYenile(a);return;}
+      var kutu=this;
+      izinIste().then(function(ok){
+        if(!ok){kutu.checked=false;mesaj('Bildirim izni verilmedi. Telefon ayarlarından izin verebilirsin.');return;}
+        a=ayarOku();a.acik=true;
+        kanalAc().then(function(){kaydetYenile(a);});
+      });
+    });
+    $('bld-gun').addEventListener('change',function(){var a=ayarOku();a.gunluk.acik=this.checked;kaydetYenile(a);});
+    $('bld-saat').addEventListener('change',function(){var a=ayarOku();if(this.value)a.gunluk.saat=this.value;kaydetYenile(a);});
+    $('bld-sin').addEventListener('change',function(){var a=ayarOku();a.sinav.acik=this.checked;kaydetYenile(a);});
+    $('bld-prg').addEventListener('change',function(){var a=ayarOku();a.program.acik=this.checked;kaydetYenile(a);});
+    ciz();
+  }
+  // acilis + geri donus
+  if(ayarOku().acik)kanalAc().then(yenile);
+  document.addEventListener('visibilitychange',function(){if(!document.hidden&&ayarOku().acik)yenile();});
 })();
 </script>
 <script>

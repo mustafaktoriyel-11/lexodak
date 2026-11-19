@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
+Disallow: /panel.html
 
 Sitemap: https://lexodak.com/sitemap.xml

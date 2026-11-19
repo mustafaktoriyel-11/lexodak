@@ -3,12 +3,19 @@
   "appName": "Lex Odak Test",
   "webDir": "www",
   "android": {
-    "backgroundColor": "#281619"
+    "backgroundColor": "#5E1F2A"
   },
   "plugins": {
     "SystemBars": {
       "insetsHandling": "disable",
       "style": "DARK"
+    },
+    "SplashScreen": {
+      "launchShowDuration": 3000,
+      "launchAutoHide": true,
+      "launchFadeOutDuration": 180,
+      "backgroundColor": "#5E1F2A",
+      "showSpinner": false
     }
   }
 }

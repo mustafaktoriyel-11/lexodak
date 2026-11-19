@@ -55,7 +55,7 @@ jobs:
           ic = Image.open('icon-512.png').convert('RGBA')
           ic.resize((1024, 1024), Image.LANCZOS).save('assets/icon-only.png')
           for ad in ('splash.png', 'splash-dark.png'):
-              sp = Image.new('RGBA', (2732, 2732), (0x28, 0x16, 0x19, 255))
+              sp = Image.new('RGBA', (2732, 2732), (0x5E, 0x1F, 0x2A, 255))
               k = ic.resize((600, 600), Image.LANCZOS)
               sp.paste(k, ((2732 - 600) // 2, (2732 - 600) // 2), k)
               sp.convert('RGB').save('assets/' + ad)
@@ -66,7 +66,7 @@ jobs:
           PY
           npx --yes @capacitor/assets generate --android \
             --iconBackgroundColor '#762B37' --iconBackgroundColorDark '#762B37' \
-            --splashBackgroundColor '#281619' --splashBackgroundColorDark '#281619'
+            --splashBackgroundColor '#5E1F2A' --splashBackgroundColorDark '#5E1F2A'
           # Android 8+ uyarlanabilir ikon: web sürümünün maskable ikonu, görünür alana tam oturur (PWA ile aynı görünüm)
           R=android/app/src/main/res
           mkdir -p $R/drawable-nodpi $R/drawable $R/mipmap-anydpi-v26
@@ -85,6 +85,13 @@ jobs:
               '</adaptive-icon>' > $R/mipmap-anydpi-v26/$f.xml
           done
           cat $R/mipmap-anydpi-v26/ic_launcher.xml
+
+      - name: Açılış ekranı zemini (web açılışıyla aynı renk)
+        run: |
+          S=android/app/src/main/res/values/styles.xml
+          grep -n "NoActionBarLaunch" -A4 $S
+          sed -i 's#\(<style name="AppTheme.NoActionBarLaunch"[^>]*>\)#\1\n        <item name="windowSplashScreenBackground">\#5E1F2A</item>#' $S
+          grep -n "NoActionBarLaunch" -A6 $S
 
       - name: Sistem çubukları (MainActivity)
         run: |

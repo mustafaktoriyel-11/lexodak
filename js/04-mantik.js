@@ -110,12 +110,11 @@
       e.addEventListener('click',git);e.addEventListener('keydown',function(ev){if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();git();}});});
     rozet();setTimeout(torenDene,700);
   }
-  function rozet(){var e=$('nav-mantik');if(!e)return;var r=oku()[haftaNo()],yeni=!r;e.textContent=yeni?'Yeni':'';e.className=yeni?'var':'';
-    var b=e.parentNode,z=b.querySelector('.nav-roz');
-    if(r){var sv=seviye(r.d,r.sn);if(!z){z=document.createElement('i');z.className='nav-roz';z.setAttribute('aria-hidden','true');b.insertBefore(z,b.firstChild);}
-      if(z.dataset.e!==sv.e){z.dataset.e=sv.e;z.innerHTML=LXE(sv.e);z.classList.remove('yeni');void z.offsetWidth;z.classList.add('yeni');}
-      b.classList.add('rozetli');b.setAttribute('aria-label','Sınav, bugünkü rozetin: '+sv.a);}
-    else{if(z)z.remove();b.classList.remove('rozetli');b.removeAttribute('aria-label');}}
+  function rozet(){var e=$('nav-mantik');if(!e)return;var r=oku()[haftaNo()],yeni=!r;
+    /* sade rozet: bugünkü set çözülmediyse "Yeni", çözüldüyse küçük onay; parlayan emoji yok */
+    e.textContent=yeni?'Yeni':'✓';e.className=yeni?'var':'var tam';
+    var b=e.parentNode,z=b.querySelector('.nav-roz');if(z)z.remove();b.classList.remove('rozetli');
+    if(r)b.setAttribute('aria-label','Sınav, bugünkü set tamamlandı');else b.removeAttribute('aria-label');}
   document.addEventListener('visibilitychange',function(){if(!document.hidden)rozet();});
   function basla(tekrar){
     var h=haftaNo();

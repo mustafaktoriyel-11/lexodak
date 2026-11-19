@@ -8,6 +8,6 @@
     "@capacitor/core": "latest",
     "@capacitor/app": "latest",
     "@capacitor/splash-screen": "latest",
-    "@capacitor/local-notifications": "latest"
+    "@capacitor/local-notifications": "8.3.1"
   }
 }

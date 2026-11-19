@@ -4413,7 +4413,7 @@ function lexDersler(){
     var a=ayarOku(),simdi=Date.now()+10000,liste=[],i;
     if(!a.acik)return liste;
     var calisti=bugunCalisti(),sd=saatAyir(a.gunluk.saat);
-    function ekle(id,at,baslik,govde){if(at.getTime()>simdi)liste.push({id:id,title:baslik,body:govde,channelId:KANAL,schedule:{at:at,allowWhileIdle:true},isExactNotification:false,isExactMandatory:false});   // tam zamanlı alarm İSTEME (eklenti 8.3+ yoksa ayar sayfasını açıyor)}
+    function ekle(id,at,baslik,govde){if(at.getTime()>simdi)liste.push({id:id,title:baslik,body:govde,channelId:KANAL,schedule:{at:at,allowWhileIdle:true},isExactNotification:false,isExactMandatory:false});/* tam zamanlı alarm isteme: eklenti 8.3+ izin yoksa ayar sayfasını açıyor */}
     // 1+3: gunluk (programla birlesik) ve program
     for(i=0;i<7;i++){
       var pg=programGun(i),at=gunSaat(i,sd[0],sd[1]),atla=(i===0&&calisti),bas='Lex Odak ⚖️';

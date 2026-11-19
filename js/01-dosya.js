@@ -8,6 +8,19 @@
     a.href=u;a.download=ad;a.style.display='none';document.body.appendChild(a);a.click();
     setTimeout(function(){try{a.remove();}catch(_){}URL.revokeObjectURL(u);},30000);
   }
+  // Uygulamada dosyayı telefonun Belgeler/Lex Odak klasörüne kalıcı kaydet (Drive/Dosyalarım paylaşımda arka planda okuyamıyor). Söz: {yol, uri}
+  window.LEX_DOSYA_KAYDET=async function(blob,ad){
+    var P=window.Capacitor&&window.Capacitor.Plugins,Fs=P&&P.Filesystem;if(!Fs)throw new Error('Dosya sistemi yok');
+    ad=temiz(ad);var yol='Lex Odak/'+ad;
+    try{if(Fs.checkPermissions){var iz=await Fs.checkPermissions();if(iz&&iz.publicStorage&&iz.publicStorage!=='granted'&&Fs.requestPermissions)await Fs.requestPermissions();}}catch(e){}
+    var PARCA=3*1024*1024,w=null;
+    for(var o=0;o<Math.max(1,blob.size);o+=PARCA){
+      var d=await b64(blob.slice(o,o+PARCA));
+      if(o===0)w=await Fs.writeFile({path:yol,data:d,directory:'DOCUMENTS',recursive:true});
+      else await Fs.appendFile({path:yol,data:d,directory:'DOCUMENTS'});
+    }
+    return {yol:'Belgeler › Lex Odak › '+ad,uri:w&&w.uri};
+  };
   window.LEX_DOSYA=async function(blob,ad,mime,metin,sec){
     sec=sec||{};window.LEX_DOSYA_HATA='';ad=temiz(ad);
     var baslik=sec.baslik||ad,P=window.Capacitor&&window.Capacitor.Plugins;

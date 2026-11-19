@@ -159,6 +159,19 @@
         try{blob=await olustur();}catch(e){mesaj('Yedek hazırlanamadı: '+(e&&e.message?e.message:'bilinmeyen hata'));return;}
         try{var c=await coz(blob);md=c.dosyalar.length;ks=Object.keys(c.veri.ls).length;}catch(e){}
         var d=new Date(), ad='lexodak-yedek-'+d.getFullYear()+'-'+iki(d.getMonth()+1)+'-'+iki(d.getDate())+'.zip';
+        // Android uygulaması: önce telefona kalıcı kaydet, sonra isteğe bağlı paylaş
+        if(window.Capacitor&&window.LEX_DOSYA_KAYDET){
+          try{
+            var k=await window.LEX_DOSYA_KAYDET(blob,ad);
+            try{localStorage.setItem('lex-son-yedek',String(Date.now()));}catch(e){}
+            sonGuncelle();
+            dur.innerHTML='';dur.appendChild(document.createTextNode('Yedek kaydedildi: '+k.yol+' ('+ks+' kayıt, '+md+' dosya) '));
+            var pb=document.createElement('button');pb.type='button';pb.className='yd-paylas';pb.textContent='Paylaş';
+            pb.style.cssText='margin-left:6px;border:0;border-radius:10px;padding:4px 12px;font:inherit;font-weight:700;background:#762B37;color:#fff;cursor:pointer';
+            pb.addEventListener('click',function(){window.LEX_DOSYA(blob,ad,'application/zip',null,{baslik:'Lex Odak yedeği'});});
+            dur.appendChild(pb);return;
+          }catch(e){/* klasöre yazılamadıysa paylaşım ekranına düş */}
+        }
         var sonuc=await window.LEX_DOSYA(blob,ad,'application/zip',null,{baslik:'Lex Odak yedeği'});
         if(sonuc==='iptal'){mesaj('');return;}   // kullanıcı vazgeçti
         if(sonuc==='hata'){mesaj('Yedek kaydedilemedi'+(window.LEX_DOSYA_HATA?': '+window.LEX_DOSYA_HATA:'.')+' ('+Math.round(blob.size/1048576)+' MB)');return;}

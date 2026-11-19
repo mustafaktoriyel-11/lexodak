@@ -2316,7 +2316,10 @@ var SEKIL = (function () {
     if((sb.kaldirilan||[]).length)gr='<button type="button" class="sb-geri-al" id="sb-geri-al">'+sb.kaldirilan.length+' öğe kaldırıldı · Geri getir</button>';
     sbMsg.hidden=true;sbIc.hidden=false;
     sbIc.className='sb-ic iki';
-    sbIc.innerHTML=uy+'<div class="sb-sol">'+not+sol+'</div><div class="sb-sag">'+sag+gr+'</div>';
+    var v=sb.veri||{},ok=sbOK(),bl='Özet geri bildirimi: '+sbBaslik().t,
+      gv='Not: '+sbBaslik().t+'\nUzunluk: '+({k:'Kısa',o:'Orta',u:'Uzun'}[ok])+' · Mod: '+(v.mod||'ozet')+'\nCihaz: '+(window.Capacitor?'Android uygulaması':'Web')+'\n\nGereksiz olan cümle/bölüm:\n\nEksik olan (özete girmesi gereken):\n\nYanlış yazılan/bozuk görünen:\n';
+    var fb='<a class="sb-bildir" href="mailto:odak.lex@gmail.com?subject='+encodeURIComponent(bl)+'&body='+encodeURIComponent(gv)+'">Özet motoru Beta · Eksik ya da yanlış bildir</a>';
+    sbIc.innerHTML=uy+'<div class="sb-sol">'+not+sol+'</div><div class="sb-sag">'+sag+gr+fb+'</div>';
     $('sb-yenile').hidden=false;$('sb-pay').hidden=false;
     sbKay.scrollTop=y;
   }

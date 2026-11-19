@@ -1,6 +1,7 @@
 // Lex Odak - service worker
-var SURUM = 'lex-odak-v120';
-var MEVZUAT = 'lex-mevzuat-2';
+var SURUM = 'lex-odak-v121';
+var MEVZUAT = 'lex-mevzuat-3';
+var MEVZUAT_ESKI = 'lex-mevzuat-2';  // tek dosyalı eski mevzuat.json önbelleği; kanun dosyaları tamamen inene dek silinmez (aşağıda 'message')
 var OCR = 'lex-ocr-1';  // taranmış PDF okuma motoru (jsdelivr), bir kez iner  // kanun metinleri sürüm değişse de silinmez
 var DOSYALAR = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png', './gizlilik.html'];
 
@@ -11,26 +12,62 @@ self.addEventListener('install', function (e) {
 
 self.addEventListener('activate', function (e) {
   e.waitUntil(caches.keys().then(function (ks) {
-    return Promise.all(ks.filter(function (k) { return k !== SURUM && k !== MEVZUAT && k !== OCR && k !== 'lex-muzik-1'; }).map(function (k) { return caches.delete(k); }));
+    return Promise.all(ks.filter(function (k) { return k !== SURUM && k !== MEVZUAT && k !== MEVZUAT_ESKI && k !== OCR && k !== 'lex-muzik-1'; }).map(function (k) { return caches.delete(k); }));
   }));
   self.clients.claim();
 });
 
-// Kanun metinleri: agdan gelen dosya saglamsa onbellegi guncelle; bozuk/bos/eksikse eldeki saglam kopyayi ver
+// Kanun metinleri (mevzuat/index.json ve mevzuat/<no>.json): ag-oncelikli, saglam degilse onbellek.
+// Neden ag-oncelikli (stale-while-revalidate degil): kanun metni degisince kullanici bir sonraki acilista
+// eski metni gormesin; istek 'no-cache' ile gider, degismediyse sunucu 304 doner (govde inmez), yani ucuzdur.
+// Internetsiz ya da yavassa (6 sn) / 404 / bos / bozuk JSON ise onbellekteki son saglam kopya verilir; boylece cevrimdisi hep calisir.
+function mevzuatSaglam(yol, j) {
+  if (!j) return false;
+  if (/\/index\.json$/.test(yol)) return !!(j.index && j.index.length);
+  return !!(j.maddeler && j.maddeler.length);
+}
 function mevzuatAl(req) {
+  var yol = new URL(req.url).pathname;
+  var cevap = function (t) { return new Response(t, { headers: { 'Content-Type': 'application/json; charset=utf-8' } }); };
+  var onbellek = function () {
+    return caches.open(MEVZUAT).then(function (c) { return c.match(req); });
+  };
+  var ag = fetch(req, { cache: 'no-cache' }).then(function (r) {
+    if (!r.ok) throw 0;
+    return r.text().then(function (t) {
+      var j; try { j = JSON.parse(t); } catch (x) { throw 0; }
+      if (!mevzuatSaglam(yol, j)) throw 0;
+      caches.open(MEVZUAT).then(function (c) { c.put(req, cevap(t)); });
+      return cevap(t);
+    });
+  });
+  var yedek = function () { return onbellek().then(function (r) { return r || new Response('', { status: 503 }); }); };
+  var sure = new Promise(function (res) {
+    setTimeout(function () { onbellek().then(function (r) { if (r) res(r); }); }, 6000);
+  });
+  return Promise.race([ag, sure]).catch(yedek);
+}
+
+// Eski istemciler hala mevzuat.json ister: eski onbellegi (varsa) koruyarak ayni mantikla sun
+function mevzuatEskiAl(req) {
   return fetch(req, { cache: 'no-cache' }).then(function (r) {
     if (!r.ok) throw 0;
     return r.text().then(function (t) {
       var j = JSON.parse(t);
       if (!j || !j.index || !j.index.length || !j.kanunlar) throw 0;
       var cevap = function () { return new Response(t, { headers: { 'Content-Type': 'application/json; charset=utf-8' } }); };
-      caches.open(MEVZUAT).then(function (c) { c.put(req, cevap()); });
+      caches.open(MEVZUAT_ESKI).then(function (c) { c.put(req, cevap()); });
       return cevap();
     });
   }).catch(function () {
-    return caches.open(MEVZUAT).then(function (c) { return c.match(req); }).then(function (r) { return r || new Response('', { status: 503 }); });
+    return caches.open(MEVZUAT_ESKI).then(function (c) { return c.match(req); }).then(function (r) { return r || new Response('', { status: 503 }); });
   });
 }
+
+// Sayfa butun kanun dosyalarini indirdiginde bildirir; ancak o zaman eski tek dosyalik onbellek silinir (gecis guvenli)
+self.addEventListener('message', function (e) {
+  if (e.data === 'mevzuat-gecis-tamam') e.waitUntil(caches.delete(MEVZUAT_ESKI));
+});
 
 // Uygulama dosyalari: once agdan dene (guncel kalsin), olmazsa onbellekten ver
 self.addEventListener('fetch', function (e) {
@@ -44,7 +81,8 @@ self.addEventListener('fetch', function (e) {
     return;
   }
   if (e.request.method !== 'GET' || u.origin !== location.origin) return;
-  if (/\/mevzuat\.json$/.test(u.pathname)) { e.respondWith(mevzuatAl(e.request)); return; }
+  if (/\/mevzuat\/(index|\d+)\.json$/.test(u.pathname)) { e.respondWith(mevzuatAl(e.request)); return; }
+  if (/\/mevzuat\.json$/.test(u.pathname)) { e.respondWith(mevzuatEskiAl(e.request)); return; }
   e.respondWith(
     fetch(e.request.mode === 'navigate' ? new Request(e.request.url, { cache: 'no-cache', credentials: 'same-origin' }) : new Request(e.request, { cache: 'no-cache' })).then(function (r) {
       var kopya = r.clone();

@@ -3786,21 +3786,39 @@ function lexDersler(){
     var v=[w],s=w.slice(-1);if(w.length>=4&&YUM[s]&&YUM[s]!==s)v.push(w.slice(0,-1)+YUM[s]);if(w.length>=5&&s==='k')v.push(w.slice(0,-1));return v;});}
   function eslesir(t,S){for(var i=0;i<S.length;i++){var ok=false;for(var j=0;j<S[i].length;j++)if(t.indexOf(S[i][j])>=0){ok=true;break;}if(!ok)return false;}return S.length>0;}
   function al(u){return fetch(u).then(function(r){if(!r.ok)throw 0;return r.json();});}
-  var IDX=null,KAN={},BSL=null,tumSoz=null,akt=null,goster=[],bas=0,sinir=0,PARCA=40,filtreli=false;
-  // bütün kanunlar tek dosyada (mevzuat.json); bir kez iner, sonra internetsiz açılır
-  function tum(){if(IDX)return Promise.resolve();if(tumSoz)return tumSoz;
-    tumSoz=al('mevzuat.json').then(function(j){
-      IDX=j.index||[];KAN={};BSL=[];
-      IDX.forEach(function(k){var kk=j.kanunlar[k.no];if(!kk)return;kk.maddeler.forEach(function(m,i){m.i=i;});KAN[k.no]=kk;
-        var L=[],on=norm(k.kisa+' '+k.no)+' ';
-        kk.maddeler.forEach(function(m){(m.y||[]).forEach(function(y){var p=y[1].split(' · ');L.push([m.n,(p[1]||p[0])+' ('+p[0]+')',on+norm(y[1]),1]);});
-          if(m.b)L.push([m.n,m.b,on+norm(m.b),0]);});
-        BSL.push({no:k.no,kisa:k.kisa,m:L});});
-    }).catch(function(){tumSoz=null;IDX=null;throw 0;});return tumSoz;}
-  window.LEX_MV_HAZIRLA=function(){return tum().catch(function(){});};   // açılış ekranında sessizce önceden yükle
-  function indeks(){return tum().then(function(){return IDX;}).catch(function(){return [];});}
-  function kanun(no){return tum().then(function(){if(!KAN[no])throw 0;return KAN[no];});}
-  function basliklar(){return tum().then(function(){return BSL;}).catch(function(){return [];});}
+  var IDX=null,KAN={},KSOZ={},BSLK={},idxSoz=null,hepSoz=null,akt=null,goster=[],bas=0,sinir=0,PARCA=40,filtreli=false;
+  // kanunlar kanun başına ayrı dosyada (mevzuat/<no>.json) + küçük bir dizin (mevzuat/index.json);
+  // bir kanun/madde açmak için yalnız dizin + o kanun iner. Hepsi arka planda sessizce önbelleğe alınır (internetsiz açılsın diye).
+  function indeksYukle(){if(IDX)return Promise.resolve();if(idxSoz)return idxSoz;
+    idxSoz=al('mevzuat/index.json').then(function(j){if(!j||!j.index||!j.index.length)throw 0;IDX=j.index;}).catch(function(){idxSoz=null;IDX=null;throw 0;});return idxSoz;}
+  function kanun(no){no=String(no);if(KAN[no])return Promise.resolve(KAN[no]);if(KSOZ[no])return KSOZ[no];
+    KSOZ[no]=indeksYukle().then(function(){if(!IDX.some(function(k){return k.no===no;}))throw 0;return al('mevzuat/'+no+'.json');}).then(function(kk){
+      if(!kk||!kk.maddeler||!kk.maddeler.length)throw 0;kk.maddeler.forEach(function(m,i){m.i=i;});KAN[no]=kk;return kk;}).catch(function(){delete KSOZ[no];throw 0;});return KSOZ[no];}
+  function indeks(){return indeksYukle().then(function(){return IDX;}).catch(function(){return [];});}
+  // bütün kanunlar (tam metin araması, başlık araması); tek tek başarısız olan kanun atlanır
+  function hepsi(){if(hepSoz)return hepSoz;
+    hepSoz=indeksYukle().then(function(){return Promise.all(IDX.map(function(k){return kanun(k.no).catch(function(){return null;});}));}).then(function(){if(!IDX.every(function(k){return KAN[k.no];}))hepSoz=null;}).catch(function(){hepSoz=null;});return hepSoz;}
+  function basliklar(){var B=[];IDX.forEach(function(k){var kk=KAN[k.no];if(!kk)return;
+    if(!BSLK[k.no]){var L=[],on=norm(k.kisa+' '+k.no)+' ';
+      kk.maddeler.forEach(function(m){(m.y||[]).forEach(function(y){var p=y[1].split(' · ');L.push([m.n,(p[1]||p[0])+' ('+p[0]+')',on+norm(y[1]),1]);});
+        if(m.b)L.push([m.n,m.b,on+norm(m.b),0]);});
+      BSLK[k.no]={no:k.no,kisa:k.kisa,m:L};}
+    B.push(BSLK[k.no]);});return B;}
+  // belirli kanunları hemen indir (PDF'te atıf geçen kanunlar gibi); sonucu beklenmez
+  window.LEX_MV_ONCELIK=function(liste){try{(liste||[]).forEach(function(no){if(no&&!KAN[no]&&!KSOZ[no])kanun(String(no)).catch(function(){});});}catch(e){}};
+  window.LEX_MV_HAZIRLA=function(){return indeksYukle().catch(function(){});};   // açılış ekranında yalnız dizini sessizce önceden yükle
+  // arka plan: açılıştan sonra, boştayken ve çevrimiçiyken kalan kanunları sırayla indir (servis çalışanı önbelleğe alır)
+  var onT=false;
+  function arkaPlan(){if(onT)return;try{if(navigator.connection&&navigator.connection.saveData)return;}catch(e){}onT=true;   // veri tasarrufu açıksa arka planda indirme yok
+    var bekle=function(f,ms){setTimeout(function(){if(window.requestIdleCallback)requestIdleCallback(f,{timeout:4000});else f();},ms);};
+    function sira(i){
+      if(i>=IDX.length){if(IDX.every(function(k){return KAN[k.no];})&&navigator.serviceWorker&&navigator.serviceWorker.controller)try{navigator.serviceWorker.controller.postMessage('mevzuat-gecis-tamam');}catch(e){}return;}
+      if(navigator.onLine===false||KAN[IDX[i].no]||KSOZ[IDX[i].no]){bekle(function(){sira(i+1);},KAN[IDX[i].no]?0:2000);return;}
+      kanun(IDX[i].no).catch(function(){}).then(function(){bekle(function(){sira(i+1);},400);});}
+    indeksYukle().then(function(){sira(0);}).catch(function(){onT=false;});}
+  if(document.readyState==='complete')setTimeout(function(){bekle0();},0);else addEventListener('load',function(){bekle0();});
+  function bekle0(){setTimeout(function(){if(window.requestIdleCallback)requestIdleCallback(arkaPlan,{timeout:8000});else arkaPlan();},3000);}
+  addEventListener('online',function(){if(!onT)bekle0();});
   function mz(m){return m.z||(m.z=norm(m.m+' '+(m.b||'')));}
   function resmi(k){return 'https://www.mevzuat.gov.tr/mevzuat?MevzuatNo='+k.no+'&MevzuatTur=1&MevzuatTertip='+(k.tertip||5);}
   // Türk Bayrağı: Türk Bayrağı Kanunu oranları (1,5:1), kırmızı #E30A17
@@ -3823,7 +3841,8 @@ function lexDersler(){
     if($('mv-ara').value.trim()){el.innerHTML='';return;}
     if(!a.length&&!nk.length){el.innerHTML='<p class="pm-kucuk mv-fav-ip">☆ Bir maddenin yanındaki yıldıza dokunursan favorilerine eklenir; kalem simgesiyle maddeye kendi notunu yazabilirsin. Notlar yalnız bu telefonda kalır.</p>';return;}
     if(favSek==='fav'&&!a.length)favSek='not';if(favSek==='not'&&!nk.length)favSek='fav';
-    indeks().then(function(l){
+    var gl={};a.forEach(function(x){gl[x[0]]=1;});nk.forEach(function(x){gl[x.split('|')[0]]=1;});
+    indeks().then(function(l){return Promise.all(Object.keys(gl).map(function(no){return kanun(no).catch(function(){});})).then(function(){return l;});}).then(function(l){
       if($('mv-ara').value.trim())return;
       var K={},o='',say=0;l.forEach(function(k){K[k.no]=k;});
       function md(no,n){var kk=KAN[no],m=null;if(!kk)return null;kk.maddeler.some(function(y){if(y.n===n){m=y;return true;}return false;});return m;}
@@ -3893,6 +3912,12 @@ function lexDersler(){
     var ham=$('mv-ara').value.trim(),q=norm(ham),S=sorgu(ham),bs=$('mv-bsl'),ms=$('mv-tam-s');
     ms.innerHTML='';MT=[];MTN=0;favCiz();
     indeks().then(function(l){
+      if(norm($('mv-ara').value.trim())!==q)return l;
+      var no0=q?noAyir(ham,l):null;
+      var tek=no0?(no0.kn?[no0.kn]:null):(q.length<3||l.some(function(k){return norm(k.kisa)===q||k.no===q;}))?[]:null;   // null: bütün kanunlar gerekli
+      if(!q||(tek&&!tek.length))return l;
+      return (tek?Promise.all(tek.map(function(x){return kanun(x).catch(function(){});})):hepsi()).then(function(){return l;});
+    }).then(function(l){
       if(norm($('mv-ara').value.trim())!==q)return;
       var no=q?noAyir(ham,l):null,o='';
       if(!no)l.forEach(function(k){if(q&&!eslesir(norm(k.ad+' '+k.kisa+' '+k.no),S))return;
@@ -3908,7 +3933,7 @@ function lexDersler(){
       if(q.length<3||l.some(function(k){return norm(k.kisa)===q||k.no===q;})){bs.hidden=true;bs.innerHTML='';return;}   // yalnız kanun adı/numarası: sadece kanun kartı
       // 1) madde başlıkları
       var gor={},n=0,ob='';
-      BSL.forEach(function(k){var kk=KAN[k.no];k.m.forEach(function(x){if(!eslesir(x[2],S))return;n++;if(x[3]!==1)gor[k.no+'|'+x[0]]=1;if(n>50)return;
+      basliklar().forEach(function(k){k.m.forEach(function(x){if(!eslesir(x[2],S))return;n++;if(x[3]!==1)gor[k.no+'|'+x[0]]=1;if(n>50)return;
         ob+='<button type="button" class="mv-b'+(x[3]===1?' blm':'')+'" data-no="'+esc(k.no)+'" data-n="'+esc(x[0])+'" data-q="'+esc(ham)+'"><b>'+esc(k.kisa)+(x[3]===1?' · bölüm':' m. '+esc(x[0]))+'</b><span>'+esc(x[1])+'</span></button>';});});
       bs.hidden=false;
       bs.innerHTML='<p class="mv-etk">Madde başlıklarında'+(n?' · '+n+' sonuç'+(n>50?' (ilk 50)':''):'')+'</p>'+(ob||'<p class="mv-bos">Başlığında “'+esc(ham)+'” geçen madde yok.</p>');
@@ -6046,6 +6071,7 @@ var SEKIL = (function () {
           else{g.taranmis=true;ocrDugme(g);}
         }
         g.atif[s.n]=A;
+        try{if(window.LEX_MV_ONCELIK){var kn={},kl=[],vk0=varsK(g);if(vk0)kn[vk0]=1;A.forEach(function(a){if(a.no)kn[a.no]=1;});for(var x in kn)kl.push(x);if(kl.length)LEX_MV_ONCELIK(kl);}}catch(e){}
         if(A.yalin&&!varsK(g))knSor(g,A.metin);
       }
       if(g.kapali||!s.canvas||!s.el)return;

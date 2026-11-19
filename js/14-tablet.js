@@ -10,6 +10,17 @@
   var yk=document.getElementById('lex-yakin');
   var yan=document.createElement('div');yan.className='tb-yan';sayfa.insertBefore(yan,k);
   yan.appendChild(k);yan.appendChild(hk);
+  /* günlük test (Hukukçunun Ufku) kısa kartı: sağ sütundaki boşluğu anlamlı doldurur */
+  var uk=document.createElement('section');uk.className='kart tb-ufuk';uk.id='tb-ufuk';yan.insertBefore(uk,hk);
+  function ufukYaz(){
+    var U=window.LEX_UFUK,nm=document.getElementById('nav-mantik'),tamam=!!(nm&&/✓/.test(nm.textContent));
+    var r=U&&U.kayitR?U.kayitR():0,un=U&&U.UNV&&U.UNV[r]?U.UNV[r]:null;
+    var mk=U&&U.maskot?U.maskot(72,'',r):'';
+    uk.innerHTML='<div class="tb-uf-m" aria-hidden="true">'+mk+'</div><div class="tb-uf-y"><span class="tb-uf-u">Hukukçunun Ufku'+(un&&un[0]?' · '+un[0]:'')+'</span><b>'+(tamam?'Bugünkü levha tamam':'Bugünün levhası seni bekliyor')+'</b><span>'+(tamam?'Yarın yeni set açılır.':'12 dakika · günlük test')+'</span></div><button type="button" class="tb-uf-b">'+(tamam?'Sonuca bak':'Başla')+'</button>';
+    uk.querySelector('.tb-uf-b').onclick=function(){var b=document.querySelector('.alt-nav button[data-s="mantik"]');if(b)b.click();};
+  }
+  setTimeout(ufukYaz,600);document.addEventListener('visibilitychange',function(){if(!document.hidden)ufukYaz();});
+  (function(){var nm=document.getElementById('nav-mantik');if(nm)new MutationObserver(ufukYaz).observe(nm,{childList:true,characterData:true,subtree:true});})();
   if(yk){var ykYer=document.createComment('yk');yk.parentNode.insertBefore(ykYer,yk);
     var mq=window.matchMedia('(min-width:760px)');
     var ykYerlestir=function(){if(mq.matches){if(yk.parentNode!==yan)yan.insertBefore(yk,hk);}else if(ykYer.nextSibling!==yk)ykYer.parentNode.insertBefore(yk,ykYer.nextSibling);};

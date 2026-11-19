@@ -1,0 +1,23 @@
+# Lex Odak – mevzuat araçları (deneme: mevzuat.gov.tr'ye erişim)
+name: Mevzuat
+
+on:
+  push:
+    branches: [main]
+    paths: ['mevzuat-arac/**', '.github/workflows/mevzuat.yml']
+  workflow_dispatch:
+
+jobs:
+  erisim:
+    runs-on: ubuntu-latest
+    steps:
+      - name: mevzuat.gov.tr PDF erişimi
+        run: |
+          for no in 6098 5275; do
+            for tertip in 5 3; do
+              u="https://www.mevzuat.gov.tr/MevzuatMetin/1.${tertip}.${no}.pdf"
+              code=$(curl -sS -L -A "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/131 Safari/537.36" -o /tmp/k.pdf -w "%{http_code} %{content_type} %{size_download}" "$u" || true)
+              echo "$u -> $code"
+              head -c 5 /tmp/k.pdf; echo
+            done
+          done

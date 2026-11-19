@@ -3570,6 +3570,19 @@ function lexDersler(){
 })();
 </script>
 <script>
+// ================= ÖLÇÜ (tanı): başlıktaki "Lex Odak" yazısına 1,5 sn basılı tut =================
+(function(){
+  var h=document.querySelector('h1');if(!h)return;var t=0;
+  function goster(){
+    var vv=window.visualViewport,m=document.querySelector('meta[name=viewport]');
+    var d=document.createElement('div');
+    d.style.cssText='position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:99999;background:#281619;color:#F2DDA8;padding:14px 18px;border-radius:14px;font:14px/1.5 monospace;box-shadow:0 6px 24px rgba(0,0,0,.5)';
+    d.textContent=(window.Capacitor?'UYGULAMA':'TARAYICI')+' · '+innerWidth+'×'+innerHeight+' · dpr '+(window.devicePixelRatio||1).toFixed(2)+' · ekran '+screen.width+'×'+screen.height+(vv?' · ölçek '+vv.scale.toFixed(2):'')+' · yazı '+getComputedStyle(document.documentElement).fontSize;
+    document.body.appendChild(d);d.addEventListener('click',function(){d.remove();});setTimeout(function(){d.remove();},12000);
+  }
+  h.addEventListener('touchstart',function(){clearTimeout(t);t=setTimeout(goster,1500);},{passive:true});
+  ['touchend','touchmove','touchcancel'].forEach(function(o){h.addEventListener(o,function(){clearTimeout(t);},{passive:true});});
+})();
 // ================= GERİ TUŞU =================
 (function(){
   var G=[];   // {k:anahtar, fn:geri dönüş, iptal}

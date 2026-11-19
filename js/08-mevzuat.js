@@ -276,6 +276,7 @@
     if(!r)k.maddeler.forEach(function(m){if(!r&&String(m.n)===ana)r=m;});return r;}
   window.LEX_MV_MADDE=function(no,n){return kanun(String(no)).then(function(k){var m=maddeBul(k,n);return {kisa:k.kisa,ad:adYaz(k),no:k.no,m:m};});};
   window.LEX_MV_YAN=function(no,n){DIS=false;ac(String(no),n?String(n):'');};
+  window.LEX_MV_INDEKS=function(){return indeks();};   // dizin listesi: [{no,ad,kisa,madde(adet)}]
   window.LEX_MV_VAR=function(cb){indeks().then(function(l){var s={};l.forEach(function(k){s[k.no]=1;});cb(s);});};
   if(location.hash==='#mevzuat'&&window.MF_SAYFA)window.MF_SAYFA('mevzuat');
 })();

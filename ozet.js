@@ -60,13 +60,147 @@ var LEXOZET = (function () {
   }
 
   /* ------------------------------------------------------------------ */
+  /* Turkce buyuk/kucuk harf, bozuk kasa (kucuk-buyuk harf yazi tipleri), baslik gosterimi */
+  /* ------------------------------------------------------------------ */
+  function ucs(s) { return String(s).replace(/i/g, 'İ').replace(/ı/g, 'I').toUpperCase(); }
+  function ilkBuyuk(s) { return s ? ucs(s.charAt(0)) + s.substr(1) : s; }
+
+  var KISALTMA_BUYUK = {};
+  (function () {
+    var l = ('TCK AYM HMK CMK TBK TMK TTK İİK IIK İYUK KVKK SOME USOM AİHM AİHS BM AB ABD TBMM YİBK HGK CGK HD CD KHK MK AY BK CMUK HUMK TDK TÜİK BDDK BTK EPDK SPK ' +
+      'NATO OHAL PDF UYAP SGK YÖK TÜBİTAK TKHK MÖHUK İMK HUAK DMK VUK ÖSYM TRT TV TL USD EUR AVM LGBT DNA ŞİK İHD YSK SSK İŞKUR RTÜK TBB').split(' ');
+    for (var i = 0; i < l.length; i++) { KISALTMA_BUYUK[l[i]] = 1; }
+  })();
+  var KISALTMA_KARISIK = /^(TebK|İşK|AvK|KabK|KTK|KamK|SiberGK|İnfazK|SSGSSK|CGTİK|CGTİHK|KarTK|IoT|AİHM|e-Devlet)$/;
+  var LATIN_KELIME = {};
+  ('argumentum hominem ad ante contra sensu lato stricto fallacies fallacy pro facto jure lex specialis generalis ratio legis dubio bona fide mala ipso erga omnes inter partes nullum crimen sine lege bis idem tuquoque quoque post hoc ergo propter slippery slope').split(' ').forEach(function (w) { LATIN_KELIME[w] = 1; });
+  var BASLIK_KUCUK = { ve: 1, ile: 1, veya: 1, ya: 1, da: 1, de: 1, ki: 1 };
+
+  /* "ÖNyargIlar", "Özelleştİrme", "çIkarma", "otorİteye": kucuk harften sonra I/İ ya da ONyargi tipi */
+  function anormalKelime(w) {
+    if (w.length < 3) { return false; }
+    if (KISALTMA_BUYUK[w] || KISALTMA_KARISIK.test(w)) { return false; }
+    if (/[a-zçğıöşüâîû][Iİ]/.test(w)) { return true; }
+    if (/^[A-ZÇĞİÖŞÜ]{2,}[a-zçğıöşü]{2,}/.test(w) && !KISALTMA_KARISIK.test(w)) { return true; }
+    return false;
+  }
+  function anormalSatirMi(t) {
+    var m = String(t).match(new RegExp('[' + HARF + ']+', 'g')) || [];
+    for (var i = 0; i < m.length; i++) { if (anormalKelime(m[i])) { return true; } }
+    return false;
+  }
+  function cumleBasiMi(str, off) {
+    var on = str.substr(0, off).replace(/[«“"‘(\s]+$/, '');
+    return on === '' || /[.?!:;]["”’»)]*$/.test(on);
+  }
+  /* govde metni: bozuk kasali kelimeleri duzelt (kucuk harf; cumle basinda ilk harf buyuk) */
+  function govdeDuzelt(s) {
+    if (!s || !/[a-zçğıöşü]/.test(s) || !/[A-ZÇĞİÖŞÜ]/.test(s)) { return s; }
+    return s.replace(new RegExp('[' + HARF + ']+', 'g'), function (w, off, str) {
+      if (!anormalKelime(w)) { return w; }
+      var kck = lc(w);
+      var onc = off > 0 ? str.charAt(off - 1) : '';
+      if (onc === '’' || onc === '\'') { return kck; }
+      if (cumleBasiMi(str, off) && bykMi(w.charAt(0))) { return ilkBuyuk(kck); }
+      return kck;
+    });
+  }
+  /* baslik: TAMAMEN BUYUK ya da bozuk kasaliysa duzgun Basliklar Gibi (Title Case) yaz; aksi halde oldugu gibi */
+  function baslikBicim(t, zorla) {
+    t = String(t).replace(/\s+/g, ' ').replace(/^ | $/g, '');
+    if (!t) { return t; }
+    var harfler = t.replace(new RegExp('[^' + HARF + ']', 'g'), '');
+    if (harfler.length < 2) { return t; }
+    var buy = (harfler.match(/[A-ZÇĞİÖŞÜÂÎÛ]/g) || []).length;
+    var hepBuy = harfler.length >= 3 && buy / harfler.length >= 0.8;
+    if (!zorla && !hepBuy && !anormalSatirMi(t)) { return t; }
+    return baslikHarfle(t);
+  }
+  function baslikHarfle(t) {
+    var say = 0;
+    return t.replace(new RegExp('[' + HARF + ']+', 'g'), function (w, off, str) {
+      var ilk = say++ === 0;
+      var sonra = str.charAt(off + w.length), onc = off > 0 ? str.charAt(off - 1) : '';
+      if (/^[IVXLCivxlc]+$/.test(w) && sonra === '.' && (ilk || /[\s(]/.test(onc))) { return w; }
+      if (KISALTMA_BUYUK[w] || KISALTMA_KARISIK.test(w)) { return w; }
+      if (w.length <= 4 && /^[A-ZÇĞİÖŞÜ]+$/.test(w) && !/[AEIİOÖUÜ]/.test(w)) { return w; }
+      if (onc === '’' || onc === '\'') { return lc(w); }
+      var k = lc(w);
+      if (LATIN_KELIME[w.toLowerCase()]) { return ilkBuyuk(w.toLowerCase()); }
+      if (!ilk && BASLIK_KUCUK[k]) { return k; }
+      return ilkBuyuk(k);
+    }).replace(/(^|[\s(])”(?=[A-Za-zÇĞİÖŞÜçğıöşü])/g, '$1“');
+  }
+  /* terim: cumle bicimi (ilk harf buyuk, kisaltmalar korunur) */
+  function terimBicim(t) {
+    var say = 0;
+    t = baslikBicim(t, true);
+    return t.replace(new RegExp('[' + HARF + ']+', 'g'), function (w, off, str) {
+      var ilk = say++ === 0;
+      if (KISALTMA_BUYUK[w] || KISALTMA_KARISIK.test(w)) { return w; }
+      if (/^[IVXLC]+$/.test(w) && str.charAt(off + w.length) === '.') { return w; }
+      if (ilk) { return w; }
+      return lc(w);
+    });
+  }
+
+  function terimAdi(t) {
+    t = String(t || '').replace(/^\s*(?:[IVXLC]+|[ivxlc]+|\d{1,2})\s*[.)]\s*/, '').replace(/\s+/g, ' ').replace(/^ | $/g, '');
+    if (!t || t.split(' ').length > 8 || /[.?!]$/.test(t)) { return ''; }
+    return terimBicim(t);
+  }
+
+  /* cikti metni son temizligi: PUA/ligatur, kesme isareti, bosluk, yapisik cumle, bozuk kasa */
+  function sonTemizle(s) {
+    if (typeof s !== 'string' || !s) { return s; }
+    s = s.replace(/^[\uE000-\uF8FF]+\s*/, '• ').replace(/[\uE000-\uF8FF]+/g, ' ')
+      .replace(/ﬀ/g, 'ff').replace(/ﬁ/g, 'fi').replace(/ﬂ/g, 'fl').replace(/ﬃ/g, 'ffi').replace(/ﬄ/g, 'ffl')
+      .replace(/\*\*/g, '')
+      .replace(/\s*(?:-|–|—)>\s*/g, ' → ')
+      .replace(/,\s+(ifade eder|ifade etmektedir|ifade edilir|ifade edilmektedir|denir|denilir|adı verilir|adı verilmektedir|olarak adlandırılır|anlamına gelir)(?=[.;)]|$)/gi, ' $1')
+      .replace(new RegExp('([' + HARF + '])[\u2018\u0060\u00b4]([' + KUCUK + '])', 'g'), '$1’$2')
+      .replace(/(\S)\s+•\s+/g, '$1; ')
+      .replace(/\s+([!?;,])(?=\s|$)/g, '$1')
+      .replace(new RegExp('([' + KUCUK + ']{2,})\\.([A-ZÇĞİÖŞÜ][' + KUCUK + ']{2,})', 'g'), '$1. $2')
+      .replace(/(\S) {2,}/g, '$1 ');
+    return govdeDuzelt(s);
+  }
+
+  var DOSYA_DUZELT = { 'calısma': 'çalışma', 'calisma': 'çalışma', 'çalisma': 'çalışma', 'çalısma': 'çalışma', 'notlari': 'notları', 'notlarım': 'notlarım',
+    'guvenlik': 'güvenlik', 'guvenligi': 'güvenliği', 'ozet': 'özet', 'ozeti': 'özeti', 'hukukun': 'hukukun', 'tebligat': 'tebligat', 'mantik': 'mantık', 'hatalari': 'hataları',
+    'sunum': 'sunum', 'ders': 'ders', 'cözümlü': 'çözümlü', 'cozumlu': 'çözümlü', 'sinav': 'sınav', 'sorulari': 'soruları', 'uygulama': 'uygulama', 'kanunu': 'kanunu', 'ceza': 'ceza', 'idare': 'idare', 'borclar': 'borçlar', 'medeni': 'medeni', 'usul': 'usul', 'hukuku': 'hukuku' };
+  /* dosya adi -> sade baslik: uzanti ve zaman damgasi/sayac kuyrugunu at */
+  function dosyaBasligi(ad) {
+    var s = String(ad === null || ad === undefined ? '' : ad).replace(/[\\\/]+/g, ' ').replace(/^\s+|\s+$/g, '');
+    var onceki, n = 0;
+    do {
+      onceki = s; n++;
+      s = s.replace(/[\s_.\-]*\(\d{1,2}\)\s*$/, '')
+        .replace(/[_\-\s]+\d{8}[_\-]?\d{6}([_\-]\d{1,4})?\s*$/, '')
+        .replace(/[_\-\s]+\d{4}[_\-]\d{2}[_\-]\d{2}[_\-\s]+\d{2}[_\-.]\d{2}([_\-.]\d{2})?\s*$/, '')
+        .replace(/[_\-\s]+\d{10,14}\s*$/, '')
+        .replace(/\.(pptx?|pdf|docx?|odt|odp|key|rtf|txt|png|jpe?g)\s*$/i, '')
+        .replace(/[_\-]\d{1,2}\s*$/, function (m, off, str) { return /[A-Za-zÇĞİÖŞÜçğıöşü]$/.test(str.substr(0, off)) && off >= 4 ? '' : m; })
+        .replace(/^\s+|\s+$/g, '');
+    } while (s !== onceki && n < 8);
+    if (s.indexOf(' ') < 0 && /_/.test(s)) { s = s.replace(/_+/g, ' '); }
+    s = s.replace(/\s{2,}/g, ' ').replace(/^[\s_\-.]+|[\s_\-.]+$/g, '');
+    s = s.replace(new RegExp('(^|\\s)([' + HARF + ']+)(?=\\s|$)', 'g'), function (m0, a0, w) {
+      var d = DOSYA_DUZELT[lc(w)];
+      if (!d) { return m0; }
+      return a0 + (bykMi(w.charAt(0)) ? ilkBuyuk(d) : d);
+    });
+    return s || String(ad || '').replace(/^\s+|\s+$/g, '');
+  }
+
+  /* ------------------------------------------------------------------ */
   /* CUMLE BOLUCU                                                         */
   /* ------------------------------------------------------------------ */
   var KISALTMA = {};
   (function () {
     var l = ('m md mad vd vb vs bkz bk krs s ss sy hd cd hgk cgk e k t no nolu yarg dan orn or prof doc dr av c cilt ' +
       'f fik fikr par bnd b bs cev ed haz gb yy yuz yrd ogr gor ars uzm st sn tel ibk ibbgk hk tar kn sk ek bsk mah ' +
-      'bkn gen org ltd sti dn md. ay ayn tbk tmk hmk cmk iik tck ant a ay').split(' ');
+      'bkn gen org ltd sti dn md. ay ayn tbk tmk hmk cmk iik tck ant a ay sa rg yön krş fık bnd').split(' ');
     var i;
     for (i = 0; i < l.length; i++) { KISALTMA[l[i]] = 1; }
     /* Turkce karakterli yazimlar */
@@ -479,6 +613,14 @@ var LEXOZET = (function () {
           }
         }
         var kutu = { tip: mk.tip, etiket: mk.etiket, ad: ad, sayfa: ln.p, t: kt, maddeler: km };
+        /* "IPUCU:" kutusu uzun/aciklayici ise sinav notu degil, siradan govde metnidir */
+        var tumKutu = kt + ' ' + km.join(' ');
+        if (mk.tip === 'sinav' && /^[İI]PUCU$/i.test(mk.etiket) && kelimeSay(tumKutu) > 40 && !/(sınav|mutlaka|önemli|dikkat|karıştır|unutma|soru)/.test(lc(tumKutu))) {
+          if (mk.ic) { var kopya = {}, ky0; for (ky0 in ln) { if (ln.hasOwnProperty(ky0)) { kopya[ky0] = ln[ky0]; } } kopya.t = mk.ic; out.push(kopya); }
+          for (var bk = i + 1; bk < j; bk++) { out.push(L[bk]); }
+          i = j;
+          continue;
+        }
         out.push({ t: PHT, ph: true, kutu: kutu, p: ln.p, x: ln.x, y: ln.y, h: ln.h, b: true, bn: 1, gap: 0 });
       }
       i = j;
@@ -922,8 +1064,15 @@ var LEXOZET = (function () {
     }
     return n ? b / n : 0;
   }
-  function sonNoktalama(t) { return /[.?!:;]["”’»)]*$/.test(t); }
-  function cumleSonu(t) { return /[.?!]["”’»)]*$/.test(t); }
+  /* satir sonundaki kisaltma ("m.", "sa.", "bkz.") cumle sonu degildir; yeni satir rakamla basliyorsa vd./vs. de degildir */
+  var RE_KISALTMA_SON = /(^|[\s(,;])(m|md|mad|sa|bkz|bk|s|ss|sy|hd|cd|e|k|t|no|yön|par|fık|krş|bnd)\.$/i;
+  var RE_KISALTMA_SON2 = /(^|[\s(,;])(vd|vs|vb|yön)\.$/i;
+  function kisaltmaSonu(t, sonraki) {
+    if (RE_KISALTMA_SON.test(t)) { return true; }
+    return !!(sonraki && RE_KISALTMA_SON2.test(t) && /^[\d,;)]/.test(sonraki));
+  }
+  function sonNoktalama(t, sonraki) { return /[.?!:;]["”’»)]*$/.test(t) && !kisaltmaSonu(t, sonraki); }
+  function cumleSonu(t, sonraki) { return /[.?!]["”’»)]*$/.test(t) && !kisaltmaSonu(t, sonraki); }
 
   var BAGLAC_SON = /\s(ve|ile|veya|için|ya da|ile ilgili|de|da)$/i;
 
@@ -1025,7 +1174,7 @@ var LEXOZET = (function () {
 
     function yeniParagrafMi(prev, ln) {
       /* sayfa sonunda kesilen cumle: ayni paragrafin devami */
-      if (prev.p !== ln.p && (kckMi(ln.t.charAt(0)) || !sonNoktalama(prev.t))) { return false; }
+      if (prev.p !== ln.p && (kckMi(ln.t.charAt(0)) || !sonNoktalama(prev.t, ln.t))) { return false; }
       if (ln.b) { return true; }
       if (prev.h && ln.h && Math.abs(ln.h - prev.h) > 0.12 * prev.h) { return true; }
       if (/^(örneğin|örnek|mesela)\s*[;:,]?$/i.test(prev.t)) { return false; }
@@ -1036,9 +1185,9 @@ var LEXOZET = (function () {
         if (md && dy > 1.55 * md && dy > 1.1 * (ln.h || 0)) { return true; }
       }
       var kisaSatir = (prev.x2 !== null && prev.x2 !== undefined && sagKenar[prev.p] !== undefined) ? (sagKenar[prev.p] - prev.x2 > 4.5 * (prev.h || 10)) : (prev.t.length < 0.8 * lenRef);
-      if (!sonNoktalama(prev.t) && prev.p === ln.p && kisaSatir && prev.t.length >= 12 && bykMi(ln.t.charAt(0)) &&
+      if (!sonNoktalama(prev.t, ln.t) && prev.p === ln.p && kisaSatir && prev.t.length >= 12 && bykMi(ln.t.charAt(0)) &&
         !BAGLAC_SON.test(prev.t) && !/[,(]$/.test(prev.t) && prev.x !== null && ln.x !== null && Math.abs(prev.x - ln.x) < 4) { return true; }
-      if (sonNoktalama(prev.t)) {
+      if (sonNoktalama(prev.t, ln.t)) {
         var kisa = prev.t.length < 0.62 * lenRef;
         var kn = kenar[ln.p];
         var girinti = (ln.x !== null && kn !== undefined && (ln.x - kn) > behindThr && prev.p === ln.p && (prev.x === null || (ln.x - prev.x) > behindThr));
@@ -1054,7 +1203,7 @@ var LEXOZET = (function () {
       if (bodyH && ln.h >= bodyH * 1.15 && len <= 160) { return { kind: 'font', lv: 0 }; }
       var onceki = i > 0 ? L[i - 1] : null;
       var sonraki = i + 1 < N ? L[i + 1] : null;
-      var oncekiBitti = !onceki || ln.b || onceki.p !== ln.p || cumleSonu(onceki.t) || onceki.baslik;
+      var oncekiBitti = !onceki || ln.b || onceki.p !== ln.p || cumleSonu(onceki.t, ln.t) || onceki.baslik;
       /* roma */
       m = /^([IVX]{1,5})\s*[.)-]\s*(\S.*)$/.exec(t);
       if (m && bykMi(m[2].charAt(0)) && len <= 130 && !/[,;]$/.test(t)) { return { kind: 'roma', lv: 1 }; }
@@ -1098,7 +1247,7 @@ var LEXOZET = (function () {
         var oran = baslikHarfOrani(t);
         var sk = kelimeSay(t);
         if ((sk >= 2 && oran >= 0.6) || (sk === 1 && len >= 4 && oran === 1 && (bykMi(sonraki.t.charAt(0))))) {
-          if (!ln.b && onceki && onceki.p === ln.p && !cumleSonu(onceki.t)) { return null; }
+          if (!ln.b && onceki && onceki.p === ln.p && !cumleSonu(onceki.t, ln.t)) { return null; }
           return { kind: 'baslikbicim', lv: 4 };
         }
       }
@@ -1183,7 +1332,9 @@ var LEXOZET = (function () {
           if ((bt.kind === 'roma' || bt.kind === 'sayi' || bt.kind === 'harf' || bt.kind === 'noktali' || bt.kind === 'harfalt') &&
             kckMi(nx.t.charAt(0)) && onNoktasiz && ht.length >= 30 && nx.t.length <= 100) { devam = true; }
           if ((bt.kind === 'harfalt' || bt.kind === 'baslikbicim' || bt.kind === 'caps') && /^\([^)]{2,60}\)$/.test(nx.t) && onNoktasiz) { devam = true; }
-          if (!devam && (ht.match(/\(/g) || []).length > (ht.match(/\)/g) || []).length && /^[^()]{1,50}\)$/.test(nx.t)) { devam = true; }
+          if (!devam && (ht.match(/\(/g) || []).length > (ht.match(/\)/g) || []).length && /^[^()]{1,70}\)[.,;]?$/.test(nx.t)) { devam = true; }
+          if (!devam && (ht.match(/\(/g) || []).length > (ht.match(/\)/g) || []).length && /^\d/.test(nx.t) && nx.t.length <= 90 && nx.t.indexOf('(') < 0) { devam = true; }
+          if (!devam && kisaltmaSonu(ht, nx.t) && /^\d/.test(nx.t) && nx.t.length <= 80) { devam = true; }
           if (!devam) { break; }
           hj++; ht += ' ' + nx.t;
         }
@@ -1301,13 +1452,27 @@ var LEXOZET = (function () {
 
   var RE_ORNEK = rx(NB + '(örneğin|örnek olarak|örnek vermek gerekirse|mesela|örnek gösterilebilir|örnek verilebilir)' + NS, 'i');
   var RE_ORNEK_BAS = /^\(?(örneğin|örnek|mesela)(\s|[:;,]|$)/i;
+  var RE_ORNEK_ETIKET = /^\(?(örnek|örneğin|mesela)\s*\d{0,2}\s*[:.)]/i;
+  var RE_KURGUSAL = /\((?:dersten\s+)?kurgusal\s+örnek[^)]*\)/i;
+  /* tirnak/guillemet icinde verilmis alinti (cogunlukla ornek cumlesi) */
+  function alintiOrani(t) {
+    var top = 0, m, rg = /«[^»]*»|“[^”]*”|"[^"]*"/g;
+    while ((m = rg.exec(t))) { top += m[0].length; }
+    return t.length ? top / t.length : 0;
+  }
 
-  var RE_GORUS = rx(NB + '(doktrinde|doktrin|öğretide|öğreti|bir görüşe göre|görüşe göre|görüşünde|görüşündedir|görüş|görüşü|görüşler|hâkim görüş|hakim görüş|baskın görüş|ağırlıklı görüş|aksi görüş|karşı görüş|kanaatimizce|kanaatimize|kanımızca|bizce|savunulmaktadır|savunulur|savunmaktadır|savunur|savunan|ileri sürülmektedir|ileri sürmektedir|ileri sürülür|ileri sürmüştür|yazarlara göre|yazara göre|yazarlar|yazarına göre|teze göre|tez)' + NS);
+  /* gercek doktrin/gorus isaretleri: genel "gorus", "yazar", "savun" kelimeleri tek basina yetmez */
+  var RE_GORUS = rx(NB + '(doktrinde|doktrindeki|doktrin(?:in)?\\s+(?:bir\\s+kısmı|çoğunluğu|ağırlıklı)|öğretide|öğretideki|' +
+    '(?:bir|diğer\\s+bir|başka\\s+bir|ikinci|birinci)\\s+görüşe\\s+göre|görüşe\\s+göre|hâkim\\s+görüş|hakim\\s+görüş|baskın\\s+görüş|ağırlıklı\\s+görüş|aksi\\s+görüş|karşı\\s+görüş|' +
+    'azınlık\\s+görüşü|çoğunluk\\s+görüşü|farklı\\s+görüş|görüşündedir|görüşündedirler|görüşünde|görüşüne\\s+katılıyoruz|görüşünü\\s+benimsemekteyiz|' +
+    'kanaatimizce|kanımızca|görüşündeyiz|kanaatindeyiz|yazara\\s+göre|yazarlara\\s+göre|yazarına\\s+göre|teze\\s+göre|' +
+    '(?:yazarlar|doktrin|öğreti)\\s+[^.]{0,40}(?:savun|ileri\\s+sür|kabul\\s+et|benimse))' + NS);
   var RE_GORUS_AKSI = /(aksi görüş|karşı görüş|aksi yönde|karşı oy|aksine|karşı görüştedir|farklı görüş)/;
   var RE_GORUS_HAKIM = /(hâkim görüş|hakim görüş|baskın görüş|ağırlıklı görüş|genel kabul gören|çoğunluk görüşü|çoğunlukla)/;
   var RE_GORUS_KANAAT = /(kanaatimizce|kanaatimize|kanımızca|bizce|görüşündeyiz|düşüncesindeyiz|kanaatindeyiz)/;
 
-  var RE_MAHKEME = new RegExp(NB + '(Yargıtay|YİBK|YHGK|YCGK|İBBGK|İBK|HGK|CGK|AYM|Anayasa Mahkemesi|AİHM|Avrupa İnsan Hakları Mahkemesi|Danıştay|İDDK|Uyuşmazlık Mahkemesi|Bölge Adliye|BAM|Sayıştay|Yüksek Seçim Kurulu|İçtihadı Birleştirme)' + NS);
+  var MAHKEME_ADLARI = 'Yargıtay|YİBK|YHGK|YCGK|İBBGK|İBK|HGK|CGK|AYM|Anayasa Mahkemesi|AİHM|Avrupa İnsan Hakları Mahkemesi|Danıştay|İDDK|Uyuşmazlık Mahkemesi|Bölge Adliye|BAM|Sayıştay|Yüksek Seçim Kurulu|İçtihadı Birleştirme';
+  var RE_MAHKEME = new RegExp(NB + '(' + MAHKEME_ADLARI + ')' + NS);
   var RE_ESAS_KARAR = /(?:\bE\.\s*\d{2,4}\s*\/\s*\d+|\bK\.\s*\d{2,4}\s*\/\s*\d+|\d{2,4}\s*\/\s*\d+\s*E\.|\d{2,4}\s*\/\s*\d+\s*K\.)/;
   var RE_KARAR_SOZ = rx('(karar|kararı|kararında|kararına|içtihat|içtihad|bozma|bozdu|onama|onadı|kabul et|hükmet|verdiği|sonuca var|belirt|vurgula|değerlendir|görüşü|uygulama|yaklaşım|içtihatlar|başvuru|ihlal)', 'i');
 
@@ -1339,7 +1504,13 @@ var LEXOZET = (function () {
 
     /* ---- tanim ---- */
     var tanim = false;
-    if (!soruMu && len >= 30 && len <= 520 && bas) {
+    var tanimOn = /^Tanım\s*:\s*\S/.test(t);
+    var ornekEt = RE_ORNEK_ETIKET.test(t) || RE_KURGUSAL.test(t);
+    var alintiBas = /^[«“"]/.test(t) && alintiOrani(t) >= 0.6;
+    u.alinti = alintiBas || RE_KURGUSAL.test(t);
+    if (tanimOn && !soruMu && len >= 20) {
+      tanim = true; u.tanimOn = true;
+    } else if (!soruMu && len >= 30 && len <= 520 && bas && !ornekEt && !u.alinti) {
       var mt = RE_TANIM_GUCLU.exec(lt);
       if (mt) {
         var pos = mt.index + (mt[0].length - mt[1].length);
@@ -1348,6 +1519,11 @@ var LEXOZET = (function () {
         if (pos >= 10) {
           if (!zayifCue) {
             if (!(engel && /^(ancak|örneğin|mesela|ayrıca|fakat)\b/.test(baslayan))) { tanim = true; }
+            /* "...sahipsiniz demektir." : zamir ozneli / sartli (-sa) cumle sonu "demektir" bir tanim degildir */
+            if (tanim && /^(demektir|anlamına gelir|anlamına gelmektedir)$/.test(mt[1]) &&
+              (/^(o|bu|şu|bunlar|onlar|bunun|onun|şunlar|bunu|onu|burada|orada)(\s|$)/.test(baslayan) ||
+                /^[^,;:]{0,80}?[a-zçğıöşü]+(seniz|sanız|sak|sek|ysa|yse|[^a-zçğıöşü]sa|[^a-zçğıöşü]se)(\s|,)/.test(' ' + baslayan.substr(0, 90)) ||
+                /(seniz|sanız|siniz|sınız|sin|sın|sun|sün|yorsun|yorsunuz|iz|ız|uz|üz)\s+(demektir|anlamına)/.test(lt))) { tanim = false; }
           } else if (!engel && wc <= 45 && (/[“"«]/.test(t) || RE_TANIM_ZAYIF_ISIM.test(lt) || pos < 120)) {
             tanim = true;
           }
@@ -1406,10 +1582,16 @@ var LEXOZET = (function () {
 
     /* ---- karar ---- */
     var kar = false;
-    var mk = RE_MAHKEME.exec(t);
-    if (mk) {
+    var tpar = t.replace(/\([^)]*\)/g, ' ');
+    var mk = RE_MAHKEME.exec(tpar);
+    if (mk && !tanimOn && !ornekEt) {
       var esas = RE_ESAS_KARAR.test(t);
-      if (esas || (RE_KARAR_SOZ.test(t) && (/[“"]/.test(t) || /(HD|CD|HGK|CGK|YİBK|YHGK|Daire|Genel Kurul|AYM|AİHM|karar|içtihat|Anayasa Mahkemesi)/.test(t)))) { kar = true; }
+      var ozne = new RegExp('(?:' + MAHKEME_ADLARI + ')[^;]{0,200}?(karar\\s+ver|kabul\\s+et|hükmet|benimse|bozdu|bozmuş|onadı|onamış|içtihat|belirtmiş|vurgulamış|değerlendir|sonuca\\s+var|yer\\s+ver|kararında|karara\\s+bağla|reddet|iptal\\s+et|ihlal|saptamış|tespit\\s+et|görüşündedir|yönündedir|yönünde|uygulamaktadır|uygulamıştır|gerektiğini|gerektiği)', 'i').test(tpar) ||
+        new RegExp('(?:' + MAHKEME_ADLARI + ')[^;]{0,40}[,:]\\s*[“"«]').test(tpar);
+      var kunye = /\b(B\.?\s*No|K\.?T\.|Başvuru\s+No|Karar\s+Tarihi)\s*:?\s*\d/i.test(t);
+      var icerik = kelimeSay(tpar.replace(/\b[EKT]\.\s*[\d\/.\-]+|\bR\.?G\.?|\bsa\.|\bbkz\.|\bsayılı|\d+/gi, ' ').replace(/[^A-Za-zÇĞİÖŞÜçğıöşü\s]/g, ' ').replace(/\b\S{1,2}\b/g, ' '));
+      if (esas || kunye || (ozne && icerik >= 8)) { kar = true; }
+      if (kar && !esas && !kunye && icerik < 8) { kar = false; }
       if (kar) {
         u.mahkeme = mk[1];
         var me = /\bE\.\s*(\d{2,4}\s*\/\s*\d+)/.exec(t) || /(\d{2,4}\s*\/\s*\d+)\s*E\./.exec(t);
@@ -1424,20 +1606,16 @@ var LEXOZET = (function () {
 
     /* ---- gorus ---- */
     var gor = false;
-    if (RE_GORUS.test(lt)) {
-      var dar = /(doktrin|öğreti|görüşe göre|görüş|kanaat|kanımızca|bizce|savun|ileri sür|yazar|teze göre)/.test(lt);
-      if (dar) {
-        gor = true;
-        if (/görüş/.test(lt) && !/(doktrin|öğreti|hâkim görüş|hakim görüş|baskın|ağırlıklı|aksi görüş|karşı görüş|bir görüş|görüşe göre|görüşündedir|görüşü savun|görüşünü|görüşü benimse|görüşe|kanaat|yazar|karşı oy|görüşler)/.test(lt)) { gor = false; }
-      }
-    }
+    if (!tanimOn && !ornekEt && !u.alinti && !soruMu && RE_GORUS.test(lt)) { gor = true; }
     f.gorus = gor;
     if (gor) {
       u.gorusTuru = RE_GORUS_KANAAT.test(lt) ? 'kanaat' : (RE_GORUS_AKSI.test(lt) ? 'aksi' : (RE_GORUS_HAKIM.test(lt) ? 'hakim' : 'genel'));
     }
 
     /* ---- ornek ---- */
-    f.ornek = RE_ORNEK.test(lt) && !soruMu;
+    f.ornek = (RE_ORNEK.test(lt.replace(/\([^)]*\)/g, ' ')) && !soruMu) || ornekEt;
+    f.geri = /(yukarıda|yukarıdaki|aşağıda\s+(?:açıklan|belirt|ele al|incelen)|belirtmiştik|belirttik|bahsetmiştik|bahsettik|değinmiştik|değindik|açıklamıştık|görmüştük|ele almıştık|anlatmıştık)/.test(lt) ||
+      /^(maalesef|yani,)\s/.test(baslayan);
     f.ornekBas = RE_ORNEK_BAS.test(lt);
 
     u.atifVar = /(\bm\.\s*\d|\bmd\.\s*\d|sayılı|\d+\.\s*madde|\d+['’]?[a-zçğıöşü]*\s+madde)/.test(t);
@@ -1576,6 +1754,66 @@ var LEXOZET = (function () {
   var RE_MADDE_ARA2 = new RegExp('^\\s*,?\\s*\\(?\\s*(?:(?:m|md)\\.\\s*(\\d{1,4}(?:\\/[' + KUCUK + '](?![' + KUCUK + ']))?)(?:\\s*\\/\\s*(\\d{1,2}))?|(\\d{1,4})\\s*\\.\\s*madde[' + KUCUK + ']*|(\\d{1,4})[’\']?(?:inci|ıncı|uncu|üncü|nci|ncı)\\s+madde)');
   var RE_MD_BAGLAM = new RegExp('(^|[^' + HARF + '])(?:md|mad)\\.\\s*(\\d{1,4})(?:\\s*\\/\\s*(\\d{1,2}))?(?:\\s*-\\s*([' + KUCUK + '])(?![' + KUCUK + ']))?', 'g');
 
+  /* mulga (eski) kanun baglami: "765 sayili", "eski TCK", 1988 tarihli karar ... */
+  var YURURLUK = { tck: 2005, cmk: 2005, tbk: 2012, hmk: 2011, ttk: 2012, tmk: 2002 };
+  var ESKI_NO = { '765': 'tck', '1412': 'cmk', '818': 'tbk', '1086': 'hmk', '6762': 'ttk', '743': 'tmk' };
+  var AILE_AD = '(tck|türk ceza (?:kanunu|yasası)|ceza kanunu|cmk|ceza muhakemesi|ceza usul|tbk|borçlar kanunu|hmk|hukuk muhakemeleri|hukuk usulü|ttk|ticaret kanunu|tmk|medeni kanun)';
+  function kanunAile(k) {
+    var l = lc(k || '');
+    if (/(^|\s)cmk(\s|$)|ceza muhakemesi|^1412\b|1412 sayılı/.test(l)) { return 'cmk'; }
+    if (/(^|\s)tck(\s|$)|türk ceza (kanunu|yasası)|^ceza kanunu|5237 sayılı|765 sayılı/.test(l)) { return 'tck'; }
+    if (/(^|\s)tbk(\s|$)|borçlar kanunu|6098 sayılı/.test(l)) { return 'tbk'; }
+    if (/(^|\s)hmk(\s|$)|hukuk muhakemeleri|6100 sayılı/.test(l)) { return 'hmk'; }
+    if (/(^|\s)ttk(\s|$)|türk ticaret kanunu|6102 sayılı/.test(l)) { return 'ttk'; }
+    if (/(^|\s)tmk(\s|$)|medeni kanun|4721 sayılı/.test(l)) { return 'tmk'; }
+    return '';
+  }
+  function baglamMetni(units, i) {
+    var s = '', pg = units[i].sayfa, z, son = Math.min(units.length - 1, i + 40);
+    for (z = Math.max(0, i - 40); z <= son; z++) { if (units[z].sayfa === pg) { s += ' ' + units[z].t; } }
+    return s;
+  }
+  /* atif bu baglamda mulga kanuna mi gonderiyor? */
+  function mulgaMi(kanun, baglam) {
+    var aile = kanunAile(kanun);
+    if (!aile) { return false; }
+    var l = lc(baglam), m, rg = /(\d{3,4})\s+sayılı/g;
+    while ((m = rg.exec(l))) { if (ESKI_NO[m[1]] === aile) { return true; } }
+    if (new RegExp('(eski|mülga|yürürlükten kaldırılan|yürürlükten kalkan)\\s+' + AILE_AD).test(l)) {
+      var mm = new RegExp('(eski|mülga|yürürlükten kaldırılan|yürürlükten kalkan)\\s+' + AILE_AD).exec(l);
+      if (kanunAile(mm[2]) === aile) { return true; }
+    }
+    if (/(5237|6098|6100|6102|4721|5271)\s+sayılı/.test(l)) { return false; }
+    /* karar yili kanunun yururluk yilindan once */
+    var yil = 0, ry = /\b[EK]\.\s*(19\d\d|20\d\d)\s*\/|\bT\.\s*\d{1,2}[./]\d{1,2}[./](19\d\d|20\d\d)|\b(19\d\d|20\d\d)\s*\/\s*\d+\s*[EK]\./g, my;
+    var enBuyuk = 0, bulundu = false;
+    while ((my = ry.exec(baglam))) { yil = parseInt(my[1] || my[2] || my[3], 10); bulundu = true; if (yil > enBuyuk) { enBuyuk = yil; } }
+    if (bulundu && enBuyuk < YURURLUK[aile]) { return true; }
+    return false;
+  }
+  /* atiflari kontrol et: kanun numarasi biliniyorsa madde var mi? opts.kanunNo(ad)->no, opts.kanunMadde{no:adet}, opts.maddeVar(no,madde)->bool */
+  function atifKontrol(atiflar, opts) {
+    opts = opts || {};
+    for (var i = 0; i < atiflar.length; i++) {
+      var a = atiflar[i];
+      if (a.mulga) { continue; }
+      var no = a.no || (/(\d{3,5})\s+sayılı/.exec(a.kanun || '') || [])[1] || '';
+      if (!no && typeof opts.kanunNo === 'function') {
+        try { no = opts.kanunNo(a.kanunAd || a.kanun, a) || ''; } catch (e) { no = ''; }
+      }
+      if (!no) { continue; }
+      a.no = String(no);
+      var n = parseInt(a.madde, 10), top = opts.kanunMadde ? opts.kanunMadde[a.no] : 0;
+      var yok = false;
+      if (top && n > top) { yok = true; }
+      if (!yok && typeof opts.maddeVar === 'function') {
+        try { if (opts.maddeVar(a.no, a.madde) === false) { yok = true; } } catch (e2) { /* yoksay */ }
+      }
+      if (yok) { a.yok = true; a.belirsiz = true; } else if (a.yok) { delete a.yok; }
+    }
+    return atiflar;
+  }
+
   var CUMLE_BASI = {};
   (function () {
     var l = 'ancak ayrıca bununla bu şu zira yani ise fakat özellikle nitekim oysa çünkü şayet örneğin mesela buna burada ve de da ile her bazı tüm aynı ilgili diğer sonuç böylece dolayısıyla kanun'.split(' ');
@@ -1653,6 +1891,18 @@ var LEXOZET = (function () {
     }
   }
 
+  /* iki kelime arasi duzenleme mesafesi <= 1 mi (ekleme/silme/degistirme) */
+  function levBir(a, b) {
+    if (a === b) { return true; }
+    if (Math.abs(a.length - b.length) > 1) { return false; }
+    var i = 0, j = 0, fark = 0;
+    while (i < a.length && j < b.length) {
+      if (a.charAt(i) === b.charAt(j)) { i++; j++; continue; }
+      if (++fark > 1) { return false; }
+      if (a.length > b.length) { i++; } else if (b.length > a.length) { j++; } else { i++; j++; }
+    }
+    return fark + (a.length - i) + (b.length - j) <= 1;
+  }
   /* "Tebligat Kanunu (TebK)" tipi kisaltma tanimlari */
   var RE_ALIAS = new RegExp('((?:[A-ZÇĞİÖŞÜ][a-zçğıöşü]+\\s+){1,6}(?:Kanunu?|Yönetmeli[kğ]i?|Kararnamesi?|Sözleşmesi?|Tüzü[kğ]ü?))[’\']?[a-zçğıöşü]*\\s*\\(([A-ZÇĞİÖŞÜ][A-Za-zÇĞİÖŞÜçğıöşü]{1,9})\\)', 'g');
   function adAnahtar(ad) {
@@ -1783,12 +2033,27 @@ var LEXOZET = (function () {
     return pr;
   }
 
+  /* ":" ile biten ya da liste girisi kesilmis ("...sektorleri sunlardir: Dijital Altyapilar") cumle */
+  function yarimListeMi(t) {
+    var tt = bosluk(String(t));
+    if (/:["”)]*$/.test(tt)) { return true; }
+    var m = /:\s+([^.?!]*)$/.exec(tt);
+    return !!(m && kelimeSay(m[1]) <= 5 && !/[.?!]["”)]*$/.test(tt));
+  }
+  /* uzunluga gore ust sinir (cumle sayisi): Kisa ~28, Orta ~58, Uzun ~110 */
+  function ozetTavan(oran) {
+    if (oran <= 0.1) { return 26; }
+    if (oran <= 0.2) { return Math.round(26 + (oran - 0.1) * 280); }
+    if (oran <= 0.3) { return Math.round(54 + (oran - 0.2) * 480); }
+    return 102 + Math.round((oran - 0.3) * 400);
+  }
   function ozetle(units, heads, opts, qaModu) {
     var oran = typeof opts.oran === 'number' ? opts.oran : 0.2;
     var cand = [], i, j;
     for (i = 0; i < units.length; i++) {
       var u = units[i];
       u.aday = !(u.test || u.kucuk || u.wc < 4 || (qaModu && u.sec < 0));
+      if (u.aday && ((u.wc > 100 && !u.f.tanim) || (u.wc >= 45 && alintiOrani(u.t) >= 0.5) || (!u.maddeler && yarimListeMi(u.t)))) { u.aday = false; }
       if (u.aday) { cand.push(i); }
     }
     var N = cand.length;
@@ -1840,6 +2105,8 @@ var LEXOZET = (function () {
       var wc = x.wc;
       if (wc < 6) { sc -= 0.45; } else if (wc < 9) { sc -= 0.12; }
       if (wc > 110) { sc -= 0.45; } else if (wc > 70) { sc -= 0.2; } else if (wc > 55) { sc -= 0.08; }
+      if (oran < 0.3) { if (wc > 60) { sc -= 0.2; } else if (wc > 45) { sc -= 0.1; } }
+      if (f.geri) { sc -= 0.4; }
       if (x.liste) { if (wc > 120) { sc -= 0.1; } if (wc < 9) { sc += 0.1; } }
       if (f.ornekBas || x.ornekPara) { sc -= 0.30; } else if (f.ornek) { sc -= 0.05; }
       if (x.aside) { sc -= 0.08; }
@@ -1859,6 +2126,7 @@ var LEXOZET = (function () {
       (bolumler[s] = bolumler[s] || []).push(cand[i]);
     }
     var K = Math.max(1, Math.round(oran * N));
+    K = Math.min(K, ozetTavan(oran));
     var anahtarlar = Object.keys(bolumler);
     var kota = {}, toplam = 0, minK = 0;
     var bb = typeof opts.baslikBasi === 'number' && opts.baslikBasi > 0 ? opts.baslikBasi : 0;
@@ -1869,7 +2137,8 @@ var LEXOZET = (function () {
       ham[key] = oran * n;
       q = Math.floor(ham[key]);
       var enAz = n >= 2 ? 1 : 0;
-      if (qaModu && n >= 6) { enAz = 2; }
+      if (qaModu && n >= 6 && oran >= 0.3) { enAz = 2; }
+      if (oran <= 0.15 && n >= 2) { enAz = 0; }
       if (n === 1) {
         /* tek cumle: yalnizca kendi basina anlamliysa */
         var tu = units[arr[0]];
@@ -1881,14 +2150,41 @@ var LEXOZET = (function () {
     }
     /* toplami hedefe yaklastir */
     var guard = 0;
+    var bolumTepe = {};
+    for (i = 0; i < anahtarlar.length; i++) {
+      var tp = -1e9, ar0 = bolumler[anahtarlar[i]];
+      for (j = 0; j < ar0.length; j++) { if (units[ar0[j]].skor > tp) { tp = units[ar0[j]].skor; } }
+      bolumTepe[anahtarlar[i]] = tp;
+    }
     while (toplam > K * 1.1 + 1 && guard++ < 5000) {
       var en = null, ev = 0;
+      if (oran <= 0.15) {
+        /* kisa ozet: butce asiliyorsa en zayif bolumlerin payi sifirlanir */
+        var dusuk = 1e9;
+        for (i = 0; i < anahtarlar.length; i++) {
+          var kk3 = anahtarlar[i];
+          if (kota[kk3] > 0 && bolumTepe[kk3] < dusuk) { dusuk = bolumTepe[kk3]; en = kk3; }
+        }
+        if (en === null) { break; }
+        toplam -= kota[en]; kota[en] = 0; bolumTepe[en] = 1e9;
+        continue;
+      }
       for (i = 0; i < anahtarlar.length; i++) {
         var kk2 = anahtarlar[i];
-        var minimum = bolumler[kk2].length >= 2 ? (qaModu && bolumler[kk2].length >= 6 ? 2 : 1) : (kota[kk2] ? 1 : 0);
+        var minimum = bolumler[kk2].length >= 2 ? (qaModu && bolumler[kk2].length >= 6 && oran >= 0.3 ? 2 : 1) : (kota[kk2] ? 1 : 0);
         if (kota[kk2] > minimum && kota[kk2] - ham[kk2] > ev) { ev = kota[kk2] - ham[kk2]; en = kk2; }
       }
-      if (en === null) { break; }
+      if (en === null) {
+        /* her bolum zaten en az 1: butce asiliyorsa en zayif bolumlerin payi sifirlanir */
+        var dus2 = 1e9;
+        for (i = 0; i < anahtarlar.length; i++) {
+          var kk5 = anahtarlar[i];
+          if (kota[kk5] > 0 && bolumTepe[kk5] < dus2) { dus2 = bolumTepe[kk5]; en = kk5; }
+        }
+        if (en === null) { break; }
+        toplam -= kota[en]; kota[en] = 0; bolumTepe[en] = 1e9;
+        continue;
+      }
       kota[en]--; toplam--;
     }
     guard = 0;
@@ -2086,6 +2382,23 @@ var LEXOZET = (function () {
   /* ------------------------------------------------------------------ */
   /* Seviye atama                                                         */
   /* ------------------------------------------------------------------ */
+  /* tekrar eden "GIRIS" basliklari: ust bolum adiyla "Bolum > Giris" yapilir */
+  function girisBaslikDuzelt(heads) {
+    var i, j, n = 0;
+    for (i = 0; i < heads.length; i++) { if (lc(heads[i].t) === 'giriş') { n++; } }
+    if (n < 2) { return; }
+    for (i = 0; i < heads.length; i++) {
+      if (lc(heads[i].t) !== 'giriş') { continue; }
+      for (j = i - 1; j >= 0; j--) {
+        if (heads[j].seviye < heads[i].seviye && lc(heads[j].t) !== 'giriş') {
+          var pt = bosluk(heads[j].t);
+          if (pt.length > 70) { pt = pt.substr(0, 70).replace(/\s+\S*$/, '') + '…'; }
+          heads[i].t = pt + ' › ' + heads[i].t;
+          break;
+        }
+      }
+    }
+  }
   function seviyeAta(heads) {
     var i;
     var hVar = false;
@@ -2125,18 +2438,454 @@ var LEXOZET = (function () {
     for (i = 0; i < heads.length; i++) { heads[i].seviye = lvs.indexOf(heads[i].lv) + 1; }
   }
 
+  /* ek bolumler: icerigi bos ":" cumleleri at, bolumler arasi tekrari kaldir, her ogeye kalite puani ver */
+  function benzAnahtar(t) { return lc(String(t)).replace(/[^a-zçğıöşü0-9]+/g, ' ').replace(/^ | $/g, '').substr(0, 90); }
+  function ekPuan(tur, x) {
+    var wc = kelimeSay(x.t || ''), p = 0;
+    if (wc >= 8 && wc <= 40) { p += 1; } else if (wc > 60) { p -= 1; } else if (wc < 6) { p -= 1; }
+    if (tur === 'tanim') { if (x.terim) { p += 2; } p += 1; }
+    else if (tur === 'karar') { if (x.esas || x.kararNo) { p += 2; } if (x.tarih) { p += 1; } }
+    else if (tur === 'ornek') { if (/^(Örnek|Örneğin)/i.test(x.t)) { p += 1; } }
+    else if (tur === 'sart') { if (x.maddeler && x.maddeler.length >= 2) { p += 2; } }
+    else if (tur === 'istisna') { p += (x.guc || 0); }
+    else if (tur === 'gorus') { if (x.tur === 'hakim' || x.tur === 'aksi') { p += 1; } }
+    return p;
+  }
+  function ekBolumDuzenle(R) {
+    var sira = R.mod === 'sunum' ? [['tanimlar', 'tanim'], ['kararlar', 'karar'], ['ornekler', 'ornek'], ['gorusler', 'gorus'], ['sartlar', 'sart'], ['istisnalar', 'istisna']] :
+      [['tanimlar', 'tanim'], ['kararlar', 'karar'], ['gorusler', 'gorus'], ['sartlar', 'sart'], ['istisnalar', 'istisna'], ['ornekler', 'ornek']];
+    var gorulen = {}, a, i;
+    for (a = 0; a < sira.length; a++) {
+      var arr = R[sira[a][0]], yeni = [];
+      for (i = 0; i < arr.length; i++) {
+        var x = arr[i], mad = x.maddeler && x.maddeler.length;
+        if (!mad && yarimListeMi(x.t)) { continue; }
+        var k = benzAnahtar(x.t);
+        if (gorulen[k]) { continue; }
+        gorulen[k] = 1;
+        x.p = ekPuan(sira[a][1], x);
+        if (x._para !== undefined) { delete x._para; }
+        yeni.push(x);
+      }
+      R[sira[a][0]] = yeni;
+    }
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* SUNUM (slayt) modu: Canva/PowerPoint'ten PDF'e cevrilmis ders sunumlari */
+  /* ------------------------------------------------------------------ */
+  function sayfaBoyutu(pages, opts, i) {
+    var a = pages[i];
+    if (a && typeof a.w === 'number' && typeof a.h === 'number' && a.w > 0 && a.h > 0) { return { w: a.w, h: a.h }; }
+    var d = opts && opts.sayfaBoyutlari ? opts.sayfaBoyutlari[i] : null;
+    if (d && d.w > 0 && d.h > 0) { return { w: d.w, h: d.h }; }
+    return null;
+  }
+  var RE_PAR_BAS = /^(?:(?:Tanım|Örnek|ÖRNEK|Örneğin|ÖRNEĞİN|Türleri|Not|NOT)\s*\d{0,2}\s*[:.)]|[-–—•·*]\s*\S|\(?\d{1,2}[.)]\s*\S|[ivxlc]{1,5}\.\s*\S|[IVXLC]{1,5}\.\s*\S)/;
+  var RE_LISTE_ISARET = /^(?:[-–—•·*]\s*|\(?\d{1,2}[.)]\s*|[ivxlc]{1,5}\.\s*|[IVXLC]{1,5}\.\s*)(\S.*)$/;
+
+  function sunumSatirlar(arr) {
+    var out = [], i, o, t, hep = true;
+    for (i = 0; i < (arr || []).length; i++) {
+      o = (arr[i] !== null && typeof arr[i] === 'object') ? arr[i] : { t: arr[i] };
+      t = bosluk(temizle(o.t).replace(/[-]+/g, '• '));
+      if (!t || /^\d{1,3}$/.test(t)) { continue; }
+      var ln = { t: t, h: typeof o.h === 'number' ? o.h : 0, y: typeof o.y === 'number' ? o.y : null, x: typeof o.x === 'number' ? o.x : null, x2: typeof o.x2 === 'number' ? o.x2 : null, i: i };
+      if (ln.y === null) { hep = false; }
+      var cc = o.c;
+      if (cc && cc.length >= 2 && /:$/.test(bosluk(cc[0].t)) && kelimeSay(cc[0].t) <= 4 && !RE_PAR_BAS.test(bosluk(cc[0].t))) {
+        var rest = [];
+        for (var z = 1; z < cc.length; z++) { rest.push(bosluk(cc[z].t)); }
+        out.push({ t: bosluk(cc[0].t), h: ln.h, y: ln.y, x: ln.x, i: i });
+        ln = { t: bosluk(rest.join(' ')), h: ln.h * 0.85, y: ln.y !== null ? ln.y - 0.01 : null, x: cc[1].x, x2: ln.x2, i: i + 0.5 };
+      }
+      out.push(ln);
+    }
+    if (hep && out.length > 1) { out.sort(function (a, b) { return (b.y - a.y) || (a.i - b.i); }); }
+    /* satir araligi ve sag kenar (dogal satir sonu / paragraf sonu ayrimi icin) */
+    var adim = [], sag = [];
+    for (i = 1; i < out.length; i++) { if (out[i].y !== null && out[i - 1].y !== null) { adim.push(out[i - 1].y - out[i].y); } }
+    var am = adim.length >= 3 ? medyan(adim) : 0;
+    for (i = 1; i < out.length; i++) {
+      if (am > 0 && out[i].y !== null && out[i - 1].y !== null && out[i - 1].y - out[i].y > 1.45 * am) { out[i].aralik = true; }
+    }
+    for (i = 0; i < out.length; i++) { if (out[i].x2 !== null && out[i].t.length >= 25) { sag.push(out[i].x2); } }
+    out.sagKenar = sag.length >= 3 ? yuzdelik(sag, 0.9) : 0;
+    return out;
+  }
+  function sunumBaslikAdayi(t) {
+    return kelimeSay(t) <= 12 && t.length <= 90 && !/[.?!;,]["”’»)]*$/.test(t) && !/^(Tanım|Örnek|ÖRNEK|Örneğin)\s*\d*\s*[:.]/.test(t) &&
+      !/^[-–—•·*]\s/.test(t) && alintiOrani(t) < 0.9 && !(/^[«“"]/.test(t) && !/[»”"]/.test(t));
+  }
+  function sunumBaslikAyir(sat) {
+    if (!sat.length) { return { n: 0, t: '' }; }
+    var l0 = sat[0];
+    if (!sunumBaslikAdayi(l0.t) || (/:$/.test(l0.t) && sat.length < 2)) { return { n: 0, t: '' }; }
+    var n = 1, rest = [], z;
+    for (z = 1; z < sat.length; z++) { if (sat[z].h && (!l0.h || sat[z].h < 0.97 * l0.h)) { rest.push(sat[z].h); } }
+    var rm = rest.length ? medyan(rest) : 0;
+    if (rm && l0.h && Math.abs(l0.h - rm) <= 0.1 * rm && sat[1] && kckMi(sat[1].t.charAt(0)) && !RE_LISTE_ISARET.test(sat[1].t)) { return { n: 0, t: '' }; }
+    while (n < sat.length && n < 3 && l0.h && Math.abs(sat[n].h - l0.h) <= 0.03 * l0.h && (!rm || l0.h > 1.1 * rm) &&
+      kelimeSay(sat[n].t) <= 6 && sunumBaslikAdayi(sat[n].t) && !RE_LISTE_ISARET.test(sat[n].t)) { n++; }
+    var t = [];
+    for (z = 0; z < n; z++) { t.push(sat[z].t); }
+    return { n: n, t: bosluk(t.join(' ')).replace(/:$/, '') };
+  }
+  function sunumParagraflar(sat) {
+    var pars = [], cur = null, prev = null, sag = sat.sagKenar || 0;
+    for (var i = 0; i < sat.length; i++) {
+      var l = sat[i], t = l.t, yeni = false;
+      var etiketli = cur && /^(?:Tanım|Örnek|ÖRNEK|Örneğin|ÖRNEĞİN)\s*\d{0,2}\s*[:.)]/.test(cur.t);
+      if (!cur) { yeni = true; }
+      else if (/^\(.{1,40}\)$/.test(t) && kelimeSay(t) <= 6) { yeni = false; }
+      else if (/^[«“"]/.test(t) && cumleSonu(cur.t, t)) { yeni = true; }
+      else if (RE_PAR_BAS.test(t)) { yeni = true; }
+      else if (l.aralik) { yeni = true; }
+      else if (/:$/.test(cur.t) && /^[«“"]/.test(t)) { yeni = true; }
+      else if (prev && prev.h && l.h && Math.abs(l.h - prev.h) > 0.12 * prev.h) { yeni = true; }
+      else if (cumleSonu(cur.t, t) && /^[A-ZÇĞİÖŞÜ0-9«“"‘(]/.test(t) && sag && prev && prev.x2 !== null && prev.x2 !== undefined) {
+        /* satir sag kenara varmadan bitmisse (sonraki kelime sigmayacak kadar bosluk) paragraf sonudur */
+        var kalanGen = sag - prev.x2, ilkK = /^\S+/.exec(t)[0].length * 0.5 * (l.h || 20) + 0.4 * (l.h || 20);
+        if (kalanGen > ilkK * 1.05) { yeni = true; }
+      }
+      if (yeni) { cur = { t: t, h: l.h }; pars.push(cur); }
+      else { cur.t = birlestir(cur.t, t); }
+      prev = l;
+    }
+    /* paragraf ici "Ornek:" / "Ornegin:" gecisleri ayri paragraf */
+    var out = [];
+    pars.forEach(function (p) {
+      var parca = p.t.split(/\s+(?=(?:Örnek\s*\d{0,2}|Örneğin|ÖRNEK\s*\d{0,2})\s*:\s)/);
+      parca.forEach(function (x) { if (x) { out.push({ t: x, h: p.h }); } });
+    });
+    return out;
+  }
+  function sunumAnahtar(t) {
+    var k = lc(String(t).replace(/^\s*(?:[IVXLCivxlc]+|\d{1,2})\s*[.)]\s*/, '')).replace(/[“”"«»‘’'()]/g, '').replace(/\s+/g, ' ');
+    k = k.replace(/\s+(mantık\s+)?hata(sı|ları|lar)?$/, '').replace(/[.:…\s]+$/, '');
+    return k;
+  }
+  function sunumOrtukTanim(par, baslik) {
+    var cs = bol(par);
+    if (!cs.length) { return false; }
+    var c0 = cs[0], l0 = lc(c0), wc = kelimeSay(c0);
+    if (wc < 5 || wc > 45 || /\?["”]?$/.test(c0)) { return false; }
+    if (TANIM_ENGEL_BASLA.test(l0.replace(/^["“(«\s]+/, ''))) { return false; }
+    if (kelimeSay(baslik) > 6 || /(adım|örnek)/i.test(baslik)) { return false; }
+    var son = l0.replace(/[.)"”]+$/, '').split(' ').pop();
+    if (KURAL_SON.test(son)) { return false; }
+    return RE_COPULA_SON.test(l0) || (RE_TANIM_GUCLU.exec(l0) !== null && RE_TANIM_GUCLU.exec(l0).index >= 8 && !/^(o|bu|şu)\s/.test(l0));
+  }
+  function sunumTespit(pages, opts) {
+    var np = pages.length;
+    if (opts && opts.mod === 'sunum') { return { zorla: true }; }
+    if (np < 6) { return null; }
+    var kel = [], yatay = 0, boyutlu = 0, baslikli = 0, metinli = 0, rel = [], i;
+    for (i = 0; i < np; i++) {
+      var sat = sunumSatirlar(pages[i]);
+      if (!sat.length) { continue; }
+      metinli++;
+      var w = 0, hh = [];
+      sat.forEach(function (l) { w += kelimeSay(l.t); if (l.h) { hh.push(l.h); } });
+      kel.push(w);
+      var d = sayfaBoyutu(pages, opts, i);
+      if (d) { boyutlu++; if (d.w / d.h >= 1.3) { yatay++; } if (hh.length) { rel.push(medyan(hh) / d.h); } }
+      else if (hh.length) { rel.push(medyan(hh) / 600); }
+      if (sunumBaslikAyir(sat).n > 0) { baslikli++; }
+    }
+    if (metinli < 6) { return null; }
+    var kmed = medyan(kel), kmax = 0;
+    kel.forEach(function (x) { if (x > kmax) { kmax = x; } });
+    var land = boyutlu >= 0.6 * np ? (yatay / boyutlu >= 0.7 ? 1 : (yatay / boyutlu <= 0.2 ? -1 : 0)) : 0;
+    var kv = kmed <= 70 ? 1 : (kmed <= 110 ? 0.5 : (kmed <= 160 ? 0 : -1));
+    var bv = baslikli / metinli;
+    var rb = rel.length ? medyan(rel) : 0;
+    var buyuk = rb >= 0.035 ? 1 : (rb >= 0.025 ? 0.5 : 0);
+    var sinyal = { yatay: land, kelimeMedyan: kmed, baslikOrani: Math.round(bv * 100) / 100, yaziBoyu: Math.round(rb * 1000) / 1000 };
+    var ok = (land === 1 && kv >= 0.5 && bv >= 0.5) || (land === 0 && boyutlu === 0 && kv === 1 && buyuk >= 0.5 && bv >= 0.6 && metinli >= 8);
+    return ok ? { sinyal: sinyal } : null;
+  }
+
+  /* slaytlari kavramlara (ayni baslikli slaytlar birlesir) ve bloklara cevir */
+  function sunumKur(pages, opts) {
+    var np = pages.length, kav = [], kapak = null, kaynakca = false, i, z, satirSay = 0, sonKav = null, ilkMetin = true;
+    for (i = 0; i < np; i++) {
+      var sat = sunumSatirlar(pages[i]);
+      if (!sat.length) { continue; }
+      satirSay += sat.length;
+      /* dipnot: alttaki daha kucuk puntolu "5 AYM, E.1988/4 ..." satiri */
+      var fn = '', hs = [];
+      sat.forEach(function (l) { if (l.h) { hs.push(l.h); } });
+      var gm = hs.length ? medyan(hs) : 0;
+      if (sat.length >= 4) {
+        for (z = sat.length - 1; z >= 1; z--) {
+          var lz = sat[z];
+          if (gm && lz.h && lz.h <= 0.8 * gm && (/^\d{1,2}\s+\S/.test(lz.t) || RE_ESAS_KARAR.test(lz.t))) {
+            fn = lz.t.replace(new RegExp('^\\d{1,3}\\s+(?=' + MAHKEME_ADLARI + ')'), ''); sat.splice(z, 1);
+          }
+        }
+      }
+      var bs = sunumBaslikAyir(sat), baslik = bs.t, kalan = sat.slice(bs.n);
+      kalan.sagKenar = sat.sagKenar;
+      /* kapak: ilk sayfada baslik + (varsa) alt baslik, cumle yok */
+      if (ilkMetin) {
+        ilkMetin = false;
+        var cumleli = false;
+        kalan.forEach(function (l) { if (kelimeSay(l.t) >= 10 && /[.?!]$/.test(l.t)) { cumleli = true; } });
+        if (bs.n > 0 && !cumleli && kalan.length <= 2) {
+          kapak = { baslik: baslikBicim(baslik, true), alt: kalan.length ? bosluk(kalan.map(function (l) { return l.t; }).join(' ')) : '' };
+          continue;
+        }
+      }
+      if (baslik && /^(kaynak|yararlan|bibliyografya|referans|kaynakça)/.test(lc(baslik))) { kaynakca = true; sonKav = null; continue; }
+      var altBaslik = '';
+      if (kalan.length >= 2 && /^[A-ZÇĞİÖŞÜ\s’'“”".\-/]{3,40}$/.test(kalan[0].t) && kelimeSay(kalan[0].t) <= 5 && kalan[0].t !== lc(kalan[0].t)) {
+        altBaslik = kalan[0].t; kalan = kalan.slice(1);
+      }
+      var key = baslik ? sunumAnahtar(baslik) : '';
+      var c = null;
+      var kararBasligi = (/\b(AYM|Yargıtay|Danıştay|AİHM|Mahkeme)/i.test(baslik) && /karar/i.test(baslik)) || /karar\s+inceleme/i.test(baslik);
+      if (key) {
+        for (z = kav.length - 1; z >= 0 && z >= kav.length - 4; z--) { if (kav[z].key === key) { c = kav[z]; break; } }
+        if (!c && kararBasligi && kav.length && kav[kav.length - 1].kararMi) { c = kav[kav.length - 1]; }
+        if (!c) {
+          c = { key: key, baslik: baslikBicim(baslik, true), ham: baslik, sayfa: i + 1, sayfalar: [], tanim: [], metin: [], liste: [], ornek: [], sorular: [], par: [], karar: '', kararSay: 0, kararMi: (/\b(AYM|Yargıtay|Danıştay|AİHM|Mahkeme)/i.test(baslik) && /karar/i.test(baslik)) || /karar\s+inceleme/i.test(baslik), ornekSlayt: /örnek/i.test(baslik), tanimVardi: false };
+          kav.push(c);
+        }
+      } else if (sonKav) { c = sonKav; }
+      else { continue; }
+      sonKav = c;
+      if (altBaslik && !c.alt) { c.alt = baslikBicim(altBaslik, true); }
+      if (c.sayfalar.indexOf(i + 1) < 0) { c.sayfalar.push(i + 1); }
+      var pars = sunumParagraflar(kalan);
+      var tanimOnce = c.tanim.length > 0, isaretli = false, k;
+      pars.forEach(function (p) { if (RE_ORNEK_ETIKET.test(p.t) || /^[«“"]/.test(p.t) || RE_KURGUSAL.test(p.t)) { isaretli = true; } });
+      var yeniKav = c.par.length === 0;
+      var soruSay = 0;
+      pars.forEach(function (p) { if (/\?["”]?$/.test(p.t) || /^\d+\.\s*Adım/i.test(baslik)) { soruSay++; } });
+      var soruSlayt = pars.length > 0 && soruSay * 2 >= pars.length;
+      for (k = 0; k < pars.length; k++) {
+        var pt = pars[k].t, sn = i + 1, tur;
+        if (/^Tanım\s*:/i.test(pt)) { tur = 'tanim'; pt = pt.replace(/^Tanım\s*:\s*/i, ''); }
+        else if (RE_ORNEK_ETIKET.test(pt) || RE_KURGUSAL.test(pt) || /^[«“"]/.test(pt)) { tur = 'ornek'; }
+        else if (c.ornekSlayt) { tur = 'ornek'; }
+        else if (/:$/.test(pt) && k + 1 < pars.length && /^[«“"]/.test(pars[k + 1].t)) { tur = 'ornek'; }
+        else if (RE_LISTE_ISARET.test(pt) && !/^[IVXLC]{1,5}\.\s/.test(pt) || (/^[ivxlc]{1,5}\.\s*\S/.test(pt))) { tur = 'madde'; }
+        else if (tanimOnce && isaretli) { tur = 'ornek'; }
+        else if (soruSlayt) { tur = 'soru'; }
+        else { tur = 'metin'; }
+        if (c.kararMi) { c.par.push({ t: pt, tur: 'karar', sayfa: sn }); continue; }
+        if (tur === 'metin' && yeniKav && !c.tanim.length && !c.par.length && sunumOrtukTanim(pt, c.baslik)) { tur = 'tanim'; pars[k].ortuk = true; }
+        c.par.push({ t: pt, tur: tur, sayfa: sn, ortuk: !!pars[k].ortuk });
+        yeniKav = false;
+        if (tur === 'tanim') { c.tanim.push({ t: pt, sayfa: sn, ortuk: !!pars[k].ortuk }); }
+      }
+      if (fn) { c.karar = fn; c.kararMi = true; c.kararSay = i + 1; }
+    }
+    /* liste maddelerini grupla */
+    kav.forEach(function (c) {
+      var g = null;
+      c.par.forEach(function (p, idx) {
+        if (p.tur === 'madde') {
+          if (!g) {
+            g = { items: [], sayfa: p.sayfa, lead: '' };
+            var onc = idx > 0 ? c.par[idx - 1] : null;
+            if (onc && onc.tur === 'metin' && /:$/.test(onc.t)) { g.lead = onc.t; onc.lead = true; }
+            c.liste.push(g);
+          }
+          var m = RE_LISTE_ISARET.exec(p.t);
+          g.items.push(sunumMaddeTemizle(m ? m[1] : p.t));
+        } else {
+          g = null;
+          if (p.tur === 'metin' && !p.lead) { c.metin.push({ t: p.t, sayfa: p.sayfa }); }
+          if (p.tur === 'ornek') {
+            var son = c.ornek.length ? c.ornek[c.ornek.length - 1] : null;
+            if (son && /:$/.test(son.t) && son.sayfa === p.sayfa) { son.t += ' ' + p.t; } else { c.ornek.push({ t: p.t, sayfa: p.sayfa }); }
+          }
+          if (p.tur === 'soru') { c.sorular.push({ t: p.t, sayfa: p.sayfa }); }
+        }
+      });
+      /* metin paragraflari icinde liste girisi olanlar (lead) yeniden metin degil */
+      c.metin = c.metin.filter(function (m) { return !(c.liste.some(function (g) { return g.lead === m.t; })); });
+    });
+    /* "1.Kisisel Duygular" tipi numarali kisa baslik satirlari: madde olarak yakalandi; tek satirlik "i.ORNEK" icin buyuk harf */
+    var bloklar = [];
+    kav.forEach(function (c) {
+      var lv = /^[IVXLC]+\.\s/.test(c.ham) ? 1 : 2;
+      bloklar.push({ tur: 'baslik', kind: 'font', lv: 0, t: c.baslik, p: c.sayfa, h: lv === 1 ? 90 : 60, x: 0 });
+      c.par.forEach(function (p) {
+        if (p.tur === 'karar') { return; }
+        bloklar.push({ tur: 'para', t: p.t, p: p.sayfa, aside: false, kucuk: false });
+      });
+      if (c.karar) { bloklar.push({ tur: 'para', t: c.karar, p: c.kararSay || c.sayfa, aside: false, kucuk: true }); }
+    });
+    return { kav: kav, kapak: kapak, kaynakca: kaynakca, bloklar: bloklar, satirSay: satirSay };
+  }
+  function sunumMaddeTemizle(t) {
+    t = bosluk(t);
+    if (/[A-ZÇĞİÖŞÜ]/.test(t) && hepBuyukMu(t)) { t = baslikBicim(t, true); }
+    t = t.replace(/^”(?=\S)/, '“');
+    /* slayttan kesik gelen uzun madde: sonuna belirgin kesme isareti */
+    if (kelimeSay(t) >= 7 && !/[.?!:;)”"…]$/.test(t)) { t += ' …'; }
+    return t;
+  }
+  function sunumKirp(t, n) {
+    t = bosluk(t);
+    if (t.length <= n) { return t; }
+    var cs = bol(t), o = '';
+    for (var i = 0; i < cs.length; i++) { if ((o + ' ' + cs[i]).length > n && o) { break; } o = o ? o + ' ' + cs[i] : cs[i]; }
+    if (o.length > n) { o = o.substr(0, n).replace(/\s+\S*$/, ''); }
+    return o + (o.length < t.length ? ' …' : '');
+  }
+  function sunumCumleler(par, n) {
+    var cs = bol(par), out = [];
+    for (var i = 0; i < cs.length && out.length < n; i++) { if (kelimeSay(cs[i]) >= 3 || out.length === 0) { out.push(cs[i]); } }
+    return out;
+  }
+  function sunumUygula(R, S, units, heads, oran) {
+    var sev = oran <= 0.15 ? 1 : (oran >= 0.3 ? 3 : 2), kav = S.kav;
+    var ozet = [], tanimlar = [], ornekler = [], kararlar = [], basliklar = [], bi = 0;
+    var gorulen = {}, oncekiOrnek = false;
+    kav.forEach(function (c) {
+      var bNo = bi++;
+      var gb = c.baslik + (c.alt ? ' (' + c.alt + ')' : '');
+      c._i0 = ozet.length;
+      /* ornek slaydindan hemen sonra gelen, daha once gecmis bir baslikla ayni slayt ornegin devamidir */
+      var bk = lc(c.baslik).replace(/^[ivxlc]+\.\s*/, '');
+      var devam = oncekiOrnek && gorulen[bk] && !c.tanim.length;
+      oncekiOrnek = /örne[kğ]/.test(lc(c.baslik)) || (devam && oncekiOrnek);
+      if (!gorulen[bk]) { gorulen[bk] = 1; }
+      if (devam) {
+        var yt = [];
+        c.metin.forEach(function (m) { yt.push(m.t); });
+        c.liste.forEach(function (g) { g.items.forEach(function (it) { yt.push(it); }); });
+        if (yt.length) { ornekler.push({ t: sunumKirp(c.baslik + ': ' + yt.join(' '), 420), sayfa: c.sayfa, baslik: gb }); }
+        return;
+      }
+      basliklar.push({ t: gb, sayfa: c.sayfa, seviye: /^[IVXLC]+\.\s/.test(c.ham) ? 1 : 2 });
+      var terim = terimAdi(c.baslik);
+      /* tanimlar */
+      c.tanim.forEach(function (d, di) {
+        var cs = sunumCumleler(d.t, 3), tx = cs[0] || d.t;
+        if (cs.length > 1 && kelimeSay(cs[0]) < 7) { tx = cs[0] + ' ' + cs[1]; }
+        var o = { t: tx, sayfa: d.sayfa, baslik: gb };
+        if (terim) { o.terim = terim; }
+        tanimlar.push(o);
+      });
+      c.ornek.forEach(function (o) {
+        var t = o.t.replace(/^ÖRNEK(\s*\d*\s*[:.)])/, 'Örnek$1').replace(/^ÖRNEĞİN/, 'Örneğin');
+        ornekler.push({ t: sunumKirp(t, 420), sayfa: o.sayfa, baslik: gb });
+      });
+      if (c.kararMi && c.par.length) {
+        var gv = c.par[0].t;
+        kararlar.push({ t: (c.karar ? c.karar + ': ' : c.baslik + ': ') + sunumKirp(gv, 260), sayfa: c.kararSay || c.sayfa, baslik: gb, mahkeme: (RE_MAHKEME.exec(c.karar || c.baslik) || [0, 'AYM'])[1] });
+      }
+      /* ozet maddeleri */
+      var items = [];
+      function ekle(t, sayfa, tur, maddeler) {
+        var it = { t: t, sayfa: sayfa, baslik: gb, baslikNo: bNo, tur: tur || [], skor: 0 };
+        if (maddeler && maddeler.length) { it.maddeler = maddeler; }
+        ozet.push(it);
+      }
+      if (c.tanim.length) {
+        var d0 = c.tanim[0], n = sev === 1 ? 1 : (sev === 2 ? 2 : 4);
+        var cs0 = sunumCumleler(d0.t, n);
+        if (sev === 1 && cs0.length === 1 && kelimeSay(cs0[0]) < 7) { cs0 = sunumCumleler(d0.t, 2); }
+        ekle((d0.ortuk ? '' : 'Tanım: ') + cs0.join(' '), d0.sayfa, ['tanim']);
+        for (var dj = 1; dj < c.tanim.length && sev === 3; dj++) { ekle(sunumCumleler(c.tanim[dj].t, 2).join(' '), c.tanim[dj].sayfa, ['tanim']); }
+      }
+      var metinler = c.metin;
+      var kM = sev === 1 ? (c.tanim.length ? 0 : 1) : (sev === 2 ? (c.tanim.length ? 1 : 2) : 4);
+      for (var mi = 0; mi < metinler.length && mi < kM; mi++) {
+        var cm = sunumCumleler(metinler[mi].t, sev === 3 ? 2 : 1);
+        if (cm.length) { ekle(cm.join(' '), metinler[mi].sayfa, []); }
+      }
+      c.liste.forEach(function (g) {
+        var cap = sev === 1 ? 8 : (sev === 2 ? 12 : 20), mm = g.items.slice(0, cap);
+        var it = { t: g.lead ? sunumKirp(g.lead, 200) : '', sayfa: g.sayfa, baslik: gb, baslikNo: bNo, tur: ['liste'], skor: 0, maddeler: mm };
+        if (g.items.length > cap) { it.daha = g.items.length - cap; }
+        ozet.push(it);
+      });
+      if (sev === 3) {
+        c.sorular.slice(0, 4).forEach(function (m) { ekle(m.t, m.sayfa, ['soru']); });
+      }
+    });
+    /* Kisa: tavan asiliyorsa dusuk puanli alt basliklari at; ust bolum (romen rakamli) ve tanimli kavramlar kalir */
+    var tv = ozetTavan(oran), top = 0;
+    kav.forEach(function (c) { if (c._i0 !== undefined) { c._n = 0; } });
+    if (sev === 1 && ozet.length > tv) {
+      var kk = kav.filter(function (c) { return c._i0 !== undefined; });
+      kk.forEach(function (c, i) { c._i1 = i + 1 < kk.length ? kk[i + 1]._i0 : ozet.length; c._pri = (/^[IVXLC]+\.\s/.test(c.ham) ? 3 : 0) + (c.tanim.length ? 2 : 0) + (c.liste.length ? 1 : 0); });
+      var atilan = {}, say = ozet.length;
+      for (var pr = 0; pr <= 3 && say > tv; pr++) {
+        for (var ki = kk.length - 1; ki >= 0 && say > tv; ki--) {
+          var cc = kk[ki];
+          if (cc._pri === pr && !atilan[ki] && cc._i1 > cc._i0) { atilan[ki] = 1; say -= cc._i1 - cc._i0; }
+        }
+      }
+      var yeni = [];
+      kk.forEach(function (c, i) { if (!atilan[i]) { for (var z = c._i0; z < c._i1; z++) { yeni.push(ozet[z]); } } });
+      ozet = yeni;
+    }
+    R.ozet = ozet; R.tanimlar = tanimlar; R.ornekler = ornekler; R.basliklar = basliklar;
+    if (kararlar.length) { R.kararlar = kararlar; }
+    if (S.kapak) { R.baslik = S.kapak.baslik; if (S.kapak.alt) { R.altBaslik = S.kapak.alt; } }
+    R.sunum = { kavram: kav.length, kaynakca: !!S.kaynakca };
+  }
+
+  /* cikti: baslik gosterimi (Title Case) ve tum metinlerde son temizlik */
+  function cikisDuzelt(R) {
+    var bgm = {};
+    function bg(t) { if (!t) { return t; } if (bgm[t] === undefined) { bgm[t] = sonTemizle(baslikBicim(t)); } return bgm[t]; }
+    var K = ['ozet', 'tanimlar', 'sartlar', 'listeler', 'istisnalar', 'kararlar', 'gorusler', 'ornekler', 'sinavNotlari', 'ekBilgi'];
+    var i, j, x;
+    for (i = 0; i < K.length; i++) {
+      for (j = 0; j < R[K[i]].length; j++) {
+        x = R[K[i]][j];
+        if (x.baslik) { x.baslik = bg(x.baslik); }
+        if (x.t) { x.t = sonTemizle(x.t); }
+        if (x.terim) { x.terim = sonTemizle(x.terim); }
+        if (x.etiket) { x.etiket = sonTemizle(x.etiket); }
+        if (x.maddeler) { x.maddeler = x.maddeler.map(sonTemizle); }
+      }
+    }
+    for (i = 0; i < R.basliklar.length; i++) { R.basliklar[i].t = bg(R.basliklar[i].t); }
+    for (i = 0; i < R.atiflar.length; i++) { if (R.atiflar[i].t) { R.atiflar[i].t = sonTemizle(R.atiflar[i].t); } }
+    for (i = 0; i < R.tablolar.length; i++) {
+      x = R.tablolar[i];
+      x.baslik = bg(x.baslik);
+      x.sutunlar = x.sutunlar.map(sonTemizle);
+      x.satirlar = x.satirlar.map(function (r) { return r.map(sonTemizle); });
+    }
+    for (i = 0; i < R.testler.length; i++) { x = R.testler[i]; x.t = sonTemizle(x.t); x.secenekler = x.secenekler.map(sonTemizle); }
+    for (i = 0; i < R.klasikSorular.length; i++) { R.klasikSorular[i].t = sonTemizle(R.klasikSorular[i].t); }
+    if (R.kapak) { R.kapak.satirlar = R.kapak.satirlar.map(sonTemizle); }
+  }
+
   /* ------------------------------------------------------------------ */
   /* ANA GIRIS                                                            */
   /* ------------------------------------------------------------------ */
   function sablon(pages, opts) {
     opts = opts || {};
     var t0 = (typeof Date !== 'undefined') ? new Date().getTime() : 0;
-    var hz = hazirla(pages || [], opts);
-    var bl = bloklaraAyir(hz.L);
+    pages = pages || [];
+    var sun = (opts.mod === 'ozet' || opts.mod === 'iskelet') ? null : sunumTespit(pages, opts), SK = null, hz, bl;
+    if (sun) {
+      SK = sunumKur(pages, opts);
+      if (!SK.kav.length) { sun = null; SK = null; }
+    }
+    if (sun) {
+      hz = { L: [], sayfaSayisi: pages.length, kapak: null, sinavBolge: null };
+      bl = { blocks: SK.bloklar, qaModu: false };
+    } else {
+      hz = hazirla(pages, opts);
+      bl = bloklaraAyir(hz.L);
+    }
     var bu = birimleriUret(bl.blocks);
     var units = bu.units, heads = bu.heads;
     var i, u;
     seviyeAta(heads);
+    girisBaslikDuzelt(heads);
 
     for (i = 0; i < units.length; i++) { analiz(units[i]); }
 
@@ -2157,7 +2906,7 @@ var LEXOZET = (function () {
     var R = {
       basliklar: [], tanimlar: [], sartlar: [], istisnalar: [], atiflar: [], kararlar: [], gorusler: [], ornekler: [],
       listeler: [], kanunlar: [], testler: bu.testler, ozet: [], qa: bl.qaModu, sayfaSayisi: hz.sayfaSayisi,
-      istatistik: { satir: hz.L.length, cumle: units.length },
+      istatistik: { satir: sun ? SK.satirSay : hz.L.length, cumle: units.length },
       mod: 'ozet', sinavNotlari: [], ekBilgi: [], tablolar: [], klasikSorular: [], kapak: hz.kapak || null
     };
     /* kutular */
@@ -2223,6 +2972,12 @@ var LEXOZET = (function () {
       if (f.tanim && bir('t', tam)) {
         var td = { t: tam, sayfa: u.sayfa, baslik: baslikAdi(u) };
         if (u.terim) { td.terim = u.terim; }
+        if (u.tanimOn) {
+          td.t = tam.replace(/^Tanım\s*:\s*/, '');
+          var tb = u.sec >= 0 ? heads[u.sec].t : '';
+          tb = terimAdi(tb);
+          if (tb) { td.terim = tb; }
+        }
         R.tanimlar.push(td);
       }
       if (f.sart && bir('s', tam)) {
@@ -2240,16 +2995,23 @@ var LEXOZET = (function () {
         R.listeler.push({ t: tam, sayfa: u.sayfa, baslik: baslikAdi(u), maddeler: u.maddeler.slice() });
       }
       if (f.istisna && bir('i', tam)) { R.istisnalar.push({ t: tam, sayfa: u.sayfa, baslik: baslikAdi(u), guc: u.istisnaGuc }); }
-      if (f.karar && bir('k', tam)) {
-        var kd = { t: tam, sayfa: u.sayfa, baslik: baslikAdi(u), mahkeme: u.mahkeme };
-        if (u.esas) { kd.esas = u.esas; } if (u.kararNo) { kd.kararNo = u.kararNo; } if (u.tarih) { kd.tarih = u.tarih; }
-        R.kararlar.push(kd);
+      if (f.karar) {
+        /* dipnot numarasi yapisik gelmis: "5 AYM, E.1988/4 ..." */
+        var ktam = tam.replace(new RegExp('^\\d{1,3}\\s+(?=' + MAHKEME_ADLARI + ')'), '');
+        var kunsur = RE_ESAS_KARAR.test(ktam) || /\b[TK]\.\s*\d{1,2}[./]\d{1,2}[./]\d{4}/.test(ktam) || /\bsayılı\b/i.test(ktam) || /\b\d{1,2}[./]\d{1,2}[./](19|20)\d{2}\b/.test(ktam) || /\bSayı\s*:/i.test(ktam);
+        if ((kunsur || ktam.length >= 40) && bir('k', ktam)) {
+          var kd = { t: ktam, sayfa: u.sayfa, baslik: baslikAdi(u), mahkeme: u.mahkeme };
+          if (u.esas) { kd.esas = u.esas; } if (u.kararNo) { kd.kararNo = u.kararNo; } if (u.tarih) { kd.tarih = u.tarih; }
+          R.kararlar.push(kd);
+        }
       }
       if (f.gorus && bir('g', tam)) { R.gorusler.push({ t: tam, sayfa: u.sayfa, baslik: baslikAdi(u), tur: u.gorusTuru }); }
-      if (f.ornek && bir('o', tam)) {
+      if (u.ornekPara && !f.ornek && !u.ilkPara && R.ornekler.length && R.ornekler[R.ornekler.length - 1]._para === u.para) {
+        R.ornekler[R.ornekler.length - 1].t += ' ' + tam;
+      } else if ((f.ornek || (u.ornekPara && u.ilkPara)) && bir('o', tam)) {
         var ot = tam;
-        if (tam.length < 30 && units[i + 1] && units[i + 1].sec === u.sec) { ot = tam + ' ' + units[i + 1].t; }
-        R.ornekler.push({ t: ot, sayfa: u.sayfa, baslik: baslikAdi(u) });
+        if (tam.length < 30 && units[i + 1] && units[i + 1].sec === u.sec && !u.ornekPara) { ot = tam + ' ' + units[i + 1].t; }
+        R.ornekler.push({ t: ot, sayfa: u.sayfa, baslik: baslikAdi(u), _para: u.ornekPara ? u.para : -1 });
       }
       if (u.atifVar || u.maddeler || /\bmd\./.test(tam)) {
         atifBuf.atif.length = 0;
@@ -2257,6 +3019,7 @@ var LEXOZET = (function () {
         for (var a = 0; a < atifBuf.atif.length; a++) {
           var at = atifBuf.atif[a];
           at.sayfa = u.sayfa;
+          if (mulgaMi(at.kanun, baglamMetni(units, i))) { at.mulga = true; at.belirsiz = false; }
           R.atiflar.push(at);
         }
       }
@@ -2292,21 +3055,45 @@ var LEXOZET = (function () {
     }
     /* atiflari tekillestir: (kanun,madde,fikra); tam adli olanlari kisaltmaya esle */
     var tek = {}, atl = [];
+    /* kopuk ad parcalari ve yazim hatali kisaltmalar: bilinen kisaltmaya esle, eslesmezse at */
+    var yeniAt = [];
+    for (i = 0; i < R.atiflar.length; i++) {
+      var A0 = R.atiflar[i], k0 = A0.kanun || '';
+      if (/^(Uygulanmasına|Dair|Hakkında|İlişkin|Ait|Esaslar|Usul)(\s|$)/.test(k0)) {
+        var bul0 = '';
+        for (var ab0 in aliasTers) { if (aliasTers.hasOwnProperty(ab0) && lc(aliasTers[ab0]).indexOf(lc(k0)) >= 0) { bul0 = ab0; break; } }
+        if (!bul0) { continue; }
+        A0.kanun = bul0;
+      } else if (/^[A-ZÇĞİÖŞÜ][A-Za-zÇĞİÖŞÜçğıöşü]{3,9}$/.test(k0) && !aliasTers[k0]) {
+        for (var ab1 in aliasTers) {
+          if (aliasTers.hasOwnProperty(ab1) && ab1.length >= 4 && Math.abs(ab1.length - k0.length) <= 1 && levBir(lc(ab1), lc(k0))) { A0.kanun = ab1; break; }
+        }
+      }
+      yeniAt.push(A0);
+    }
+    R.atiflar = yeniAt;
     for (i = 0; i < R.atiflar.length; i++) {
       var A = R.atiflar[i];
       var kisa = alias[adAnahtar(A.kanun)];
       if (kisa && A.kanun !== kisa) { A.kanunAd = A.kanun; A.kanun = kisa; }
       else if (aliasTers[A.kanun]) { A.kanunAd = aliasTers[A.kanun]; }
-      var ky = A.kanun + '|' + A.madde + '|' + A.fikra;
+      var ky = A.kanun + '|' + A.madde + '|' + A.fikra + (A.mulga ? '|mulga' : '');
       if (tek[ky]) { tek[ky].adet++; if (tek[ky].sayfalar.indexOf(A.sayfa) < 0) { tek[ky].sayfalar.push(A.sayfa); } continue; }
       A.adet = 1; A.sayfalar = [A.sayfa];
       tek[ky] = A; atl.push(A);
     }
     R.atiflar = atl;
+    for (i = 0; i < R.atiflar.length; i++) {
+      if (R.atiflar[i].mulga) { R.atiflar[i].kanunAd = (R.atiflar[i].kanunAd || R.atiflar[i].kanun) + ' (mülga kanun)'; }
+    }
+    atifKontrol(R.atiflar, opts);
 
-    var sg0 = notSinyalleri(hz.L, units, heads, hz.sayfaSayisi, R, govdeIst(hz.L));
-    R.mod = opts.mod === 'ozet' || opts.mod === 'iskelet' ? opts.mod : modKarar(sg0);
-    R.ozet = R.mod === 'iskelet' ? iskeletOzet(units, heads, opts, R) : ozetle(units, heads, opts, bl.qaModu);
+    ekBolumDuzenle(R);
+    var sg0 = sun ? (sun.sinyal || {}) : notSinyalleri(hz.L, units, heads, hz.sayfaSayisi, R, govdeIst(hz.L));
+    R.mod = sun ? 'sunum' : (opts.mod === 'ozet' || opts.mod === 'iskelet' ? opts.mod : modKarar(sg0));
+    if (sun) { R.ozet = []; sunumUygula(R, SK, units, heads, typeof opts.oran === 'number' ? opts.oran : 0.2); ekBolumDuzenle(R); }
+    else { R.ozet = R.mod === 'iskelet' ? iskeletOzet(units, heads, opts, R) : ozetle(units, heads, opts, bl.qaModu); }
+    cikisDuzelt(R);
     var sg = sg0;
     R.istatistik.sinyal = sg;
     R.istatistik.ozetCumle = R.ozet.length;
@@ -2408,6 +3195,9 @@ var LEXOZET = (function () {
     metindenSayfalar: metindenSayfalar,
     pdfjsSatirlar: pdfjsSatirlar,
     cumleBol: bol,
+    atifKontrol: atifKontrol,
+    dosyaBasligi: dosyaBasligi,
+    baslikBicim: baslikBicim,
     turkceKucuk: lc,
     kokler: kokler,
     surum: '0.1'

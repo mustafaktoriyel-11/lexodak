@@ -1595,6 +1595,9 @@ html.mf-gece .acik > .lx-i:first-child,html.mf-gece .mt-kaynak .lx-i,html.mf-gec
 .sb-am{min-height:38px;padding:0 4px 0 12px;border:0;background:none;font:inherit;font-size:14px;font-weight:700;color:#762B37;cursor:pointer}
 .sb-am i{font-style:normal;font-weight:600;font-size:11.5px;color:#7A5760;margin-left:5px}
 .sb-am.pasif{cursor:default;color:#625356}
+.sb-trm{font-weight:800;color:#762B37}
+.sb-daha-sf{display:inline-flex;align-items:center;padding:0 7px;font-size:11.5px;color:#9A7A80}
+.sb-tum{min-height:40px;padding:0 14px;border:1px solid #E8D6D9;border-radius:20px;background:#fff;font:inherit;font-size:13.5px;font-weight:700;color:#762B37;cursor:pointer}
 .sb-at .sb-s{border:0;border-radius:0;background:none;min-height:38px;margin:0;padding:0 7px;color:#9A7A80;font-size:11.5px}
 .sb-at .sb-x{width:30px;height:auto;border-radius:0;font-size:18px}
 .sb-geri-al{display:block;margin:2px auto 0;padding:10px;background:none;border:0;font:inherit;font-size:13.5px;color:#7A5760;text-decoration:underline;cursor:pointer}
@@ -1617,6 +1620,7 @@ html.mf-gece .sb-x{color:#9E8187}html.mf-gece .sb-x:hover{background:#472E32;col
 html.mf-gece .sb-kn{color:#F2DDA8}
 html.mf-gece .sb-at{background:#3A2429;border-color:#5D333A}html.mf-gece .sb-at.bel{background:#281619}
 html.mf-gece .sb-am{color:#F2B8C0}html.mf-gece .sb-am i{color:#C9B8BC}html.mf-gece .sb-am.pasif{color:#E6DBDD}
+html.mf-gece .sb-trm{color:#F2B8C0}html.mf-gece .sb-tum{background:#472E32;border-color:#5D333A;color:#F4ECED}
 html.mf-gece .sb-at .sb-s{background:none;border:0;color:#C9B8BC}
 html.mf-gece .sb-geri-al{color:#C9B8BC}
 .sb-paybar{flex-wrap:wrap}

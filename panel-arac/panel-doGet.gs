@@ -63,9 +63,18 @@ function panelJson_(o) {
 function panelSayfa_() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var sayfalar = ss.getSheets();
-  for (var i = 0; i < sayfalar.length; i++) {
-    var ad = norm_(sayfalar[i].getName());
-    if (ad === 'sayac') return sayfalar[i];
+  var tercih = ['kayitlar', 'kayit', 'sayac', 'log'];
+  for (var t = 0; t < tercih.length; t++) {
+    for (var i = 0; i < sayfalar.length; i++) {
+      if (norm_(sayfalar[i].getName()) === tercih[t]) return sayfalar[i];
+    }
+  }
+  /* adı uymazsa: ilk satırında "cihaz" başlığı olan sayfa */
+  for (var j = 0; j < sayfalar.length; j++) {
+    var sh = sayfalar[j];
+    if (sh.getLastRow() < 1 || sh.getLastColumn() < 1) continue;
+    var ilk = sh.getRange(1, 1, 1, Math.min(sh.getLastColumn(), 20)).getValues()[0];
+    for (var k = 0; k < ilk.length; k++) if (norm_(ilk[k]) === 'cihaz') return sh;
   }
   return sayfalar[0];
 }

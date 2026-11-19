@@ -1872,3 +1872,44 @@ button.uf-kanun{border:0;background:none;padding:0;font-family:inherit;text-deco
 body.uf-kilit{overflow:hidden}
 @media (max-width:359px){.uf-bas h2{font-size:26px}.uf-nok{grid-template-columns:repeat(4,minmax(0,1fr))}}
 .uf-bas,.uf-sbas{padding-top:50px}
+/* perspektifli Roma yolu */
+.uf-balon.yalniz{margin-bottom:12px}.uf-balon.yalniz::before{display:none}
+.uf-3d{--yz0:#F3E4BF;--yz1:#F8F1E3;--tas:#E8DCC6;--tas2:#DDCDB0;--kenar:#B9A27A;position:relative;height:470px;margin:0 0 8px;border:1px solid var(--uf-cz);border-radius:20px;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none;background:radial-gradient(ellipse 70% 38% at 50% 60px,rgba(248,214,107,.55),rgba(248,214,107,0) 70%),linear-gradient(#F5E9C8 0,#FBF7F2 140px,#FBF7F2 100%);outline:none}
+.uf-3d:focus-visible{box-shadow:0 0 0 3px #C9A227}
+html.mf-gece .uf-3d{--yz0:#4A3338;--yz1:#2F1D21;--tas:#3D2A2E;--tas2:#4A3338;--kenar:#7A5A4A;background:radial-gradient(ellipse 70% 38% at 50% 60px,rgba(201,162,39,.35),rgba(201,162,39,0) 70%),linear-gradient(#4A3A26 0,#2B1A1D 150px,#281619 100%)}
+.uf-3d-yol{position:absolute;left:0;top:0;pointer-events:none}
+.uf-gs0{stop-color:var(--yz0)}.uf-gs1{stop-color:var(--yz1)}
+.uf-zemin{fill:url(#uf-g-yol)}
+.uf-bant{fill:var(--tas2);opacity:.75}
+.uf-kenar{fill:none;stroke:var(--kenar);stroke-width:3;stroke-linecap:round;opacity:.8}
+.uf-ar{position:absolute;left:0;top:0;width:70px;height:140px;transform-origin:35px 140px;pointer-events:none;will-change:transform,opacity}
+.uf-ar svg{display:block;fill:none;stroke:#B9A27A;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+html.mf-gece .uf-ar svg{stroke:#7A5A4A}
+.uf-sl{position:absolute;left:0;top:0;width:76px;height:76px;margin:0;padding:0;border:0;background:none;transform-origin:38px 38px;will-change:transform,opacity;cursor:pointer;color:var(--uf-s);-webkit-tap-highlight-color:transparent;outline:none}
+.uf-sl:focus-visible .uf-sl-s{outline:3px solid #C9A227;outline-offset:2px;border-radius:50%}
+.uf-sl-s{display:block;overflow:visible}
+.uf-sl .lb{position:absolute;top:50%;transform:translateY(-50%);white-space:nowrap;text-align:left;pointer-events:none;color:var(--uf-y)}
+.uf-sl.R .lb,.uf-sl.bugun .lb{left:82px}.uf-sl.L:not(.bugun) .lb{right:82px;left:auto;text-align:right}
+.uf-sl .lb b{display:block;font:600 14px/1.25 Roboto,-apple-system,"Segoe UI",Arial,sans-serif}
+.uf-sl .lb i{display:block;font:400 12px/1.25 Roboto,-apple-system,"Segoe UI",Arial,sans-serif;font-style:normal;color:var(--uf-s)}.uf-sl .lb i.bg{color:var(--uf-b);font-weight:600}
+.uf-c-tam{fill:#5E1F2A;stroke:#FBF7F2}html.mf-gece .uf-c-tam{fill:#8A2F3F;stroke:#281619}
+.uf-c-gec{fill:#EBDDA8;stroke:#D9C27A}.uf-c-gk{stroke:#7A5A10}
+html.mf-gece .uf-c-gec{fill:#6E5C2C;stroke:#8F7A3A}html.mf-gece .uf-c-gk{stroke:#F2E3AE}
+.uf-saty{fill:#FBF7F2;stroke:#C9A227;stroke-width:1.5}.uf-sat2{color:#7A5A10}html.mf-gece .uf-saty{fill:#392327}html.mf-gece .uf-sat2{color:#E2C473}
+.uf-sl.sal .uf-sl-s{animation:uf-sal .5s ease-in-out 1}
+@keyframes uf-sal{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px) rotate(-5deg)}45%{transform:translateX(6px) rotate(5deg)}70%{transform:translateX(-3px)}}
+.uf-3d-aslan{position:absolute;left:0;top:0;z-index:600;pointer-events:none;will-change:transform}
+.uf-3d-ok{position:absolute;right:8px;top:50%;margin-top:-46px;z-index:700;display:flex;flex-direction:column;gap:6px}
+.uf-3d-ok button{width:44px;height:44px;border-radius:50%;border:1px solid var(--uf-cz);background:var(--uf-kart);color:var(--uf-b);display:flex;align-items:center;justify-content:center;padding:0;cursor:pointer;opacity:.92}
+html.mf-gece .uf-3d-ok button{color:#E7B7BF}
+.uf-3d-ok button:disabled{opacity:.35;cursor:default}
+.uf-3d-ok svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.uf-3d-ok button:focus-visible,.uf-3d-don:focus-visible{outline:3px solid #C9A227;outline-offset:2px}
+.uf-3d-don{position:absolute;left:50%;bottom:10px;z-index:700;min-height:44px;padding:0 18px;border:0;border-radius:22px;background:var(--uf-b);color:#fff;font:700 14px Roboto,-apple-system,"Segoe UI",Arial,sans-serif;cursor:pointer;transform:translate(-50%,16px);opacity:0;pointer-events:none;transition:opacity .25s,transform .25s}
+html.mf-gece .uf-3d-don{background:#9E3A4B}
+.uf-3d-don.g{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+.uf-3d-hint{min-height:44px;margin:0 0 10px;padding:10px 12px;border:1px solid var(--uf-cz);border-radius:14px;background:var(--uf-kart);font-size:13.5px;line-height:1.45;color:var(--uf-y);display:flex;flex-direction:column;gap:6px}
+.uf-3d-hint .uf-btn2{margin:2px 0 0}
+.uf-gecnot{display:flex;align-items:center;gap:8px;margin:0 0 10px;padding:8px 12px;border-radius:12px;background:var(--uf-ac);color:var(--uf-bas);font-size:13px;font-weight:600}
+.uf-gecnot .lx-i{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+@media (prefers-reduced-motion: reduce){.uf-3d-don{transition:none}.uf-sl.sal .uf-sl-s{animation:none}}

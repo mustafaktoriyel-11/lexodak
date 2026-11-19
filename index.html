@@ -3161,7 +3161,9 @@ function lexDersler(){
     hedef=SIRA[j];hEl=sayfaEl(hedef);
     if(window.MF_HAZIRLA)window.MF_HAZIRLA(hedef);
     var pad=parseFloat(getComputedStyle(m).paddingLeft)||0;
-    hEl.classList.add('onizle');hEl.style.top=window.scrollY+'px';hEl.style.left=(pad+yon*window.innerWidth)+'px';hEl.style.width=(m.clientWidth-2*pad)+'px';hEl.style.opacity='0';
+    hEl.classList.add('onizle');hEl.style.top=window.scrollY+'px';var mevcut=m.clientWidth-2*pad;hEl.style.left=(pad+yon*window.innerWidth)+'px';hEl.style.width=mevcut+'px';hEl.style.opacity='0';
+    // max-width + margin:auto (genis ekranda ortalanan sayfalar): mutlak konumlu onizleme de ayni sekilde ortalansin, yoksa gecis sonunda yana sicrar
+    var gw=hEl.getBoundingClientRect().width;if(gw>0&&gw<mevcut-.5)hEl.style.left=(pad+yon*window.innerWidth+(mevcut-gw)/2)+'px';
   }
   document.addEventListener('touchstart',function(e){
     if(mesgul||e.touches.length!==1){iz=false;return;}var t=e.touches[0];

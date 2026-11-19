@@ -25,7 +25,7 @@
   [].forEach.call(document.querySelectorAll('#lex-sn-p,#lex-dr-p'),function(p){p.addEventListener('click',function(e){if(e.target===p&&!(p.id==='lex-dr-p'&&ilk))kapat(p);});});
 
   // ---------- okul seçimi ----------
-  var OKULLAR=[];try{OKULLAR=JSON.parse($('okul-veri').textContent);}catch(e){}
+  var OKULLAR=[],OKSOZ=window.LEX_VERI('okul').then(function(v){OKULLAR=v||[];},function(){});
   var PALET=['rgb(142 27 51)','rgb(31 78 156)','rgb(15 122 92)','rgb(178 94 9)','rgb(91 42 134)','rgb(29 111 140)','rgb(156 47 110)','rgb(74 90 30)','rgb(163 58 28)','rgb(46 63 143)'];
   function renkOf(ad){var h=0;for(var i=0;i<ad.length;i++)h=(h*31+ad.charCodeAt(i))>>>0;return PALET[h%PALET.length];}
   function rozet(o,kucuk){return '<i class="lex-roz'+(kucuk?' k':'')+(o.kisa.length>4?' u':'')+'" style="background:'+renkOf(o.ad)+'" aria-hidden="true">'+esc(o.kisa)+'</i>';}
@@ -47,7 +47,7 @@
     $('lex-ok-say').textContent=q?n+' sonuç':OKULLAR.length+' fakülte';
     [].forEach.call(document.querySelectorAll('#lex-ok-liste .lex-ok-s'),function(b){b.addEventListener('click',function(){var x=OKULLAR[+b.dataset.i];okBitti({ad:x.ad,kisa:x.kisa});});});
   }
-  function okAc(ilkMi){okIlk=!!ilkMi;$('lex-ok-ara').value='';$('lex-ok-atla').textContent=ilkMi?'Listede yok / şimdilik atla':(window.LEX_OKUL()?'Okul seçimini kaldır':'Vazgeç');okListe();ac(op);}
+  function okAc(ilkMi){OKSOZ.then(function(){okIlk=!!ilkMi;$('lex-ok-ara').value='';$('lex-ok-atla').textContent=ilkMi?'Listede yok / şimdilik atla':(window.LEX_OKUL()?'Okul seçimini kaldır':'Vazgeç');okListe();ac(op);});}
   function okBitti(o){
     var eski=window.LEX_OKUL();yaz('lex-okul',o||{});okBaslik();kapat(op);
     if((o&&o.ad)!==(eski&&eski.ad)&&window.LEX_SAYAC_YENI)window.LEX_SAYAC_YENI();
@@ -93,8 +93,9 @@
   });
   var db=$('lex-ders-btn');if(db)db.addEventListener('click',function(){drAc(false);});
   (function(){var du=oku('pm-durum',null);if(du&&du.calisiyor)return;
+    OKSOZ.then(function(){
     if(!oku('lex-okul',null)&&OKULLAR.length)setTimeout(function(){okAc(true);},400);
-    else if(!oku('lex-dersler',null))setTimeout(function(){drAc(true);},400);})();
+    else if(!oku('lex-dersler',null))setTimeout(function(){drAc(true);},400);});})();
 
   // ---------- sınav takvimi ----------
   var SN_K='lex-sinavlar',TURLER=['Vize','Final','Bütünleme','HMGS','Diğer'];

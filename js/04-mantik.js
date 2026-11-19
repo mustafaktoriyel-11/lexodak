@@ -1,8 +1,13 @@
 // ================= MANTIK TESTI =================
 (function(){
   var $=function(id){return document.getElementById(id);};
-  var SETLER=[];try{SETLER=JSON.parse($('mantik-veri').textContent);}catch(e){}
-  if(!SETLER.length)return;
+  /* veri/*.json dosyalarini bir kez ceker; hata olursa sonraki istekte yeniden dener */
+  if(!window.LEX_VERI){var VO={};window.LEX_VERI=function(a){if(!VO[a])VO[a]=fetch('veri/'+a+'.json').then(function(r){if(!r.ok)throw 0;return r.json();}).catch(function(e){delete VO[a];throw e;});return VO[a];};}
+  var SETLER=[],GERCEK=null,BEKLE=window.LEX_VERI('mantik');
+  window.MF_MT=function(){if(GERCEK)GERCEK();else BEKLE.then(function(){if(GERCEK)GERCEK();},function(){});};
+  BEKLE.then(function(v){SETLER=v||[];if(SETLER.length)KUR();},function(){});
+  function KUR(){
+
   var K='mf-mantik-g',NS=SETLER[0].length,SURE=72*NS,BAZ=new Date(2026,10,2);
   var TIPAD={kamu:'Kamu Hukuku',ozel:'Özel Hukuk',ceza:'Ceza Hukuku',usul:'Usul Hukuku',genel:'Genel Hukuk'};
   var AY=['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
@@ -188,9 +193,10 @@
   // devam eden test varsa geri yukle
   try{aktif=JSON.parse(localStorage.getItem(K+'-aktif')||'null');}catch(e){aktif=null;}
   if(aktif&&(aktif.h!==haftaNo()||kalan()<=0)){if(aktif.h===haftaNo())bitir();else{aktif=null;try{localStorage.removeItem(K+'-aktif');}catch(e){}}}
-  window.MF_MT=function(){if(aktif){soru();clearInterval(zT);zT=setInterval(saat,500);}else giris();};
+  GERCEK=function(){if(aktif){soru();clearInterval(zT);zT=setInterval(saat,500);}else giris();};
   rozet();
   if((location.hash==='#mantik'||location.hash==='#test')&&window.MF_SAYFA)window.MF_SAYFA('mantik');
+  }
 })();
 
 // ================= YANA KAYDIRARAK SEKME GECISI (yandaki sekme belirerek gelir) =================

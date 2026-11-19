@@ -21,7 +21,7 @@ a{color:#982135}
 <small>Son güncelleme: 19 Kasım 2026 · Web sürümü (lexodak.com) ve Android uygulaması için geçerlidir.</small>
 
 <h2>Özet</h2>
-<p>Lex Odak'ta üyelik, giriş ya da reklam yoktur. Çalışma kayıtların, notların ve dosyaların yalnızca kendi cihazında kalır; kimliğini belirleyen hiçbir bilgi toplanmaz ve hiçbir veri satılmaz ya da paylaşılmaz.</p>
+<p>Lex Odak'ta üyelik, giriş ya da reklam yoktur. Çalışma kayıtların, notların ve dosyaların yalnızca kendi cihazında kalır; kimliğini belirleyen hiçbir bilgi toplanmaz ve hiçbir veri satılmaz ya da paylaşılmaz. Yalnızca kullanım sayılarını görmek için anonim bir sayaç çalışır (aşağıda).</p>
 
 <h2>Cihazında saklananlar</h2>
 <p>Aşağıdakiler yalnızca kullandığın cihazda (tarayıcı ya da uygulama deposu: localStorage, IndexedDB, önbellek) tutulur ve hiçbir sunucuya gönderilmez:</p>
@@ -38,10 +38,11 @@ a{color:#982135}
 <p>Bu verileri uygulamadaki silme seçenekleriyle, tarayıcının/uygulamanın verilerini temizleyerek ya da uygulamayı kaldırarak dilediğin an silebilirsin.</p>
 
 <h2>İnternet bağlantıları</h2>
-<p>Uygulama yalnızca içerik indirmek için internete bağlanır; bu bağlantılarda senin verilerin gönderilmez:</p>
+<p>Uygulama içerik indirmek ve aşağıdaki anonim sayaç için internete bağlanır; içerik bağlantılarında senin verilerin gönderilmez:</p>
 <ul>
 <li><b>lexodak.com</b> (GitHub Pages üzerinde barındırılır): uygulama dosyaları ile mevzuat, test ve sınav içeriğinin güncel sürümleri.</li>
 <li><b>cdn.jsdelivr.net</b>: taranmış sayfa okuma (metin tanıma) motoru ve Türkçe dil dosyası, yalnızca bu özelliği ilk kez açtığında bir kez indirilir.</li>
+<li><b>script.google.com</b>: anonim kullanım sayacı (aşağıda).</li>
 <li><b>mevzuat.gov.tr</b>: yalnızca “resmî metin” bağlantısına dokunduğunda tarayıcında açılır.</li>
 </ul>
 <p>Bu sunucular, her internet bağlantısında olduğu gibi, bağlantı sırasında IP adresini teknik olarak görebilir; Lex Odak bu bilgileri toplamaz ve saklamaz.</p>
@@ -51,20 +52,28 @@ a{color:#982135}
 
 <h2>İzinler</h2>
 <ul>
-<li><b>İnternet:</b> yukarıdaki içerik güncellemeleri için.</li>
+<li><b>İnternet:</b> içerik güncellemeleri ve anonim kullanım sayacı için.</li>
 <li><b>Bildirim:</b> isteğe bağlı hatırlatmalar ve süre bitimi için.</li>
 <li><b>Cihaz yeniden başlatıldığında çalışma:</b> planlanmış hatırlatmaları telefon yeniden açıldığında geri kurmak için.</li>
 <li><b>Ekranı açık tutma ve ekran kilidi durumu:</b> yalnızca Sıkı mod için; ne yaptığın ya da hangi uygulamayı açtığın görülmez, kaydedilmez.</li>
 </ul>
 
-<h2>Anonim kullanım sayacı (şu an kapalı)</h2>
-<p>Uygulamada, ileride açılabilecek anonim bir kullanım sayacı bulunur; <b>şu an hiçbir bilgi gönderilmemektedir.</b> Açılırsa bu politika önceden güncellenir ve günde en fazla bir kez yalnızca şu bilgiler gönderilir: rastgele üretilmiş bir cihaz kimliği (ör. L-A1B2C3), platform (Android / iPhone / Bilgisayar), uygulamanın nasıl açıldığı, seçtiysen okulunun adı ve gönderim zamanı. Adın, telefon numaran, e-postan, konumun ve çalışma kayıtların hiçbir durumda gönderilmez.</p>
+<h2>Anonim kullanım sayacı</h2>
+<p>Uygulamanın kaç kişi tarafından ve nasıl kullanıldığını görebilmek için anonim bir kullanım sayacı çalışır. İnternete bağlıyken günde en fazla bir kez, yalnızca şu bilgiler Lex Odak'ın kendi Google E-Tablolar dosyasına (Google Apps Script üzerinden) gönderilir:</p>
+<ul>
+<li>uygulamanın ilk açılışta rastgele ürettiği bir cihaz kimliği (ör. L-A1B2C3); telefonunun ya da Google hesabının kimliği değildir,</li>
+<li>platform (Android / iPhone / Bilgisayar),</li>
+<li>uygulamanın nasıl açıldığı (kurulu uygulama, tarayıcı ya da Instagram/TikTok içi tarayıcı),</li>
+<li>seçtiysen okulunun adı,</li>
+<li>gönderim zamanı.</li>
+</ul>
+<p>Adın, telefon numaran, e-postan, konumun, notların, dosyaların ve çalışma kayıtların hiçbir durumda gönderilmez. Bu bilgiler yalnızca toplam sayılar (günlük kullanıcı, kurulum, okul ve platform dağılımı) olarak değerlendirilir, kimseyle paylaşılmaz, satılmaz ve reklam için kullanılmaz. Rastgele kimliği sıfırlamak için uygulamanın verilerini temizlemen yeterlidir. Bu kayıtların silinmesini istersen cihaz kimliğinle birlikte <a href="mailto:odak.lex@gmail.com">odak.lex@gmail.com</a> adresine yazabilirsin.</p>
 
 <h2>Üçüncü taraflar</h2>
-<p>Uygulamada reklam, analiz ya da izleme aracı yoktur. Veriler kimseyle paylaşılmaz, satılmaz.</p>
+<p>Uygulamada reklam ve üçüncü taraf analiz ya da izleme aracı (Google Analytics, Firebase vb.) yoktur. Anonim sayaç verileri yalnızca Lex Odak'ın kendi tablosunda tutulur; kimseyle paylaşılmaz, satılmaz.</p>
 
 <h2>Çocuklar</h2>
-<p>Lex Odak üniversite öğrencilerine yöneliktir; bilerek 18 yaşından küçüklere ait veri toplanmaz (zaten hiçbir kişisel veri toplanmaz).</p>
+<p>Lex Odak üniversite öğrencilerine yöneliktir; bilerek 18 yaşından küçüklere ait veri toplanmaz; uygulama kimlik belirleyen kişisel veri toplamaz.</p>
 
 <h2>Sorular ve talepler</h2>
 <p>Bu politika hakkındaki soruların ve talepler için: <a href="mailto:odak.lex@gmail.com">odak.lex@gmail.com</a></p>

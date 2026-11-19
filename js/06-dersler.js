@@ -6,6 +6,20 @@
   function esc(x){return String(x).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
   function ac(p){p.classList.add('acik');requestAnimationFrame(function(){requestAnimationFrame(function(){p.classList.add('gor');});});}
   function kapat(p){p.classList.remove('gor');setTimeout(function(){p.classList.remove('acik');},280);}
+  /* aşağı kaydırarak kapatma: alttaki atla/vazgeç düğmesiyle aynı işi yapar */
+  function suruklekapat(sp,dugme){
+    var k=sp.querySelector('.sheet-k');if(!k)return;var y0=null,x0=0,dy=0,t0=0,sur=false,yut=false;
+    function bas(e){if(e.target.closest('input,select,textarea,a'))return;var q=e.touches?e.touches[0]:e;y0=q.clientY;x0=q.clientX;dy=0;t0=Date.now();sur=false;}
+    function har(e){if(y0===null)return;var q=e.touches?e.touches[0]:e,d=q.clientY-y0,dx=Math.abs(q.clientX-x0);
+      if(!sur){var ic=e.target.closest&&e.target.closest('.lex-ok-liste');var ust=k.scrollTop<=0&&(!ic||ic.scrollTop<=0);
+        if(d>8&&d>dx&&ust){sur=true;k.style.transition='none';}else if(Math.abs(d)>8||dx>8){y0=null;return;}else return;}
+      dy=Math.max(0,d);k.style.transform='translateY('+dy+'px)';if(e.cancelable)e.preventDefault();}
+    function bir(){if(y0===null)return;y0=null;if(!sur)return;sur=false;yut=true;setTimeout(function(){yut=false;},60);
+      var hiz=dy/Math.max(1,Date.now()-t0);k.style.transition='';k.style.transform='';
+      if(dy>Math.min(110,k.offsetHeight*.25)||hiz>.6)setTimeout(function(){$(dugme).click();},80);}
+    k.addEventListener('touchstart',bas,{passive:true});k.addEventListener('touchmove',har,{passive:false});k.addEventListener('touchend',bir);k.addEventListener('touchcancel',bir);
+    k.addEventListener('click',function(e){if(yut){e.stopPropagation();e.preventDefault();}},true);
+  }
   function cipler(kap,liste,secili,tik,coklu){var k=$(kap);k.innerHTML='';liste.forEach(function(x){var b=document.createElement('button');b.type='button';b.textContent=x[1];
     var on=coklu?secili.indexOf(x[0])>=0:secili===x[0];b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);b.addEventListener('click',function(){tik(x[0]);});k.appendChild(b);});}
   [].forEach.call(document.querySelectorAll('#lex-sn-p,#lex-dr-p'),function(p){p.addEventListener('click',function(e){if(e.target===p&&!(p.id==='lex-dr-p'&&ilk))kapat(p);});});
@@ -44,6 +58,7 @@
   op.addEventListener('click',function(e){if(e.target===op&&!okIlk)kapat(op);});
   document.querySelector('.ust h1').addEventListener('click',function(e){if(e.target.closest('.lex-okul'))okAc(false);});
   okBaslik();
+  suruklekapat(op,'lex-ok-atla');
 
   // ---------- dersleri düzenle ----------
   var dp=$('lex-dr-p'),sec=[],ozel=[],ilk=false,secSinif=null;
@@ -69,6 +84,7 @@
     ozel.push(v);sec.push(v);$('lex-dr-yeni').value='';drCiz();
   });
   // ilk açılışta 'Şimdilik atla': tüm dersler (varsayılan liste) kaydedilir, sonra Derslerim'den değiştirilebilir
+  suruklekapat(dp,'lex-dr-vazgec');
   $('lex-dr-vazgec').addEventListener('click',function(){if(ilk){yaz('lex-dersler',LEX_SINIF.H.slice());location.reload();return;}kapat(dp);});
   $('lex-dr-kaydet').addEventListener('click',function(){
     if(!sec.length)return;

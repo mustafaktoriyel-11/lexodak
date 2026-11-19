@@ -59,6 +59,10 @@ jobs:
               k = ic.resize((600, 600), Image.LANCZOS)
               sp.paste(k, ((2732 - 600) // 2, (2732 - 600) // 2), k)
               sp.convert('RGB').save('assets/' + ad)
+          # PWA ikonu gibi: maskable ikon beyaz zemine oturtulur (yarı saydam beyaz yay Chrome'daki gibi beyaz görünsün)
+          mk = Image.open('icon-maskable-512.png').convert('RGBA')
+          zemin = Image.new('RGBA', mk.size, (255, 255, 255, 255))
+          Image.alpha_composite(zemin, mk).convert('RGB').save('assets/lex_ikon_tam.png')
           PY
           npx --yes @capacitor/assets generate --android \
             --iconBackgroundColor '#762B37' --iconBackgroundColorDark '#762B37' \
@@ -66,9 +70,9 @@ jobs:
           # Android 8+ uyarlanabilir ikon: web sürümünün maskable ikonu, görünür alana tam oturur (PWA ile aynı görünüm)
           R=android/app/src/main/res
           mkdir -p $R/drawable-nodpi $R/drawable $R/mipmap-anydpi-v26
-          cp icon-maskable-512.png $R/drawable-nodpi/lex_ikon_tam.png
+          cp assets/lex_ikon_tam.png $R/drawable-nodpi/lex_ikon_tam.png
           printf '%s\n' '<?xml version="1.0" encoding="utf-8"?>' \
-            '<inset xmlns:android="http://schemas.android.com/apk/res/android" android:drawable="@drawable/lex_ikon_tam" android:inset="9dp"/>' \
+            '<inset xmlns:android="http://schemas.android.com/apk/res/android" android:drawable="@drawable/lex_ikon_tam" android:inset="12dp"/>' \
             > $R/drawable/lex_ikon_on.xml
           printf '%s\n' '<?xml version="1.0" encoding="utf-8"?>' \
             '<shape xmlns:android="http://schemas.android.com/apk/res/android"><gradient android:angle="270" android:startColor="#902739" android:endColor="#4D1A22"/></shape>' \

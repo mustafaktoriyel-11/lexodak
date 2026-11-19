@@ -94,6 +94,12 @@ pre{background:var(--kart);border:1px solid var(--cizgi);border-radius:10px;padd
     <div id="okullar"></div>
     <div class="satirbtn"><button class="btn ikincil gizli" id="tumu" type="button">Tümünü göster</button></div>
   </div>
+  <div class="kart">
+    <div class="bas"><h2>Şehirler</h2><span class="alt" id="sehirSay"></span></div>
+    <div id="sehirler"></div>
+    <div class="satirbtn"><button class="btn ikincil gizli" id="tumuSehir" type="button">Tümünü göster</button></div>
+    <p class="alt" style="margin:8px 0 0">Konum toplanmaz; şehir, seçilen okulun bulunduğu şehirden çıkarılır. Okul seçmeyenler “Okul seçilmemiş” olarak görünür.</p>
+  </div>
   <div class="kart"><h2>Platform</h2><div id="platform"></div></div>
   <div class="kart"><h2>Açılış biçimi</h2><div id="mod"></div></div>
 </div>
@@ -168,7 +174,7 @@ function ciz(){
   var k=temiz($('kpi'));
   [['Bugün aktif',veri.bugunAktif],['Son 7 gün',veri.son7Aktif],['Son 30 gün',veri.son30Aktif],['Toplam kişi',veri.toplamKisi],['Kurulu uygulama (kişi)',veri.kuruluKisi]].forEach(function(x){
     var d=e('div');d.appendChild(e('b','',sayi(x[1])));d.appendChild(e('span','',x[0]));k.appendChild(d)});
-  grafik();okulListe();
+  grafik();okulListe();sehirListe();
   dagilim('platform',veri.platformlar,true);dagilim('mod',veri.modlar,false);
   var es=veri.eslesme||{};
   $('eslesme').textContent='Eşleşme: '+JSON.stringify(es);
@@ -236,6 +242,25 @@ function okulListe(){
   var b=$('tumu');
   if(!q&&l.length>15){ac(b);b.textContent=tumOkul?'İlk 15’i göster':'Tümünü göster ('+l.length+')'}else kapat(b);
 }
+var OKUL_SEHIR=null,tumSehir=false;
+fetch('veri/okul.json').then(function(r){return r.json()}).then(function(l){OKUL_SEHIR={};l.forEach(function(o){OKUL_SEHIR[o.ad]=o.sehir||''});if(veri)sehirListe();}).catch(function(){OKUL_SEHIR={}});
+function sehirListe(){
+  var kap=temiz($('sehirler'));
+  if(!OKUL_SEHIR){kap.appendChild(e('p','alt','Yükleniyor…'));return;}
+  var h={};
+  (veri.okullar||[]).forEach(function(o){
+    var ad=o.ad==='Seçilmemiş'?'Okul seçilmemiş':(OKUL_SEHIR[o.ad]||'Bilinmeyen şehir');
+    h[ad]=(h[ad]||0)+o.kisi;
+  });
+  var l=Object.keys(h).map(function(a){return {ad:a,kisi:h[a]}}).sort(function(a,b){return b.kisi-a.kisi});
+  var sehirSay=l.filter(function(x){return x.ad!=='Okul seçilmemiş'&&x.ad!=='Bilinmeyen şehir'}).length;
+  $('sehirSay').textContent=sayi(sehirSay)+' şehir';
+  var mx=l.length?l[0].kisi:1,goster=tumSehir?l:l.slice(0,12);
+  if(!l.length)kap.appendChild(e('p','alt','Veri yok.'));
+  goster.forEach(function(o){kap.appendChild(satir(o.ad,o.kisi,o.kisi/mx*100,false))});
+  var b=$('tumuSehir');
+  if(l.length>12){ac(b);b.textContent=tumSehir?'İlk 12’yi göster':'Tümünü göster ('+l.length+')'}else kapat(b);
+}
 function satir(ad,kisi,yuzde,pl,etiket){
   var s=e('div','satir'+(pl?' pl':''));
   var a=e('span','ad',ad);a.title=ad;s.appendChild(a);
@@ -290,6 +315,7 @@ $('aralik').addEventListener('click',function(ev){
 });
 $('ara').addEventListener('input',function(){if(veri)okulListe()});
 $('tumu').onclick=function(){tumOkul=!tumOkul;okulListe()};
+$('tumuSehir').onclick=function(){tumSehir=!tumSehir;sehirListe()};
 $('baslikBtn').onclick=function(){
   var p=$('baslikSonuc');ac(p);
   if(DENEME){p.textContent='Örnek veri modunda sunucuya bağlanılmaz.';return}

@@ -99,6 +99,13 @@ jobs:
           sed -i 's#\(<style name="AppTheme.NoActionBarLaunch"[^>]*>\)#\1\n        <item name="windowSplashScreenBackground">\#5E1F2A</item>#' $S
           grep -n "NoActionBarLaunch" -A6 $S
 
+      - name: Gereksiz izni kaldır (tam zamanlı alarm – bildirimler esnek planlanıyor)
+        run: |
+          M=android/app/src/main/AndroidManifest.xml
+          grep -q 'xmlns:tools' $M || sed -i 's#<manifest xmlns:android="http://schemas.android.com/apk/res/android"#<manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools"#' $M
+          sed -i 's#</manifest>#    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" tools:node="remove" />\n</manifest>#' $M
+          tail -4 $M
+
       - name: Sistem çubukları (MainActivity)
         run: |
           F=$(find android/app/src/main/java -name MainActivity.java)

@@ -81,22 +81,36 @@
     var kb=$('lex-ok-kaydet');if(kb)kb.addEventListener('click',function(){var ad=ara.value.trim().replace(/\s+/g,' ').slice(0,80);if(ad.length<3)return;okBitti({ad:ad,kisa:kisaAd(ad),elle:true});});
     $('lex-ok-atla').textContent=okIlk?'Şimdilik atla':(mev?'Okul seçimini kaldır':'Vazgeç');
   }
+  function okKartYenile(){var k=$('lex-okkart');if(k&&window.LEX_OKUL())k.hidden=true;}
   function okAc(ilkMi){OKSOZ.then(function(){okIlk=!!ilkMi;okMod='sehir';okSehir='';$('lex-ok-ara').value='';okCiz();ac(op);});}
   function okBitti(o,shDegisti){
-    var eski=window.LEX_OKUL();yaz('lex-okul',o||{});okBaslik();kapat(op);
+    var eski=window.LEX_OKUL();yaz('lex-okul',o||{});okBaslik();kapat(op);if(window.LEX_OKKART_HAK)setTimeout(okKartYenile,0);
     if(((o&&o.ad)!==(eski&&eski.ad)||shDegisti)&&window.LEX_SAYAC_YENI)window.LEX_SAYAC_YENI();
     if(okIlk&&!oku('lex-dersler',null))setTimeout(function(){drAc(true);},320);
   }
   $('lex-ok-ara').addEventListener('input',function(){if(okMod==='yaz'){var kb=$('lex-ok-kaydet');if(kb)kb.disabled=this.value.trim().length<3;}else okCiz();});
   $('lex-ok-ara').addEventListener('keydown',function(e){if(e.key==='Enter'&&okMod==='yaz'){var kb=$('lex-ok-kaydet');if(kb&&!kb.disabled)kb.click();}});
   $('lex-ok-atla').addEventListener('click',function(){
-    if(okIlk){var sh=okSehir,eskiSh=oku('lex-sehir','');if(sh)yaz('lex-sehir',sh);okBitti(null,!!sh&&sh!==eskiSh);return;}
+    if(okIlk||(!window.LEX_OKUL()&&okSehir)){var sh=okSehir,eskiSh=oku('lex-sehir','');if(sh)yaz('lex-sehir',sh);okBitti(null,!!sh&&sh!==eskiSh);return;}
     if(window.LEX_OKUL())okBitti(null);else kapat(op);
   });
   op.addEventListener('click',function(e){if(e.target===op&&!okIlk)kapat(op);});
   document.querySelector('.ust h1').addEventListener('click',function(e){if(e.target.closest('.lex-okul'))okAc(false);});
   okBaslik();
   suruklekapat(op,'lex-ok-atla');
+  /* okul kartı: ilk açılışta pencere yok; 2. açılıştan ya da ilk günlük testten sonra ana ekranda nazik bir kart */
+  var acN=(+oku('lex-acilis-n',0)||0)+1;yaz('lex-acilis-n',acN);
+  function okKart(){
+    var k=$('lex-okkart');if(!k)return;
+    var goster=!window.LEX_OKUL()&&(+oku('lex-okkart-red',0)||0)<3&&Date.now()>(+oku('lex-okkart-sonra',0)||0)&&(acN>=2||oku('lex-okkart-hak',false));
+    k.hidden=!goster;
+  }
+  window.LEX_OKKART_HAK=function(){yaz('lex-okkart-hak',true);okKart();};
+  if($('lex-okkart')){
+    $('lex-okkart-sec').addEventListener('click',function(){okAc(false);});
+    $('lex-okkart-kapat').addEventListener('click',function(){yaz('lex-okkart-red',(+oku('lex-okkart-red',0)||0)+1);yaz('lex-okkart-sonra',Date.now()+3*864e5);okKart();});
+  }
+  okKart();
 
   // ---------- dersleri düzenle ----------
   var dp=$('lex-dr-p'),sec=[],ozel=[],ilk=false,secSinif=null;
@@ -132,8 +146,7 @@
   var db=$('lex-ders-btn');if(db)db.addEventListener('click',function(){drAc(false);});
   (function(){var du=oku('pm-durum',null);if(du&&du.calisiyor)return;
     OKSOZ.then(function(){
-    if(!oku('lex-okul',null)&&OKULLAR.length)setTimeout(function(){okAc(true);},400);
-    else if(!oku('lex-dersler',null))setTimeout(function(){drAc(true);},400);});})();
+    if(!oku('lex-dersler',null))setTimeout(function(){drAc(true);},400);});})();
 
   // ---------- sınav takvimi ----------
   var SN_K='lex-sinavlar',TURLER=['Vize','Final','Bütünleme','HMGS','Diğer'];

@@ -172,8 +172,10 @@ function ciz(){
   var g=new Date(veri.guncel);
   $('guncel').textContent='Son güncelleme: '+(isNaN(g)?'—':g.toLocaleString('tr-TR',{day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'}));
   var k=temiz($('kpi'));
-  [['Bugün aktif',veri.bugunAktif],['Son 7 gün',veri.son7Aktif],['Son 30 gün',veri.son30Aktif],['Toplam kişi',veri.toplamKisi],['Kurulu uygulama (kişi)',veri.kuruluKisi]].forEach(function(x){
-    var d=e('div');d.appendChild(e('b','',sayi(x[1])));d.appendChild(e('span','',x[0]));k.appendChild(d)});
+  var okS=0,shS=0;(veri.okullar||[]).forEach(function(o){if(o.ad==='Seçilmemiş')return;if(o.ad.indexOf('Şehir: ')===0)shS+=o.kisi;else okS+=o.kisi});
+  var tp=veri.toplamKisi||0,oran=tp?Math.round(okS/tp*100):0,shOran=tp?Math.round(shS/tp*100):0;
+  [['Bugün aktif',veri.bugunAktif],['Son 7 gün',veri.son7Aktif],['Son 30 gün',veri.son30Aktif],['Toplam kişi',veri.toplamKisi],['Kurulu uygulama (kişi)',veri.kuruluKisi],['Okul seçen · '+sayi(okS)+' kişi','%'+oran],['Yalnız şehir seçen · '+sayi(shS)+' kişi','%'+shOran]].forEach(function(x){
+    var d=e('div');d.appendChild(e('b','',typeof x[1]==='string'?x[1]:sayi(x[1])));d.appendChild(e('span','',x[0]));k.appendChild(d)});
   grafik();okulListe();sehirListe();
   dagilim('platform',veri.platformlar,true);dagilim('mod',veri.modlar,false);
   var es=veri.eslesme||{};

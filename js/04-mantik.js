@@ -132,7 +132,7 @@
     var bt=$('mt-bitir');if(bt)bt.addEventListener('click',function(){var bos=aktif.cev.filter(function(x){return x===null;}).length;
       if(bos&&!confirm(bos+' soru boş. Yine de bitirilsin mi?'))return;bitir();});
   }
-  function bitir(){
+  function bitir(){try{if(window.LEX_OKKART_HAK)window.LEX_OKKART_HAK();}catch(e){}
     if(!aktif)return;clearInterval(zT);
     var S=SETLER[aktif.set],d=0;S.forEach(function(q,j){if(aktif.cev[j]===q.c)d++;});
     var sn=Math.min(SURE,(Date.now()-aktif.bas)/1000),sonuc={d:d,sn:Math.round(sn),cev:aktif.cev,set:aktif.set,t:Date.now()},h=aktif.h;

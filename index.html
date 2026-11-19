@@ -369,7 +369,7 @@ setTimeout(kapat,max);})();</script>
   <input type="file" id="kt-dosya" accept="application/pdf,image/*" multiple hidden>
   <div id="kt-icerik">
     <button type="button" class="kt-serit" id="kt-serit" hidden>Son yedeğinden bu yana dosya ekledin. Telefon değişirse kaybolmasın: <b>Yedek al ›</b></button>
-    <div class="kt-sek" id="kt-sek" role="tablist" hidden><button type="button" data-t="dosya" class="on" role="tab" aria-selected="true">Dosyalar</button><button type="button" data-t="sablon" role="tab" aria-selected="false">Şablonlar<i id="kt-sek-n"></i></button></div>
+    <div class="kt-sek" id="kt-sek" role="tablist" hidden><button type="button" data-t="dosya" class="on" role="tab" aria-selected="true">Dosyalar</button><button type="button" data-t="sablon" role="tab" aria-selected="false">Özetler<i id="kt-sek-n"></i></button></div>
     <div class="kt-arac" id="kt-arac" hidden>
       <input type="search" class="lex-in kt-ara" id="kt-ara" placeholder="Dosya adında ara…" autocomplete="off" enterkeyhint="search">
       <div class="kt-cipler" id="kt-cipler"></div>
@@ -671,19 +671,20 @@ setTimeout(kapat,max);})();</script>
     <p class="kt-mn-ad" id="kt-mn-ad"></p>
     <button type="button" class="kt-mn-b" data-i="ad" role="menuitem">Yeniden adlandır</button>
     <button type="button" class="kt-mn-b" data-i="ders" role="menuitem">Dersi / etiketi değiştir</button>
-    <button type="button" class="kt-mn-b" data-i="sablonac" role="menuitem" id="kt-mn-sablonac" hidden>Şablonu aç</button>
-    <button type="button" class="kt-mn-b" data-i="sablon" role="menuitem" id="kt-mn-sablon" hidden>Şablon çıkar</button>
+    <button type="button" class="kt-mn-b" data-i="sablonac" role="menuitem" id="kt-mn-sablonac" hidden>Özeti aç</button>
+    <button type="button" class="kt-mn-b" data-i="sablon" role="menuitem" id="kt-mn-sablon" hidden>Özet çıkar <i class="sb-beta">Beta</i></button>
     <button type="button" class="kt-mn-b" data-i="paylas" role="menuitem">Paylaş</button>
     <button type="button" class="kt-mn-b" data-i="notlu" role="menuitem" id="kt-mn-notlu" hidden>Notlarımla paylaş</button>
     <button type="button" class="kt-mn-b kt-sil" data-i="sil" role="menuitem">Sil</button>
   </div>
 </div>
-<div id="sb-pnl" class="sb-pnl" hidden role="dialog" aria-modal="true" aria-label="Şablon">
+<div id="sb-pnl" class="sb-pnl" hidden role="dialog" aria-modal="true" aria-label="Özet">
   <div class="kt-gor-ust">
     <button type="button" class="kt-gb" id="sb-geri" aria-label="Geri">‹</button>
     <div class="kt-gor-ad" id="sb-ad"></div>
-    <button type="button" class="kt-gb sb-hb" id="sb-yenile" aria-label="Şablonu yeniden çıkar" hidden><svg class="lx-i" viewBox="0 0 24 24" width="21" height="21" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 5v6h-6"/></svg></button>
-    <button type="button" class="kt-gb sb-hb" id="sb-pay" aria-label="Şablonu paylaş" aria-expanded="false" hidden><svg viewBox="0 0 24 24" width="21" height="21" aria-hidden="true"><path fill="currentColor" d="M18 16.1c-.8 0-1.5.3-2 .8l-7.1-4.2c.1-.2.1-.5.1-.7s0-.5-.1-.7L16 7.2c.5.5 1.2.8 2 .8 1.7 0 3-1.3 3-3s-1.3-3-3-3-3 1.3-3 3c0 .2 0 .5.1.7L8 9.8C7.500 9.300 6.800 9 6 9c-1.700 0-3 1.300-3 3s1.300 3 3 3c.8 0 1.500-.3 2-.8l7.100 4.200c-.1.200-.1.400-.1.600 0 1.600 1.300 2.900 2.900 2.900s2.900-1.300 2.900-2.900-1.300-2.900-2.800-2.900z"/></svg></button>
+    <i class="sb-beta sb-beta-ust">Beta</i>
+    <button type="button" class="kt-gb sb-hb" id="sb-yenile" aria-label="Özeti yeniden çıkar" hidden><svg class="lx-i" viewBox="0 0 24 24" width="21" height="21" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 5v6h-6"/></svg></button>
+    <button type="button" class="kt-gb sb-hb" id="sb-pay" aria-label="Özeti paylaş" aria-expanded="false" hidden><svg viewBox="0 0 24 24" width="21" height="21" aria-hidden="true"><path fill="currentColor" d="M18 16.1c-.8 0-1.5.3-2 .8l-7.1-4.2c.1-.2.1-.5.1-.7s0-.5-.1-.7L16 7.2c.5.5 1.2.8 2 .8 1.7 0 3-1.3 3-3s-1.3-3-3-3-3 1.3-3 3c0 .2 0 .5.1.7L8 9.8C7.500 9.300 6.800 9 6 9c-1.700 0-3 1.300-3 3s1.300 3 3 3c.8 0 1.500-.3 2-.8l7.100 4.200c-.1.200-.1.400-.1.600 0 1.600 1.300 2.900 2.900 2.900s2.900-1.300 2.900-2.900-1.300-2.900-2.800-2.900z"/></svg></button>
   </div>
   <div class="sb-paybar" id="sb-paybar" hidden>
     <label class="sb-kaynak"><input type="checkbox" id="sb-kaynak"> Kaynak ve Lex Odak notu ekle</label>
@@ -703,6 +704,7 @@ setTimeout(kapat,max);})();</script>
     <button type="button" class="kt-gb kt-zoom" id="kt-gor-arti" aria-label="Yakınlaştır">+</button>
     <button type="button" class="kt-gb kt-yan-ac" id="kt-yan-ac" aria-label="Yanda mevzuat aç" aria-pressed="false" hidden>§</button>
     <button type="button" class="kt-gb kt-ocr-ac" id="kt-ocr-ac" aria-label="Taranmış sayfada atıfları bul" hidden><svg viewBox="0 0 24 24" width="21" height="21" aria-hidden="true"><path fill="currentColor" d="M3 7V5a2 2 0 0 1 2-2h2v2H5v2H3zm14-4h2a2 2 0 0 1 2 2v2h-2V5h-2V3zM5 17v2h2v2H5a2 2 0 0 1-2-2v-2h2zm14 0h2v2a2 2 0 0 1-2 2h-2v-2h2v-2zM7 8h10v2H7V8zm0 3h10v2H7v-2zm0 3h6v2H7v-2z"/></svg><i class="kt-ocr-yuz" id="kt-ocr-yuz"></i></button>
+    <button type="button" class="kt-gb kt-sb-ac" id="kt-sb-ac" aria-label="Özet çıkar (Beta)" hidden><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5h14M5 10h10M5 15h14M5 20h7"/></svg><i class="sb-beta">Beta</i></button>
     <button type="button" class="kt-gb kt-ds-ac" id="kt-ds-ac" aria-label="Notlarımla paylaş" hidden><svg viewBox="0 0 24 24" width="21" height="21" aria-hidden="true"><path fill="currentColor" d="M18 16.1c-.8 0-1.5.3-2 .8l-7.1-4.2c.1-.2.1-.5.1-.7s0-.5-.1-.7L16 7.2c.5.5 1.2.8 2 .8 1.7 0 3-1.3 3-3s-1.3-3-3-3-3 1.3-3 3c0 .2 0 .5.1.7L8 9.8C7.5 9.3 6.8 9 6 9c-1.7 0-3 1.3-3 3s1.3 3 3 3c.8 0 1.5-.3 2-.8l7.1 4.2c-.1.2-.1.4-.1.6 0 1.6 1.3 2.9 2.9 2.9s2.9-1.3 2.9-2.9-1.2-2.9-2.8-2.9z"/></svg></button>
     <button type="button" class="kt-gb kt-tam-ac" id="kt-tam-ac" aria-label="Tam ekran" hidden><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
     <button type="button" class="kt-gb kt-kalem-ac" id="kt-ciz-ac" aria-label="Not al" aria-pressed="false" hidden><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15.5 4.5 19.5 8.5 8.5 19.5H4.5v-4z"/><path d="m13 7 4 4"/></svg></button>

@@ -411,16 +411,17 @@ setTimeout(kapat,max);})();</script>
 </div>
 <div class="kart" id="bld-kart" hidden>
 <div class="pr-ust"><b class="pr-bas"><svg class="lx-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></svg>Bildirimler</b></div>
-<div class="pm-ayar" style="display:flex;flex-direction:column;gap:12px;margin-top:12px">
-<label class="pm-anahtar"><input type="checkbox" id="bld-ana" role="switch"><span class="ray" aria-hidden="true"></span><b>Hatırlatmaları aç</b></label>
-<div id="bld-ic" hidden style="display:flex;flex-direction:column;gap:12px">
-<label class="pm-anahtar"><input type="checkbox" id="bld-gun" role="switch"><span class="ray" aria-hidden="true"></span><b>Günlük hatırlatma</b></label>
-<label class="lex-agr" id="bld-saat-k" hidden style="flex-direction:row;align-items:center;justify-content:space-between;margin:0">Hatırlatma saati<input type="time" class="lex-in" id="bld-saat" value="20:00" style="width:auto;padding:8px 10px"></label>
-<label class="pm-anahtar"><input type="checkbox" id="bld-sin" role="switch"><span class="ray" aria-hidden="true"></span><b>Sınav hatırlatmaları (3 gün ve 1 gün önce)</b></label>
-<label class="pm-anahtar"><input type="checkbox" id="bld-prg" role="switch"><span class="ray" aria-hidden="true"></span><b>Program hatırlatması</b></label>
+<div class="bld-liste">
+<label class="pm-anahtar bld-sat"><span class="bld-y"><b>Hatırlatmaları aç</b><small>Bildirimler bu telefonda planlanır.</small></span><input type="checkbox" id="bld-ana" role="switch"><span class="ray" aria-hidden="true"></span></label>
+<div id="bld-ic" hidden>
+<label class="pm-anahtar bld-sat"><span class="bld-y"><b>Günlük hatırlatma</b><small>O gün çalışmadıysan seçtiğin saatte.</small></span><input type="checkbox" id="bld-gun" role="switch"><span class="ray" aria-hidden="true"></span></label>
+<label class="bld-sat bld-alt" id="bld-saat-k" hidden><span class="bld-y"><b>Hatırlatma saati</b></span><input type="time" class="lex-in" id="bld-saat" value="20:00"></label>
+<label class="pm-anahtar bld-sat"><span class="bld-y"><b>Sınav hatırlatmaları</b><small>Sınavdan 3 gün ve 1 gün önce, 19:00.</small></span><input type="checkbox" id="bld-sin" role="switch"><span class="ray" aria-hidden="true"></span></label>
+<label class="pm-anahtar bld-sat"><span class="bld-y"><b>Program hatırlatması</b><small>Saatli dersten 10 dk önce.</small></span><input type="checkbox" id="bld-prg" role="switch"><span class="ray" aria-hidden="true"></span></label>
+<div class="bld-sat bld-den"><span class="bld-y"><b>Deneme bildirimi</b><small>5 saniye sonra örnek bir bildirim gelir.</small></span><button type="button" class="bld-den-b" id="bld-den">Gönder</button></div>
 </div></div>
 <p class="pm-kucuk" id="bld-mesaj" role="status" aria-live="polite" style="margin-top:8px"></p>
-<p class="pm-kucuk">Bildirimler telefonunda planlanır; hiçbir veri gönderilmez.</p>
+<p class="pm-kucuk">Bildirimleri bir sunucu değil, telefonunun kendisi gösterir; hiçbir veri gönderilmez.</p>
 </div>
 <div class="kart" id="lex-ort-k" hidden>
 <div class="pr-ust"><b class="pr-bas"><svg class="lx-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h16"/><rect x="5.5" y="12" width="3" height="6" rx=".6"/><rect x="10.5" y="7" width="3" height="11" rx=".6"/><rect x="15.5" y="10" width="3" height="8" rx=".6"/></svg>Ders ortalamalarım</b></div>

@@ -109,6 +109,10 @@
     $('bld-saat').addEventListener('change',function(){var a=ayarOku();if(this.value)a.gunluk.saat=this.value;kaydetYenile(a);});
     $('bld-sin').addEventListener('change',function(){var a=ayarOku();a.sinav.acik=this.checked;kaydetYenile(a);});
     $('bld-prg').addEventListener('change',function(){var a=ayarOku();a.program.acik=this.checked;kaydetYenile(a);});
+    $('bld-den').addEventListener('click',function(){var bt=this;bt.disabled=true;
+      izinIste().then(function(ok){if(!ok){mesaj('Bildirim izni verilmedi. Telefon ayarlarından izin verebilirsin.');return;}
+        return kanalAc().then(function(){return LN.schedule({notifications:[{id:999,title:'Lex Odak ⚖️',body:'Bugün henüz çalışmadın. Kısa bir odak oturumu yeter.',channelId:KANAL,schedule:{at:new Date(Date.now()+5000)}}]});}).then(function(){mesaj('Deneme bildirimi 5 saniye içinde gelecek.');});
+      }).catch(function(){mesaj('Deneme bildirimi gönderilemedi.');}).then(function(){setTimeout(function(){bt.disabled=false;},5000);});});
     ciz();
   }
   // acilis + geri donus

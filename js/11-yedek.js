@@ -161,7 +161,7 @@
         var d=new Date(), ad='lexodak-yedek-'+d.getFullYear()+'-'+iki(d.getMonth()+1)+'-'+iki(d.getDate())+'.zip';
         var sonuc=await window.LEX_DOSYA(blob,ad,'application/zip',null,{baslik:'Lex Odak yedeği'});
         if(sonuc==='iptal'){mesaj('');return;}   // kullanıcı vazgeçti
-        if(sonuc==='hata'){mesaj('Yedek indirilemedi.');return;}
+        if(sonuc==='hata'){mesaj('Yedek kaydedilemedi'+(window.LEX_DOSYA_HATA?': '+window.LEX_DOSYA_HATA:'.')+' ('+Math.round(blob.size/1048576)+' MB)');return;}
         try{localStorage.setItem('lex-son-yedek',String(Date.now()));}catch(e){}
         sonGuncelle();
         mesaj('Yedek hazır: '+ks+' kayıt, '+md+' dosya');

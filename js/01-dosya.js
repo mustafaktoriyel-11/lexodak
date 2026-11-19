@@ -9,14 +9,20 @@
     setTimeout(function(){try{a.remove();}catch(_){}URL.revokeObjectURL(u);},30000);
   }
   window.LEX_DOSYA=async function(blob,ad,mime,metin,sec){
-    sec=sec||{};ad=temiz(ad);
+    sec=sec||{};window.LEX_DOSYA_HATA='';ad=temiz(ad);
     var baslik=sec.baslik||ad,P=window.Capacitor&&window.Capacitor.Plugins;
     try{
       if(window.Capacitor&&P&&P.Share){
         var Fs=P.Filesystem,Sh=P.Share;
         if(blob){
           if(!Fs)return 'hata';
-          var w=await Fs.writeFile({path:ad,data:await b64(blob),directory:'CACHE',recursive:true});
+          // büyük dosyalar (yedek onlarca MB olabilir) tek seferde köprüden geçmez: 3 MB'lık parçalar hâlinde yaz
+          var PARCA=3*1024*1024,w=null;
+          for(var o=0;o<Math.max(1,blob.size);o+=PARCA){
+            var d=await b64(blob.slice(o,o+PARCA));
+            if(o===0)w=await Fs.writeFile({path:ad,data:d,directory:'CACHE',recursive:true});
+            else await Fs.appendFile({path:ad,data:d,directory:'CACHE'});
+          }
           var uri=w&&w.uri;
           if(!uri){var g=await Fs.getUri({path:ad,directory:'CACHE'});uri=g&&g.uri;}
           var po={title:baslik,dialogTitle:baslik,files:[uri]};if(sec.yazi)po.text=sec.yazi;await Sh.share(po);
@@ -40,6 +46,7 @@
       indir(new Blob([metin||''],{type:mime||'text/plain;charset=utf-8'}),ad);return 'indirildi';
     }catch(e){
       if(iptalMi(e))return 'iptal';
+      window.LEX_DOSYA_HATA=String(e&&(e.message||e.errorMessage||e)||'bilinmeyen hata').slice(0,160);
       return 'hata';
     }
   };

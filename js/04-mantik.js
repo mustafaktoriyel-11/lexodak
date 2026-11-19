@@ -624,11 +624,12 @@
     var sayac=function(mod){
       var cid='';try{cid=localStorage.getItem('mf-cihaz')||'';if(!cid){cid='L-'+Math.random().toString(36).slice(2,8).toUpperCase();localStorage.setItem('mf-cihaz',cid);}}catch(e){return;}
       var ok=null;try{ok=JSON.parse(localStorage.getItem('lex-okul')||'null');}catch(e){}var okAd=ok&&ok.ad?String(ok.ad).slice(0,80):'';if(!okAd){var shr='';try{shr=JSON.parse(localStorage.getItem('lex-sehir')||'""');}catch(e){}if(shr)okAd=('Şehir: '+shr).slice(0,80);}
-      var d=new Date(),gun=d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(),anahtar=gun+'|'+mod+'|'+okAd;
+      var snf='';try{var sk=JSON.parse(localStorage.getItem('lex-sinif')||'null');if(sk&&localStorage.getItem('lex-dersler'))snf=(window.LEX_SINIF_AD&&LEX_SINIF_AD[sk])||(typeof LEX_SINIF_AD!=='undefined'&&LEX_SINIF_AD[sk])||'';}catch(e){}
+      var d=new Date(),gun=d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(),anahtar=gun+'|'+mod+'|'+okAd+'|'+snf;
       try{if(localStorage.getItem('mf-sayac')===anahtar)return;}catch(e){}
       if(!navigator.onLine)return;
       var plt=ios?'iPhone':(/android/i.test(navigator.userAgent)?'Android':'Bilgisayar');
-      fetch(SAYAC_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify({tip:'sayac',cihaz:cid,platform:plt,mod:mod,okul:okAd})})
+      fetch(SAYAC_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify({tip:'sayac',cihaz:cid,platform:plt,mod:mod,okul:okAd,sinif:snf})})
         .then(function(){try{localStorage.setItem('mf-sayac',anahtar);}catch(e){}}).catch(function(){});
     };
     var acMod=kurulu?'Kurulu':(uyg?'Instagram/TikTok':'Tarayıcı');

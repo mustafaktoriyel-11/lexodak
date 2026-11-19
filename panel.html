@@ -100,6 +100,7 @@ pre{background:var(--kart);border:1px solid var(--cizgi);border-radius:10px;padd
     <div class="satirbtn"><button class="btn ikincil gizli" id="tumuSehir" type="button">Tümünü göster</button></div>
     <p class="alt" style="margin:8px 0 0">Konum toplanmaz; şehir, seçilen okulun şehrinden ya da okul seçmeyenin isteğe bağlı seçtiği şehirden gelir. İkisini de seçmeyenler “Belirtilmemiş”.</p>
   </div>
+  <div class="kart gizli" id="sinifKart"><h2>Sınıflar</h2><div id="sinif"></div></div>
   <div class="kart"><h2>Platform</h2><div id="platform"></div></div>
   <div class="kart"><h2>Açılış biçimi</h2><div id="mod"></div></div>
 </div>
@@ -177,7 +178,7 @@ function ciz(){
   [['Bugün aktif',veri.bugunAktif],['Son 7 gün',veri.son7Aktif],['Son 30 gün',veri.son30Aktif],['Toplam kişi',veri.toplamKisi],['Kurulu uygulama (kişi)',veri.kuruluKisi],['Okul seçen · '+sayi(okS)+' kişi','%'+oran],['Yalnız şehir seçen · '+sayi(shS)+' kişi','%'+shOran]].forEach(function(x){
     var d=e('div');d.appendChild(e('b','',typeof x[1]==='string'?x[1]:sayi(x[1])));d.appendChild(e('span','',x[0]));k.appendChild(d)});
   grafik();okulListe();sehirListe();
-  dagilim('platform',veri.platformlar,true);dagilim('mod',veri.modlar,false);
+  dagilim('platform',veri.platformlar,true);if(veri.siniflar&&veri.siniflar.length){ac($('sinifKart'));var so=['1. sınıf','2. sınıf','3. sınıf','4. sınıf','HMGS','Seçilmemiş'];dagilim('sinif',veri.siniflar.slice().sort(function(x,y){var a=so.indexOf(x.ad),b=so.indexOf(y.ad);return (a<0?99:a)-(b<0?99:b)}),false);}else kapat($('sinifKart'));dagilim('mod',veri.modlar,false);
   var es=veri.eslesme||{};
   $('eslesme').textContent='Eşleşme: '+JSON.stringify(es);
 }
@@ -297,7 +298,7 @@ function ornekVeri(){
       gunler.push({g:d.toISOString().slice(0,10),aktif:aktif,yeni:Math.min(yeni,aktif),kurulu:Math.round(aktif*.35)});
     }
     var s=0;okullar.forEach(function(o){s+=o.kisi});
-    return {guncel:bugun.toISOString(),toplamKisi:s,son7Aktif:420,son30Aktif:1130,bugunAktif:gunler[89].aktif,kuruluKisi:Math.round(s*.34),gunler:gunler,okullar:okullar,
+    return {guncel:bugun.toISOString(),toplamKisi:s,son7Aktif:420,son30Aktif:1130,bugunAktif:gunler[89].aktif,kuruluKisi:Math.round(s*.34),gunler:gunler,siniflar:[{ad:'1. sınıf',kisi:210},{ad:'2. sınıf',kisi:260},{ad:'3. sınıf',kisi:240},{ad:'4. sınıf',kisi:310},{ad:'HMGS',kisi:180},{ad:'Seçilmemiş',kisi:461}],okullar:okullar,
       platformlar:[{ad:'Android',kisi:Math.round(s*.62)},{ad:'iPhone',kisi:Math.round(s*.26)},{ad:'Bilgisayar',kisi:Math.round(s*.12)}],
       modlar:[{ad:'Tarayıcı',kisi:Math.round(s*.5)},{ad:'Kurulu',kisi:Math.round(s*.34)},{ad:'Instagram/TikTok',kisi:Math.round(s*.16)}],
       eslesme:{yontem:'örnek',sutunlar:{zaman:0,tip:1,cihaz:2,platform:3,mod:4,okul:5}}};

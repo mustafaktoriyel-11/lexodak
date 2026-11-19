@@ -104,6 +104,9 @@ jobs:
           M=android/app/src/main/AndroidManifest.xml
           grep -q 'xmlns:tools' $M || sed -i 's#<manifest xmlns:android="http://schemas.android.com/apk/res/android"#<manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools"#' $M
           sed -i 's#</manifest>#    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" tools:node="remove" />\n</manifest>#' $M
+          # her açılışta uygulama kendi ana ekranından başlasın: üstte kalmış ayar sayfası vb. temizlensin
+          sed -i 's#android:name=".MainActivity"#android:name=".MainActivity" android:clearTaskOnLaunch="true"#' $M
+          grep -n "clearTaskOnLaunch" $M
           tail -4 $M
 
       - name: Sistem çubukları (MainActivity)

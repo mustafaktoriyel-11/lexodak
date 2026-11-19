@@ -1238,6 +1238,7 @@ html.mf-gece .pm-sifir.tut.basili{color:#E8C877}
   #pg-sayac>*{grid-column:2;margin:0!important}
   #pg-sayac>.yukle,#pg-sayac>.imza{grid-column:1/-1}
   #pg-sayac>.tb-masa{grid-column:1/-1;grid-row:1}
+  #pg-sayac>.lex-okkart{grid-column:1/-1;grid-row:1;max-width:none}
   #pg-sayac>section.kart:first-of-type{grid-column:1;grid-row:2;display:flex;flex-direction:column;justify-content:center}
   #pg-sayac>.tb-yan{grid-column:2;grid-row:2;align-self:stretch;display:flex;flex-direction:column;gap:16px}
   .tb-yan>*{margin:0!important}

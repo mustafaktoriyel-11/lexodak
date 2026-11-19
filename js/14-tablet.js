@@ -72,7 +72,7 @@
     for(var j=6;j>=0;j--){var t=Date.now()-j*864e5,v=(kay[gun(t)]||{}).dk||0;mx=Math.max(mx,v);G7.push({v:v,a:KG[new Date(t).getDay()],bu:j===0});}
     o+='<div class="tb-hf"><b>Son 7 gün</b><div class="tb-cubuk">'+G7.map(function(x){return '<div'+(x.bu?' class="bu"':'')+'><em>'+(x.v?Math.round(x.v):'')+'</em><i style="--o:'+(x.v/mx).toFixed(4)+';height:'+Math.max(3,Math.round(x.v/mx*84))+'px"></i><small>'+x.a+'</small></div>';}).join('')+'</div></div>';
     var hi=o.indexOf('<div class="tb-hf">');
-    hk.innerHTML=hi>=0?'<h3>Bu hafta<small>'+sure(hafta)+'</small></h3>'+o.slice(hi).replace('<b>Son 7 gün</b>',''):'';
+    hk.innerHTML=hi>=0?'<h3>Bu hafta<small>'+sure(hafta)+'</small></h3>'+(hafta?'':'<p class="tb-bos tb-hbos">Bu hafta henüz kayıt yok. İlk turu başlattığında çubuklar burada yükselir.</p>')+o.slice(hi).replace('<b>Son 7 gün</b>',''):'';
     k.innerHTML=hi>=0?o.slice(0,hi):o;k.classList.toggle('bos',!L.length);
   }
   ciz();

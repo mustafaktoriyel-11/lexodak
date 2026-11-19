@@ -94,20 +94,33 @@
     var soz=bu?'Tabula tamamlandı. Yarın yeni bir levha seni bekliyor.':devam?'Levha seni bekliyor. Kaldığın yerden devam edelim.':(d.seri===0&&d.set>0)?'Seri durdu, ama yolculuk bitmedi. Bugün yeniden başlayalım.':BASLA_SOZ[((h%5)+5)%5];
     o+='<header class="uf-bas"><div class="uf-ust">LEX · XII · TABULARUM</div><h2>Hukukçunun Ufku</h2><p class="uf-tipsat" aria-label="Alanlar: kamu, özel, ceza, usul, genel">Kamu · Özel · Ceza · Usul · Genel</p></header>';
     o+='<div class="uf-ikili">'+U.seriKart(d)+U.unvanKart(d)+'</div>';
-    o+='<div class="uf-konus"><div class="uf-balon yalniz" aria-live="polite">'+soz+'</div></div>';
-    o+='<div class="uf-3d" id="uf-3d"></div><div class="uf-3d-hint" id="uf-hint" aria-live="polite"></div>';
+    o+='<div class="uf-konus">'+U.maskot(84)+'<div class="uf-balon" aria-live="polite">'+soz+'</div></div>';
+    var GC=gecOku();
+    o+='<div class="uf-yolk">'+U.yol(d,v,h,gunAd,devam,GC)+'</div><p class="uf-ipucu" id="uf-ipucu" role="status" aria-live="polite"></p>';
     o+='<p class="uf-bilgi">Yeni set '+(kalS<=1?'1 saatten kısa süre sonra':kalS+' saat sonra')+' açılıyor.</p>';
     if(!bu)o+='<button type="button" class="uf-btn altin" id="mt-basla">'+(devam?'Teste devam et':'Bugünün setini başlat')+'</button>';
     else{var sv=seviye(bu.d,bu.sn);
       o+='<button type="button" class="uf-btn" id="mt-gor">Sonucu ve çözümleri gör</button>'+
         '<button type="button" class="uf-btn2" id="mt-tekrar">'+(bu.d<NS?'Tekrar çöz, rekorunu geliştir':'Tekrar çöz, süreni kısalt')+((bu.n||1)>1?' · '+bu.n+'. deneme sonrası':'')+'</button>';}
+    o+='<div id="uf-liste">'+U.liste(v,GC,h,gunAd,false)+'</div>';
     $('mt-giris').innerHTML=o;$('mt-giris').hidden=false;$('mt-test').hidden=true;$('mt-sonuc').hidden=true;
     var b=$('mt-basla');if(b)b.addEventListener('click',function(){basla(false);});
     var g=$('mt-gor');if(g)g.addEventListener('click',function(){sonucGoster(bu,h);});
     var tk=$('mt-tekrar');if(tk)tk.addEventListener('click',function(){basla(true);});
-    U.yol3($('uf-3d'),$('uf-hint'),{d:d,v:v,h:h,gec:gecOku(),ad:gunAd,devam:devam,NS:NS,
-      ac:function(k){if(k===h){if(bu)sonucGoster(bu,h);else basla(false);}else if(v[k])sonucGoster(v[k],k);else{var G=gecOku();if(G[k])sonucGoster(G[k],k,false,true);}},
-      gecCoz:function(k){basla(false,k);}});
+    function ac(k){if(k===h){if(bu)sonucGoster(bu,h);else basla(false);}else if(v[k])sonucGoster(v[k],k);else if(GC[k])sonucGoster(GC[k],k,false,true);}
+    [].forEach.call(document.querySelectorAll('#mt-giris .uf-dg[data-uk]'),function(e){var k=+e.getAttribute('data-uk');
+      e.addEventListener('click',function(){ac(k);});e.addEventListener('keydown',function(ev){if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();ac(k);}});});
+    [].forEach.call(document.querySelectorAll('#mt-giris .uf-dg.kilit'),function(e){var n=+e.getAttribute('data-kn');
+      function ip(){$('uf-ipucu').textContent=n===1?'Bu levha yarın açılır':'Bu levha '+n+' gün sonra açılır';
+        try{if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;}catch(x){}
+        e.classList.remove('sal');void e.getBoundingClientRect();e.classList.add('sal');setTimeout(function(){e.classList.remove('sal');},520);}
+      e.addEventListener('click',ip);e.addEventListener('keydown',function(ev){if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();ip();}});});
+    function listeBagla(){var L=$('uf-liste');if(!L)return;
+      [].forEach.call(L.querySelectorAll('.uf-or'),function(b){var k=+b.getAttribute('data-k'),tr=b.getAttribute('data-t');
+        b.addEventListener('click',function(){if(tr==='bos'){var ex=b.parentNode.querySelector('.uf-or-e');ex.hidden=!ex.hidden;}else ac(k);});});
+      [].forEach.call(L.querySelectorAll('.uf-or-e .gc'),function(b){b.addEventListener('click',function(){basla(false,+b.getAttribute('data-k'));});});
+      var tm=L.querySelector('.uf-tum');if(tm)tm.addEventListener('click',function(){L.innerHTML=U.liste(v,GC,h,gunAd,true);listeBagla();});}
+    listeBagla();
     rozet();setTimeout(torenDene,700);
   }
   function rozet(){var e=$('nav-mantik');if(!e)return;var r=oku()[haftaNo()],yeni=!r;
@@ -244,7 +257,7 @@
   function engel(el){
     var kg=document.getElementById('kt-gor');if(kg&&!kg.hidden)return true;
     if(document.querySelector('.pm-sheet.acik,#alarm.acik,#sik-sor.acik,#pm-curu.acik,#koc-onay.acik,#pm-not.acik,#pm-dnm.acik,#sil-p.acik'))return true;
-    return !!(el&&el.closest&&el.closest('input,select,textarea,.kaydir,.pm-chips,.mt-sec,.mt-noktalar,.uf-3d,.uf-nok,.mv-arac,.pr-gunler,.alt-nav,.st-cizim,.dg-cip,.dg-d,.kt-gor,.kt-ort,.kt-yan'));
+    return !!(el&&el.closest&&el.closest('input,select,textarea,.kaydir,.pm-chips,.mt-sec,.mt-noktalar,.uf-nok,.mv-arac,.pr-gunler,.alt-nav,.st-cizim,.dg-cip,.dg-d,.kt-gor,.kt-ort,.kt-yan'));
   }
   function ciz(x,gecis){
     var W=window.innerWidth,p=Math.min(1,Math.abs(x)/W);

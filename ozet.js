@@ -246,6 +246,496 @@ var LEXOZET = (function () {
     return lc(t).replace(/\d+/g, '#').replace(/[^a-zçğıöşü#]+/g, '');
   }
 
+  /* ------------------------------------------------------------------ */
+  /* Kapak, sinav bolumu, vurgulu kutu, tablo ayiklama                    */
+  /* ------------------------------------------------------------------ */
+  var PHT = 'Tablo ........................ .';
+
+  function govdeIst(L) {
+    var N = L.length, i, hVar = 0, hler = [], uz = [], oranlar = [];
+    for (i = 0; i < N; i++) {
+      if (L[i].ph) { continue; }
+      if (L[i].h) { hVar++; if (L[i].t.length >= 25) { hler.push(L[i].h); } }
+    }
+    var bodyH = (hVar >= 0.5 * N && hler.length) ? medyan(hler) : 0;
+    for (i = 0; i < N; i++) { if (!L[i].ph && L[i].t.length >= 30 && !L[i].gap && !L[i].fn) { uz.push(L[i].t.length); } }
+    for (i = 1; i < N; i++) {
+      var a = L[i - 1], b = L[i];
+      if (!a.ph && !b.ph && a.p === b.p && a.y !== null && b.y !== null && b.h && a.h) {
+        var dd = Math.abs(a.y - b.y) / b.h;
+        if (dd > 0.9 && dd < 2.0) { oranlar.push(dd); }
+      }
+    }
+    return { bodyH: bodyH, lenRef: yuzdelik(uz, 0.85) || 80, rho: oranlar.length >= 8 ? medyan(oranlar) : 1.45 };
+  }
+
+  /* ---- kapak ---- */
+  var RE_KAPAK_META = /(ders\s+kodu|kaynak\s*:|hazırlayan|hazırlanan|yazar\s*:|dönem|akademik\s+yıl|üniversites|fakültes|(^|[^a-zçğıöşü])(prof|doç|dr|arş|öğr)\.\s|öğretim\s+(üyesi|görevlisi)|sürüm|versiyon|tarih\s*:|danışman|çalışma\s+notu)/;
+  function kapakAyikla(L, bodyH) {
+    var lim = Math.min(L.length, 14), i, son = -1, meta = 0, oncekiMeta = false, baslik = '';
+    for (i = 0; i < lim; i++) {
+      var ln = L[i];
+      if (ln.p !== 1 || ln.fn) { break; }
+      var t = ln.t, lt = lc(t);
+      var baslikMi = i === 0 && t.length <= 90 && !/[.:;?!]$/.test(t) && (hepBuyukMu(t) || (bodyH && ln.h && ln.h >= 1.3 * bodyH));
+      var altMi = i <= 2 && t.length <= 130 && / [·|•] | \+ /.test(t) && !/[.?!]$/.test(t);
+      var metaMi = RE_KAPAK_META.test(lt) && t.length <= 170 && !/[?!]$/.test(t);
+      var devamMi = oncekiMeta && !/[.?!,]["”)]*$/.test(L[i - 1].t) && t.length <= 60 && !/,$/.test(t) && (kckMi(t.charAt(0)) || /[”")]\s*(\(\d+\s*s\.\))?$/.test(t));
+      if (baslikMi) { baslik = t; son = i; oncekiMeta = false; continue; }
+      if (altMi || metaMi || devamMi) { son = i; if (!devamMi) { meta++; } oncekiMeta = metaMi || altMi || devamMi; continue; }
+      break;
+    }
+    if (son < 0 || !meta || son + 1 >= L.length) { return { L: L, kapak: null }; }
+    var satirlar = [];
+    for (i = 0; i <= son; i++) { satirlar.push(L[i].t); }
+    return { L: L.slice(son + 1), kapak: { baslik: baslik, satirlar: satirlar } };
+  }
+
+  /* ---- deneme sinavi / cevap anahtari bolumleri ---- */
+  var RE_SINAV_BASLA = /^(?:(?:bölüm|kısım|ek)\s+[a-zçğıöşü0-9]+\s*[–—:.\-]\s*)?(?:deneme\s+sınav|deneme\s+test|örnek\s+sınav|çıkmış\s+soru|soru\s+bankası|alıştırma\s+soru|tekrar\s+soru|cevap\s+anahtar|sınav\s+soruları)/;
+  var RE_BOLUM = /^(?:bölüm|kısım)\s+[a-zçğıöşü0-9]+\s*[–—:.\-]/;
+  function sinavBaslaMi(ln) {
+    var t = ln.t;
+    return t.length <= 90 && !/[.?!,;]$/.test(t) && kelimeSay(t) <= 9 && RE_SINAV_BASLA.test(lc(t));
+  }
+  function sinavBolgeleriniAyir(L, bodyH) {
+    var out = [], reg = [], i = 0, N = L.length;
+    while (i < N) {
+      if (sinavBaslaMi(L[i])) {
+        var j = i;
+        while (j < N) {
+          var ln = L[j];
+          if (j > i && !sinavBaslaMi(ln)) {
+            var lt = lc(ln.t);
+            var yeniBolum = RE_BOLUM.test(lt) ||
+              (ln.t.length >= 10 && ln.t.length <= 90 && hepBuyukMu(ln.t) && kelimeSay(ln.t) >= 2 && !/^([a-zçğıöşü]|\d{1,2})\s*[.)]/.test(lt) && !/^(klasik|test|deneme|cevap|not)/.test(lt)) ||
+              (bodyH && ln.h && ln.h >= 1.12 * bodyH && ln.t.length <= 90 && !/[.?!]$/.test(ln.t) && !/^(klasik|test|deneme|cevap|soru|k\d)/.test(lt));
+            if (yeniBolum) { break; }
+          }
+          reg.push(ln); j++;
+        }
+        i = j;
+        continue;
+      }
+      out.push(L[i]); i++;
+    }
+    return { L: out, bolge: reg };
+  }
+
+  function sinavCozumle(R) {
+    var testler = [], klasik = [], i;
+    var mode = '', deneme = 0, anahtarD = 0, q = null, sonG = null, sonK = null;
+    var key = {}, gerekce = {}, kcevap = {};
+    function kapat() {
+      if (!q) { return; }
+      if (q.tur === 'k') { klasik.push({ t: q.t, no: q.no, puan: q.puan, deneme: q.deneme, sayfa: q.sayfa }); }
+      else if (q.sec.length >= 2) {
+        testler.push({ t: q.t, secenekler: q.sec, sayfa: q.sayfa, no: q.no, deneme: q.deneme });
+      }
+      q = null;
+    }
+    for (i = 0; i < R.length; i++) {
+      var t = R[i].t, lt = lc(t), m;
+      if ((m = /^deneme\s+sınav[ıi]\s*[:\-]?\s*(\d+)/.exec(lt))) { kapat(); deneme = parseInt(m[1], 10); mode = ''; sonG = null; sonK = null; continue; }
+      if ((m = /^deneme\s*(\d+)\s*$/.exec(lt))) { kapat(); anahtarD = parseInt(m[1], 10); mode = 'anahtar'; sonG = null; sonK = null; continue; }
+      if (/^((bölüm|kısım)\s+\S+\s*[–—:\-]\s*)?cevap\s+anahtar/.test(lt)) { kapat(); mode = 'anahtar'; continue; }
+      if (/^klasik\s+sorular/.test(lt)) { kapat(); mode = 'klasik'; continue; }
+      if (/^test\s+soruları/.test(lt)) { kapat(); mode = 'test'; continue; }
+      if (/^klasik\s+cevap\s+noktaları/.test(lt)) { kapat(); mode = 'kcevap'; sonK = null; continue; }
+      if (mode === 'klasik') {
+        m = /^(K|S|Soru)\s?(\d{1,2})\s*(?:\(\s*(\d+)\s*(?:p|puan)\s*\))?\s*[.):\-]\s*(.*)$/.exec(t);
+        if (m) { kapat(); q = { tur: 'k', no: 'K' + m[2], puan: m[3] ? parseInt(m[3], 10) : 0, t: m[4], deneme: deneme, sayfa: R[i].p }; }
+        else if (q) { q.t = birlestir(q.t, t); }
+      } else if (mode === 'test') {
+        m = /^([A-E])\s*[.)]\s*(\S.*)$/.exec(t);
+        if (m && q && q.tur === 't') { q.sec.push(m[1] + ') ' + m[2]); continue; }
+        m = /^(\d{1,2})\s*[.)]\s+(\S.*)$/.exec(t);
+        if (m && (!q || q.sec.length >= 2)) { kapat(); q = { tur: 't', no: parseInt(m[1], 10), t: m[2], sec: [], deneme: deneme, sayfa: R[i].p }; }
+        else if (q) {
+          if (q.sec.length) { q.sec[q.sec.length - 1] = birlestir(q.sec[q.sec.length - 1], t); } else { q.t = birlestir(q.t, t); }
+        }
+      } else if (mode === 'anahtar') {
+        if (!key[anahtarD]) { key[anahtarD] = {}; gerekce[anahtarD] = {}; }
+        m = /^test\s*:\s*(.*)$/i.exec(t);
+        if (m) {
+          var rg = /(\d{1,2})\s*[-–:.)]\s*([A-E])(?![A-Za-zÇĞİÖŞÜçğıöşü])/g, pm;
+          while ((pm = rg.exec(m[1]))) { key[anahtarD][parseInt(pm[1], 10)] = pm[2]; }
+          sonG = null; continue;
+        }
+        if (/^no\s+(cvp|cevap)/.test(lt)) { continue; }
+        m = /^(\d{1,2})\s+([A-E])\s+(\S.*)$/.exec(t);
+        if (m) { var no = parseInt(m[1], 10); key[anahtarD][no] = m[2]; gerekce[anahtarD][no] = m[3]; sonG = { d: anahtarD, n: no }; }
+        else if (sonG) { gerekce[sonG.d][sonG.n] = birlestir(gerekce[sonG.d][sonG.n], t); }
+      } else if (mode === 'kcevap') {
+        if (!kcevap[anahtarD]) { kcevap[anahtarD] = {}; }
+        m = /^(K\d{1,2})\s*[:.]\s*(.*)$/.exec(t);
+        if (m) { kcevap[anahtarD][m[1]] = m[2]; sonK = m[1]; }
+        else if (sonK) { kcevap[anahtarD][sonK] = birlestir(kcevap[anahtarD][sonK], t); }
+      }
+    }
+    kapat();
+    for (i = 0; i < testler.length; i++) {
+      var tq = testler[i], kk = key[tq.deneme];
+      if (kk && kk[tq.no]) { tq.cevap = kk[tq.no]; }
+      if (gerekce[tq.deneme] && gerekce[tq.deneme][tq.no]) { tq.aciklama = gerekce[tq.deneme][tq.no]; }
+    }
+    for (i = 0; i < klasik.length; i++) {
+      var kq = klasik[i];
+      if (kcevap[kq.deneme] && kcevap[kq.deneme][kq.no]) { kq.cevapNoktalari = kcevap[kq.deneme][kq.no]; }
+    }
+    return { testler: testler, klasik: klasik };
+  }
+
+  /* ---- vurgulu kutular ---- */
+  var RE_YZ1 = /^GEM[İI]N[İI]\s+NOTU(?:\s+EKLED[İI])?\s*[:：\-–—]?\s*(.*)$/i;
+  var RE_YZ2 = /^(?:YZ|Yapay\s+zek[âa]|AI)\s*(?:eki|notu|ilavesi|katkısı)\s*[:：]\s*(.*)$/i;
+  var RE_EK = /^EK\s+B[İI]LG[İI](?:\s*\(([^)]*)\))?\s*[:：]?\s*(.*)$/;
+  var RE_SINAV_CAPS = /^(SINAVDA\s+ÇIKAR|SINAVDA\s+ÇIKABİLİR|SINAVDA\s+SORULUR|SINAVDA\s+DİKKAT|SINAV\s+İPUCU|SINAV\s+NOTU|SINAV\s+UYARISI|HOCANIN\s+NOTU|HOCANIN\s+İPUCU|HOCANIN\s+UYARISI|HOCA\s+NOTU|ÇOK\s+ÖNEMLİ|ÖNEMLİ|DİKKAT|UYARI|İPUCU|MUTLAKA\s+BİL|AKILDA\s+TUTUN)\s*([:：!]?)\s*(.*)$/;
+  var RE_SINAV_ETIKET = /^(Önemli|Dikkat|Uyarı|İpucu|Not|Hocanın\s+notu|Hoca\s+notu|Hocanın\s+uyarısı|Sınav\s+notu|Sınavda\s+çıkar|Sınavda)\s*[:：]\s*(\S.*)$/;
+  function kutuIsareti(t, parBasi) {
+    var s = t, sim = false, m;
+    var m0 = /^[★☆✦✧⭐✱●◆▶►■□✔⚠❗‼]+\s*/.exec(s);
+    if (m0) { s = s.substr(m0[0].length); sim = true; }
+    if ((m = RE_YZ1.exec(s))) { return { tip: 'yz', etiket: 'Gemini notu', ic: m[1] }; }
+    if ((m = RE_YZ2.exec(s))) { return { tip: 'yz', etiket: 'YZ eki', ic: m[1] }; }
+    if ((m = RE_EK.exec(s)) && (sim || s.length <= 90)) { return { tip: 'yz', etiket: 'Ek bilgi', ic: m[2], ad: m[1] || '' }; }
+    if ((m = RE_SINAV_CAPS.exec(s))) {
+      var kalan = m[3];
+      if (!kalan || m[2] || kckMi(kalan.charAt(0))) { return { tip: 'sinav', etiket: m[1].replace(/\s+/g, ' '), ic: kalan }; }
+      if (!hepBuyukMu(kalan) && sim) { return { tip: 'sinav', etiket: m[1].replace(/\s+/g, ' '), ic: kalan }; }
+    }
+    if (sim && /^(sınavda çıkar|önemli|dikkat|uyarı|ipucu|ipucu)/.test(lc(s)) && s.length <= 40) {
+      return { tip: 'sinav', etiket: s.replace(/[:：!\s]+$/, ''), ic: '' };
+    }
+    if ((m = RE_SINAV_ETIKET.exec(s))) { return { tip: 'sinav', etiket: m[1], ic: m[2] }; }
+    if (parBasi && /^Sınavda\s+\S/.test(s)) { return { tip: 'sinav', etiket: 'Sınavda', ic: s }; }
+    return null;
+  }
+
+  var RE_BUL = /^(?:([•●▪■◦·]|[-–—*])\s+|(\d{1,2})[.)]\s+|\(([a-zçğıöşü\d])\)\s+|([a-zçğıöşü])\)\s+|(→)\s*)(\S.*)$/;
+  function kutuCozumle(satirlar) {
+    var W = 0, i, items = [], cur = null;
+    for (i = 0; i < satirlar.length; i++) { if (satirlar[i].t.length > W) { W = satirlar[i].t.length; } }
+    for (i = 0; i < satirlar.length; i++) {
+      var l = satirlar[i], t = l.t, m = RE_BUL.exec(t), yeni = false;
+      if (!cur) { yeni = true; }
+      else if (m) { yeni = true; }
+      else {
+        var pv = cur.son, pt = pv.t;
+        var kapali = /[.:;!?)”"]$/.test(pt);
+        var dolu = pt.length >= 0.85 * W;
+        var kucukB = kckMi(t.charAt(0));
+        var inDown = l.x !== null && pv.x !== null && pv.x - l.x >= 8;
+        if (kucukB) { yeni = false; }
+        else if (/:$/.test(pt)) { yeni = true; }
+        else if (inDown) { yeni = true; }
+        else if (!dolu) { yeni = true; }
+        else { yeni = false; }
+        if (!yeni && !kapali && !dolu) { yeni = false; }
+      }
+      if (yeni) {
+        cur = { t: m ? m[6] : t, son: l, ok: m && m[5] ? '→ ' : '' };
+        items.push(cur);
+      } else { cur.t = birlestir(cur.t, t); cur.son = l; }
+    }
+    var out = [];
+    for (i = 0; i < items.length; i++) { out.push(bosluk(items[i].ok + items[i].t)); }
+    return out;
+  }
+
+  function kutulariAyikla(L, bodyH, lenRefK) {
+    var out = [], i = 0, N = L.length;
+    while (i < N) {
+      var ln = L[i];
+      var parBasi = i === 0 || ln.b || ln.p !== L[i - 1].p || /[.!?:]["”)]?$/.test(L[i - 1].t);
+      var mk = (ln.fn || ln.ph) ? null : kutuIsareti(ln.t, parBasi);
+      if (!mk) { out.push(ln); i++; continue; }
+      var bx = ln.x, sat = [], j = i + 1, icerikSay = 0, standalone = !mk.ic || (hepBuyukMu(mk.ic) && !/[.:;?!]$/.test(mk.ic) && mk.ic.length <= 60), icH = null;
+      if (mk.ic) { sat.push({ t: bosluk(mk.ic), x: ln.x, h: ln.h }); icH = ln.h; }
+      var maxS = standalone ? 60 : 8;
+      while (j < N && sat.length < maxS) {
+        var nx = L[j], pv = L[j - 1];
+        if (nx.fn || nx.ph) { break; }
+        if (kutuIsareti(nx.t, false)) { break; }
+        if (nx.b && !(standalone && icerikSay === 0)) { break; }
+        if (standalone && bx !== null && nx.x !== null && nx.x < bx - 4) { break; }
+        if (bodyH && nx.h && nx.h >= bodyH * 1.12) { break; }
+        if (/^\d{1,2}(?:\.\d{1,2})+\.?\s+[A-ZÇĞİÖŞÜ]/.test(nx.t) && nx.t.length <= 100 && !/[.:;,]$/.test(nx.t)) { break; }
+        if (hepBuyukMu(nx.t) && nx.t.length >= 6 && nx.t.length <= 90 && !/^[•\-–]/.test(nx.t)) { break; }
+        if (icH === null && sat.length === 0 && !standalone) { icH = ln.h; }
+        if (!standalone && sat.length && /[.!?]["”)]*$/.test(pv.t) && (RE_BUL.test(nx.t) || /^\d{1,3}\s*[-–]\s*\S/.test(nx.t) || pv.t.length < 0.75 * lenRefK)) { break; }
+        if (sat.length && nx.h && sat[0].h && Math.abs(nx.h - sat[0].h) > 0.14 * sat[0].h) { break; }
+        if (!standalone && nx.h && ln.h && Math.abs(nx.h - ln.h) > 0.1 * ln.h) { break; }
+        sat.push({ t: bosluk(nx.t), x: nx.x, h: nx.h, p: nx.p }); icerikSay++; j++;
+      }
+      var items = kutuCozumle(sat);
+      var ad = mk.ad || '';
+      if (items.length && hepBuyukMu(items[0]) && items[0].length <= 60 && !/[.:;?!]$/.test(items[0])) { ad = ad ? ad + ' · ' + items[0] : items[0]; items.shift(); }
+      if (items.length) {
+        var kt = items[0], km = items.slice(1), ci;
+        for (ci = 0; ci < km.length - 1; ci++) {
+          if (/:$/.test(km[ci]) && ci + 1 < km.length) {
+            kt = [kt].concat(km.slice(0, ci + 1)).join(' '); km = km.slice(ci + 1); break;
+          }
+        }
+        var kutu = { tip: mk.tip, etiket: mk.etiket, ad: ad, sayfa: ln.p, t: kt, maddeler: km };
+        out.push({ t: PHT, ph: true, kutu: kutu, p: ln.p, x: ln.x, y: ln.y, h: ln.h, b: true, bn: 1, gap: 0 });
+      }
+      i = j;
+    }
+    return out;
+  }
+
+  /* ---- tablolar ---- */
+  var RE_OK = /^[➜→⇒▶►➔➡⟶»>]+$/;
+  function tabloTohumu(ln, lenRef) {
+    var c = ln.c;
+    if (!c || c.length < 2 || ln.ph || ln.fn) { return false; }
+    if (c.length >= 5 && ln.t.length >= 0.6 * lenRef && !hepBuyukMu(ln.t)) {
+      var tek = 0, k;
+      for (k = 0; k < c.length; k++) { if (c[k].t.indexOf(' ') < 0) { tek++; } }
+      if (tek >= 0.7 * c.length) { return false; }
+    }
+    return true;
+  }
+  function bantBul(c, bantlar) {
+    var bi = -1, bo = 0, k, ox;
+    for (k = 0; k < bantlar.length; k++) {
+      ox = Math.min(c.x2, bantlar[k].x2) - Math.max(c.x, bantlar[k].x);
+      if (ox > bo) { bo = ox; bi = k; }
+    }
+    if (bi >= 0) {
+      var gen = Math.min(c.x2 - c.x, bantlar[bi].x2 - bantlar[bi].x);
+      if (bo >= 0.5 * gen || bo >= 6) { return bi; }
+    }
+    /* en yakin bant (merkez) */
+    var cm = (c.x + c.x2) / 2, bd = 1e9;
+    for (k = 0; k < bantlar.length; k++) {
+      var d = Math.abs(cm - (bantlar[k].x + bantlar[k].x2) / 2);
+      if (d < bd) { bd = d; bi = k; }
+    }
+    return bi;
+  }
+  function hucreOlarak(ln) {
+    if (ln.c) { return ln.c; }
+    return [{ x: ln.x === null ? 0 : ln.x, x2: ln.x2 !== null && ln.x2 !== undefined ? ln.x2 : (ln.x || 0) + ln.t.length * 5.5, t: ln.t }];
+  }
+  function tabloParcaMi(nx, bantlar) {
+    if (nx.c) { return false; }
+    var hc = hucreOlarak(nx)[0], k, ust = 0, hz = -1;
+    for (k = 0; k < bantlar.length; k++) {
+      var ox = Math.min(hc.x2, bantlar[k].x2) - Math.max(hc.x, bantlar[k].x);
+      if (ox > 0) { ust++; hz = k; }
+    }
+    if (ust !== 1) { return false; }
+    var b = bantlar[hz], solHizali = Math.abs(hc.x - b.x) <= 3.5, orta = Math.abs((hc.x + hc.x2) / 2 - (b.x + b.x2) / 2) <= 6;
+    if (!solHizali && !orta) { return false; }
+    /* paragraf satiri: sutundan cok genis olamaz (son sutun haric) */
+    if (hz < bantlar.length - 1 && hc.x2 > bantlar[hz + 1].x - 1) { return false; }
+    return true;
+  }
+
+  function tabloKur(reg, rho) {
+    var best = null, i, k;
+    for (i = 0; i < reg.length; i++) { if (reg[i].c && (!best || reg[i].c.length > best.c.length)) { best = reg[i]; } }
+    if (!best) { return null; }
+    var bantlar = [];
+    for (k = 0; k < best.c.length; k++) { bantlar.push({ x: best.c[k].x, x2: best.c[k].x2 }); }
+    var K = bantlar.length, hucreler = [], ok = false, hs = [];
+    for (i = 0; i < reg.length; i++) {
+      var cs = hucreOlarak(reg[i]);
+      for (k = 0; k < cs.length; k++) {
+        if (RE_OK.test(cs[k].t)) { ok = true; continue; }
+        hucreler.push({ x: cs[k].x, x2: cs[k].x2, t: cs[k].t, y: reg[i].y, h: reg[i].h, sira: hucreler.length, ln: reg[i], col: bantBul(cs[k], bantlar) });
+      }
+      if (reg[i].h) { hs.push(reg[i].h); }
+    }
+    var yVar = true;
+    for (i = 0; i < reg.length; i++) { if (reg[i].y === null) { yVar = false; } }
+    var rows = [];
+    function satirAc() { var r = []; for (var z = 0; z < K; z++) { r.push([]); } rows.push(r); return r; }
+    if (yVar) {
+      var hm = medyan(hs) || 10, lineH = rho * hm;
+      var srt = hucreler.slice().sort(function (a, b) { return (b.y - a.y) || (a.sira - b.sira); });
+      var dilimler = [];
+      for (i = 0; i < srt.length; i++) {
+        var d = dilimler.length ? dilimler[dilimler.length - 1] : null;
+        if (d && Math.abs(d.y - srt[i].y) <= Math.max(1.5, 0.4 * hm)) { d.h.push(srt[i]); } else { dilimler.push({ y: srt[i].y, h: [srt[i]] }); }
+      }
+      var cur = null;
+      for (i = 0; i < dilimler.length; i++) {
+        var dl = dilimler[i], yeni = !cur;
+        if (cur) {
+          var gap = dilimler[i - 1].y - dl.y, col0 = false;
+          for (k = 0; k < dl.h.length; k++) { if (dl.h[k].col === 0) { col0 = true; } }
+          yeni = gap > lineH * 1.25 && !(!col0 && gap < lineH * 1.6);
+        }
+        if (yeni) { cur = satirAc(); }
+        for (k = 0; k < dl.h.length; k++) { cur[dl.h[k].col].push(dl.h[k].t); }
+      }
+    } else {
+      var bos = 0;
+      for (i = 0; i < reg.length; i++) { if (reg[i].b && i > 0) { bos++; } }
+      var cur2 = null, sonLn = null;
+      for (i = 0; i < hucreler.length; i++) {
+        var hc = hucreler[i], yeni2 = !cur2;
+        if (cur2 && hc.ln !== sonLn) {
+          if (bos > 0) { yeni2 = !!hc.ln.b; }
+          else { yeni2 = hc.col === 0 && !kckMi(hc.t.charAt(0)) && hc.ln.c; }
+        }
+        if (yeni2) { cur2 = satirAc(); }
+        cur2[hc.col].push(hc.t); sonLn = hc.ln;
+      }
+    }
+    var out = [];
+    for (i = 0; i < rows.length; i++) {
+      var r = [];
+      for (k = 0; k < K; k++) {
+        var tx = '';
+        for (var z = 0; z < rows[i][k].length; z++) { tx = tx ? birlestir(tx, rows[i][k][z]) : rows[i][k][z]; }
+        r.push(bosluk(tx));
+      }
+      out.push(r);
+    }
+    return { rows: out, K: K, sema: ok };
+  }
+
+  function tablolariAyikla(L, ist) {
+    var out = [], i = 0, N = L.length;
+    while (i < N) {
+      var ln = L[i];
+      if (!tabloTohumu(ln, ist.lenRef)) { out.push(ln); i++; continue; }
+      var reg = [ln], j = i + 1, seeds = 1, bant, lineH = ist.rho * (ln.h || 10);
+      /* geri cekme: tohumdan once gelen, ayni sutuna oturan kisa parcalar */
+      var enC = ln.c, la;
+      for (la = i + 1; la < N && la <= i + 14 && L[la].p === ln.p; la++) {
+        if (tabloTohumu(L[la], ist.lenRef) && L[la].c.length > enC.length) { enC = L[la].c; }
+      }
+      var bn0 = []; enC.forEach(function (c) { bn0.push({ x: c.x, x2: c.x2 }); });
+      var geri = [], k = out.length - 1;
+      while (k >= 0 && geri.length < 4 && out[k].p === ln.p && !out[k].ph && !out[k].c && out[k].y !== null && ln.y !== null &&
+        Math.abs(out[k].y - ln.y) <= 2.6 * (ln.h || 10) && out[k].t.length <= 40 && tabloParcaMi(out[k], bn0)) { geri.unshift(out[k]); k--; }
+      if (geri.length) { out.length -= geri.length; reg = geri.concat(reg); }
+      var minY = ln.y, maxY = ln.y;
+      while (j < N) {
+        var nx = L[j];
+        if (nx.p !== ln.p || nx.ph || nx.fn) { break; }
+        if (nx.y === null && nx.bn >= 3) { break; }
+        if (nx.y !== null && minY !== null && (nx.y < minY - 3.4 * lineH || nx.y > maxY + 3.4 * lineH)) { break; }
+        if (tabloTohumu(nx, ist.lenRef)) { reg.push(nx); seeds++; j++; if (nx.y !== null) { minY = Math.min(minY, nx.y); maxY = Math.max(maxY, nx.y); } continue; }
+        bant = bn0;
+        var z;
+        if (tabloParcaMi(nx, bant)) { reg.push(nx); j++; if (nx.y !== null) { minY = Math.min(minY, nx.y); maxY = Math.max(maxY, nx.y); } continue; }
+        break;
+      }
+      var T = seeds >= 2 ? tabloKur(reg, ist.rho) : null;
+      var gecerli = false;
+      if (T && T.rows.length >= 2 && T.K >= 2) {
+        var dolu = 0, tum = 0, r, c;
+        for (r = 0; r < T.rows.length; r++) { for (c = 0; c < T.K; c++) { tum++; if (T.rows[r][c]) { dolu++; } } }
+        gecerli = dolu >= 0.5 * tum;
+      }
+      if (!gecerli) {
+        for (z = 0; z < reg.length; z++) { out.push(reg[z]); }
+        i = j; continue;
+      }
+      T.sayfa = ln.p; T.sema = T.sema || false;
+      out.push({ t: PHT, ph: true, tablo: T, p: ln.p, x: reg[0].x, y: reg[0].y, h: reg[0].h, b: true, bn: 1, gap: 0 });
+      i = j;
+    }
+    /* sayfa sonundan devam eden tablolar */
+    var son = [];
+    for (i = 0; i < out.length; i++) {
+      var o = out[i], pv = son.length ? son[son.length - 1] : null;
+      if (o.tablo && pv && pv.tablo && o.p === pv.p + 1 && o.tablo.K === pv.tablo.K) {
+        var r0 = o.tablo.rows[0], prs = pv.tablo.rows, devam = !r0[0] || kckMi(r0[0].charAt(0));
+        var ayni = true, q;
+        for (q = 0; q < r0.length; q++) { if (r0[q] !== prs[0][q]) { ayni = false; } }
+        if (ayni) { prs.push.apply(prs, o.tablo.rows.slice(1)); }
+        else if (devam) {
+          var sr = prs[prs.length - 1];
+          for (q = 0; q < r0.length; q++) { if (r0[q]) { sr[q] = sr[q] ? birlestir(sr[q], r0[q]) : r0[q]; } }
+          prs.push.apply(prs, o.tablo.rows.slice(1));
+        } else { prs.push.apply(prs, o.tablo.rows); }
+        pv.tablo.sema = pv.tablo.sema || o.tablo.sema;
+        continue;
+      }
+      son.push(o);
+    }
+    return son;
+  }
+
+
+  /* ---- sutun sutun dizilmis semalar (akis semasi / kutu zinciri) ---- */
+  function diyagramAyikla(L, ist) {
+    var N = L.length, i, marj = {}, pg;
+    for (i = 0; i < N; i++) {
+      var l0 = L[i];
+      if (l0.ph || l0.x === null || l0.t.length < 25) { continue; }
+      if (marj[l0.p] === undefined || l0.x < marj[l0.p]) { marj[l0.p] = l0.x; }
+    }
+    var lh = function (ln) { return ist.rho * (ln.h || 10); };
+    function atlama(k) {
+      var a = L[k - 1], b = L[k];
+      return k > 0 && !a.ph && !b.ph && a.p === b.p && a.y !== null && b.y !== null && b.y > a.y + 2.2 * lh(b);
+    }
+    function dar(ln) {
+      return !ln.ph && ln.x !== null && marj[ln.p] !== undefined && ln.x >= marj[ln.p] + 5 && ln.t.length <= 60;
+    }
+    var bolgeler = [], k = 1;
+    while (k < N) {
+      if (!atlama(k)) { k++; continue; }
+      var s = k;
+      while (s - 1 >= 0 && dar(L[s - 1]) && L[s - 1].p === L[k].p && (s - 1 === k - 1 || (L[s - 1].y !== null && L[s].y !== null && Math.abs(L[s - 1].y - L[s].y) <= 2.2 * lh(L[s])))) { s--; }
+      var e = k, jumps = 1, m;
+      for (m = k + 1; m < N; m++) {
+        var ln2 = L[m];
+        if (ln2.ph || ln2.p !== L[k].p) { break; }
+        if (atlama(m)) { jumps++; e = m; continue; }
+        if (ln2.x !== null && marj[ln2.p] !== undefined && ln2.x <= marj[ln2.p] + 4) { break; }
+        if (ln2.t.length > 70 && !ln2.c) { break; }
+        e = m;
+      }
+      var cokH = false, q2;
+      for (q2 = k; q2 <= e; q2++) { if (L[q2].c && L[q2].c.length >= 3) { cokH = true; } }
+      if ((jumps >= 2 || cokH) && k - s >= 2) { bolgeler.push([s, e]); k = e + 1; } else { k++; }
+    }
+    if (!bolgeler.length) { return L; }
+    var out = [], bi = 0;
+    for (i = 0; i < N; i++) {
+      if (bi < bolgeler.length && i === bolgeler[bi][0]) {
+        var reg = L.slice(bolgeler[bi][0], bolgeler[bi][1] + 1), hc = [], z, y;
+        for (z = 0; z < reg.length; z++) {
+          var cs = hucreOlarak(reg[z]);
+          for (y = 0; y < cs.length; y++) {
+            if (RE_OK.test(cs[y].t)) { continue; }
+            hc.push({ m: (cs[y].x + cs[y].x2) / 2, y: reg[z].y, t: cs[y].t, sira: hc.length });
+          }
+        }
+        hc.sort(function (a, b) { return a.m - b.m; });
+        var kol = [], cur = null;
+        for (z = 0; z < hc.length; z++) {
+          if (cur && hc[z].m - cur.ort <= 40) { cur.h.push(hc[z]); cur.ort = (cur.ort * (cur.h.length - 1) + hc[z].m) / cur.h.length; }
+          else { cur = { ort: hc[z].m, h: [hc[z]] }; kol.push(cur); }
+        }
+        var baslik = [], govde = [];
+        for (z = 0; z < kol.length; z++) {
+          kol[z].h.sort(function (a, b) { return (b.y - a.y) || (a.sira - b.sira); });
+          var tx = '';
+          for (y = 1; y < kol[z].h.length; y++) { tx = tx ? birlestir(tx, kol[z].h[y].t) : kol[z].h[y].t; }
+          baslik.push(bosluk(kol[z].h[0].t.replace(/\s*[➜→⇒➔➡]+\s*$/, ''))); govde.push(bosluk(tx.replace(/\s*[➜→⇒➔➡]+(\s|$)/g, ' ')));
+        }
+        if (kol.length >= 3) {
+          out.push({ t: PHT, ph: true, tablo: { rows: [baslik, govde], K: kol.length, sema: true, sayfa: reg[0].p }, p: reg[0].p, x: reg[0].x, y: reg[0].y, h: reg[0].h, b: true, bn: 1, gap: 0 });
+        } else { for (z = 0; z < reg.length; z++) { out.push(reg[z]); } }
+        i = bolgeler[bi][1]; bi++;
+        continue;
+      }
+      out.push(L[i]);
+    }
+    return out;
+  }
+
   function hazirla(pages, opts) {
     var P = [];
     var pi, li, raw, o, txt, bp;
@@ -261,8 +751,18 @@ var LEXOZET = (function () {
         var gap = (/\S {3,}\S/.test(txt.replace(/^\s+/, '')) && !hepBuyukMu(tt)) ? 1 : 0;
         var hucre = gap ? txt.replace(/^\s+|\s+$/g, '').split(/ {3,}/) : null;
         if (!tt) { bp++; continue; }
+        var cc = o.c || null;
+        if (!cc && gap) {
+          cc = [];
+          var rg0 = /\S+(?: {1,2}\S+)*/g, mc0, d0s = txt;
+          while ((mc0 = rg0.exec(d0s))) { cc.push({ x: mc0.index * 5.5, x2: (mc0.index + mc0[0].length) * 5.5, t: mc0[0] }); }
+          if (cc.length < 2) { cc = null; }
+        }
+        var xx = typeof o.x === 'number' ? o.x : null, xx2 = typeof o.x2 === 'number' ? o.x2 : null;
+        if (xx === null && typeof o.t === 'string' && /^ +\S/.test(o.t)) { xx = /^ */.exec(o.t)[0].length * 5.5; xx2 = xx + tt.length * 5.5; }
         cur.push({ t: tt, h: (typeof o.h === 'number' ? o.h : null), y: (typeof o.y === 'number' ? o.y : null),
-          x: (typeof o.x === 'number' ? o.x : null), p: pi + 1, b: bp > 0, bn: bp, gap: gap, hucre: hucre });
+          x: xx, x2: xx2, c: cc,
+          p: pi + 1, b: bp > 0, bn: bp, gap: gap, hucre: hucre });
         bp = 0;
       }
       P.push(cur);
@@ -380,7 +880,15 @@ var LEXOZET = (function () {
     for (pi = 0; pi < np; pi++) {
       for (li = 0; li < P[pi].length; li++) { L.push(P[pi][li]); }
     }
-    return { L: L, sayfaSayisi: np };
+    var ist = govdeIst(L);
+    var kp = kapakAyikla(L, ist.bodyH);
+    L = kp.L;
+    var sb = sinavBolgeleriniAyir(L, ist.bodyH);
+    L = sb.L;
+    L = kutulariAyikla(L, ist.bodyH, ist.lenRef);
+    L = tablolariAyikla(L, ist);
+    L = diyagramAyikla(L, ist);
+    return { L: L, sayfaSayisi: np, kapak: kp.kapak, sinavBolge: sb.bolge };
   }
 
   /* ------------------------------------------------------------------ */
@@ -434,12 +942,8 @@ var LEXOZET = (function () {
     var N = L.length;
     var i;
     /* istatistikler */
-    var hVar = 0, hler = [];
-    for (i = 0; i < N; i++) { if (L[i].h) { hVar++; if (L[i].t.length >= 25) { hler.push(L[i].h); } } }
-    var bodyH = (hVar >= 0.5 * N && hler.length) ? medyan(hler) : 0;
-    var uzunluklar = [];
-    for (i = 0; i < N; i++) { if (L[i].t.length >= 30 && !L[i].gap && !L[i].fn) { uzunluklar.push(L[i].t.length); } }
-    var lenRef = yuzdelik(uzunluklar, 0.85) || 80;
+    var ist0 = govdeIst(L);
+    var bodyH = ist0.bodyH, lenRef = ist0.lenRef;
 
     /* sayfa sol kenar (x) */
     var kenar = {};
@@ -449,6 +953,11 @@ var LEXOZET = (function () {
     }
     for (pg in xs) { if (xs.hasOwnProperty(pg)) { kenar[pg] = yuzdelik(xs[pg], 0.2); } }
     var behindThr = 15;
+    var sagKenar = {}, x2s = {};
+    for (i = 0; i < N; i++) {
+      if (!L[i].ph && L[i].x2 !== null && L[i].x2 !== undefined && L[i].t.length > 40 && !L[i].fn) { pg = L[i].p; (x2s[pg] = x2s[pg] || []).push(L[i].x2); }
+    }
+    for (pg in x2s) { if (x2s.hasOwnProperty(pg) && x2s[pg].length >= 5) { sagKenar[pg] = yuzdelik(x2s[pg], 0.9); } }
 
     /* y bosluk medyani (sayfa basina) */
     var dyMed = {};
@@ -479,7 +988,7 @@ var LEXOZET = (function () {
     /* tekrar eden ALL CAPS basliklar = kutu etiketi (aside) */
     var capsSay = {};
     for (i = 0; i < N; i++) {
-      if (hepBuyukMu(L[i].t) && L[i].t.length <= 80 && !L[i].gap) { capsSay[L[i].t] = (capsSay[L[i].t] || 0) + 1; }
+      if (!L[i].ph && hepBuyukMu(L[i].t) && L[i].t.length <= 80 && !L[i].gap) { capsSay[L[i].t] = (capsSay[L[i].t] || 0) + 1; }
     }
 
     var blocks = [];
@@ -487,6 +996,24 @@ var LEXOZET = (function () {
     var fnCur = null, fnBekle = [];
     var aside = false;
     var lastNum = 0, lastHarf = '';
+    var sonNo = [];
+
+    function numParcalar(t) {
+      var m = /^(\d{1,2}(?:\.\d{1,2})*)\.?\s+\S/.exec(t);
+      if (!m) { return null; }
+      return m[1].split('.').map(function (x) { return parseInt(x, 10); });
+    }
+    /* numarali baslik, belgenin numaralandirma sirasina uyuyor mu? (9 -> 9.1 -> 9.2 -> 10) */
+    function hiyerarsiUygun(P) {
+      if (!sonNo.length) { return true; }
+      var k, n = Math.min(P.length, sonNo.length);
+      for (k = 0; k < n; k++) {
+        if (P[k] === sonNo[k]) { continue; }
+        return P[k] > sonNo[k] && P[k] <= sonNo[k] + 2;
+      }
+      if (P.length > sonNo.length) { return P[sonNo.length] <= 2; }
+      return false;
+    }
 
     function flush() {
       if (cur) { blocks.push(cur); cur = null; }
@@ -497,6 +1024,8 @@ var LEXOZET = (function () {
     function leadMi(b) { return b && b.tur === 'para' && /:$/.test(b.t); }
 
     function yeniParagrafMi(prev, ln) {
+      /* sayfa sonunda kesilen cumle: ayni paragrafin devami */
+      if (prev.p !== ln.p && (kckMi(ln.t.charAt(0)) || !sonNoktalama(prev.t))) { return false; }
       if (ln.b) { return true; }
       if (prev.h && ln.h && Math.abs(ln.h - prev.h) > 0.12 * prev.h) { return true; }
       if (/^(örneğin|örnek|mesela)\s*[;:,]?$/i.test(prev.t)) { return false; }
@@ -506,6 +1035,9 @@ var LEXOZET = (function () {
         var dy = Math.abs(ln.y - prev.y);
         if (md && dy > 1.55 * md && dy > 1.1 * (ln.h || 0)) { return true; }
       }
+      var kisaSatir = (prev.x2 !== null && prev.x2 !== undefined && sagKenar[prev.p] !== undefined) ? (sagKenar[prev.p] - prev.x2 > 4.5 * (prev.h || 10)) : (prev.t.length < 0.8 * lenRef);
+      if (!sonNoktalama(prev.t) && prev.p === ln.p && kisaSatir && prev.t.length >= 12 && bykMi(ln.t.charAt(0)) &&
+        !BAGLAC_SON.test(prev.t) && !/[,(]$/.test(prev.t) && prev.x !== null && ln.x !== null && Math.abs(prev.x - ln.x) < 4) { return true; }
       if (sonNoktalama(prev.t)) {
         var kisa = prev.t.length < 0.62 * lenRef;
         var kn = kenar[ln.p];
@@ -528,7 +1060,7 @@ var LEXOZET = (function () {
       if (m && bykMi(m[2].charAt(0)) && len <= 130 && !/[,;]$/.test(t)) { return { kind: 'roma', lv: 1 }; }
       /* 1.1 / 1.1.1 */
       m = /^(\d{1,2}(?:\.\d{1,2})+)\.?\s+(\S.*)$/.exec(t);
-      if (m && bykMi(m[2].charAt(0)) && len <= 130 && !/[,;]$/.test(t) && !/^\d{1,2}\.\d{1,2}\.\d{2,4}/.test(t)) {
+      if (m && (bykMi(m[2].charAt(0)) || (digitMi(m[2].charAt(0)) && sonNo.length && hiyerarsiUygun(numParcalar(t) || [0]))) && len <= 130 && !/[,;]$/.test(t) && !/^\d{1,2}\.\d{1,2}\.\d{2,4}/.test(t)) {
         return { kind: 'noktali', lv: 2 + m[1].split('.').length - 1 };
       }
       /* A. Baslik */
@@ -581,13 +1113,20 @@ var LEXOZET = (function () {
       var ln = L[i];
       var t = ln.t;
 
+      /* kutu / tablo yer tutucusu */
+      if (ln.ph) {
+        flush(); aside = false;
+        blocks.push(ln.kutu ? { tur: 'kutu', kutu: ln.kutu, p: ln.p } : { tur: 'tablo2', tablo: ln.tablo, p: ln.p });
+        continue;
+      }
+
       /* dipnot / kucuk punto: ana akistan ayri */
       var kucuk = !!(ln.fn || (bodyH && ln.h && ln.h < bodyH * 0.86));
       if (kucuk) {
         if (fnCur && !ln.fnYeni && !ln.b) { fnCur.t = birlestir(fnCur.t, t); }
         else {
           if (fnCur) { fnBekle.push(fnCur); }
-          fnCur = { tur: 'para', t: t, p: ln.p, aside: false, kucuk: true };
+          fnCur = { tur: 'para', t: t, p: ln.p, aside: false, kucuk: true, dipnot: !!ln.fn };
         }
         continue;
       }
@@ -622,13 +1161,19 @@ var LEXOZET = (function () {
 
       /* baslik? */
       var bt = baslikTuru(i);
+      if (bt && (bt.kind === 'sayi' || bt.kind === 'noktali')) {
+        var NP = numParcalar(t);
+        if (NP && !hiyerarsiUygun(NP)) { bt = null; }
+        else if (NP && bt.kind === 'sayi' && !sonNo.length && lastNum > 0 && NP[0] === lastNum + 1) { bt = null; }
+      }
       if (bt) {
         flush();
         var ht = t, hj = i, hh = ln.h;
         /* cok satirli baslik birlestirme */
         while (hj + 1 < N) {
           var nx = L[hj + 1];
-          if (nx.b || nx.gap || nx.fn || qa[hj + 1]) { break; }
+          if (nx.b || nx.gap || nx.fn || nx.ph || qa[hj + 1]) { break; }
+          if (/^\d{1,2}(\.\d{1,2})+\.?\s+[A-ZÇĞİÖŞÜ]/.test(nx.t)) { break; }
           var devam = false;
           var onNoktasiz = !/[.:;?!]$/.test(ht);
           if (bt.kind === 'caps' && hepBuyukMu(nx.t) && nx.t.length <= 170 && !/^(GİRİŞ|SONUÇ|ÖZET|GİRİŞ)$/.test(nx.t) &&
@@ -643,7 +1188,18 @@ var LEXOZET = (function () {
           hj++; ht += ' ' + nx.t;
         }
         i = hj;
+        /* yapisik baslik: "Kanunu 6.2 7545'e gore yapisi" -> iki baslik */
+        var gl = /^(.*?\S)\s+(\d{1,2}(?:\.\d{1,2})+)\s+([A-ZÇĞİÖŞÜ0-9].+)$/.exec(ht);
+        if (gl && gl[1].length >= 5) {
+          var GP = numParcalar(gl[2] + ' x');
+          if (GP && hiyerarsiUygun(GP)) {
+            blocks.push({ tur: 'baslik', kind: bt.kind, lv: bt.lv, t: gl[1], p: ln.p, h: hh, x: ln.x });
+            ht = gl[2] + ' ' + gl[3]; bt = { kind: 'noktali', lv: 2 + GP.length - 1 };
+          }
+        }
         blocks.push({ tur: 'baslik', kind: bt.kind, lv: bt.lv, t: ht, p: ln.p, h: hh, x: ln.x });
+        var NP2 = numParcalar(ht);
+        if (NP2) { sonNo = NP2; } else if (bt.kind === 'font' || bt.kind === 'caps') { sonNo = []; }
         aside = false; lastNum = 0; lastHarf = '';
         L[i].baslik = true;
         continue;
@@ -694,7 +1250,7 @@ var LEXOZET = (function () {
         var tamam = /[.;:!?]["”]?$/.test(cur.t);
         var oncekiSatirUzun = prevL && prevL.t.length >= 0.8 * lenRef;
         var asili = ln.x !== null && prevL.x !== null && Math.abs(ln.x - prevL.x) < 4 && (ln.x - (kenar[ln.p] || 0)) > behindThr && prevL.t.length >= 0.55 * lenRef && prevL.p === ln.p;
-        var devamEt = !ln.b && !(prevL.h && ln.h && Math.abs(ln.h - prevL.h) > 0.12 * prevL.h) && (asili ||
+        var devamEt = (!ln.b || (prevL.p !== ln.p && kckMi(t.charAt(0)))) && !(prevL.h && ln.h && Math.abs(ln.h - prevL.h) > 0.12 * prevL.h) && (asili ||
           ((!tamam && (kckMi(t.charAt(0)) || oncekiSatirUzun || !bykMi(t.charAt(0)) || BAGLAC_SON.test(cur.t))) || (tamam && kckMi(t.charAt(0)))));
         if (devamEt && !(cur.isaret === '' && etiketSatiri(t))) { cur.t = birlestir(cur.t, t); continue; }
         flush();
@@ -887,7 +1443,7 @@ var LEXOZET = (function () {
     u.atifVar = /(\bm\.\s*\d|\bmd\.\s*\d|sayılı|\d+\.\s*madde|\d+['’]?[a-zçğıöşü]*\s+madde)/.test(t);
 
     /* meta cumle: notun kendi yapisini anlatan */
-    f.meta = /(anlatılacak|anlatılacaktır|açıklanacak|açıklanacaktır|incelenecek|incelenecektir|ele alınacak|ele alınacaktır|değinilecek|değinilecektir|bilgi verilecek|bilgi verilecektir|anlatılmaya çalışılacak|ders notunda|bu bölümde|izleyen başlık|aşağıda incelen|üzerinde durulacak|iyi çalışmalar|sınavda )/.test(lt) ||
+    f.meta = /(anlatılacak|anlatılacaktır|açıklanacak|açıklanacaktır|incelenecek|incelenecektir|ele alınacak|ele alınacaktır|değinilecek|değinilecektir|bilgi verilecek|bilgi verilecektir|anlatılmaya çalışılacak|ders notunda|bu bölümde|izleyen başlık|aşağıda incelen|üzerinde durulacak|iyi çalışmalar|sınavda |yapay zek[âa] ek|notu derleyen)/.test(lt) ||
       /^(yukarıda|aşağıda|daha önce|bu bölümde|burada)\s.*(açıklandı|açıklanmıştır|belirtildi|belirtilmiştir|anlatıldı|incelendi|değinildi|açıklanacaktır|ele alınacaktır)/.test(lt);
 
     u.f = f;
@@ -907,7 +1463,8 @@ var LEXOZET = (function () {
     var sec = -1;
     var i, b, k;
     var testler = [];
-    var paraNo = 0;
+    var paraNo = 0, grupNo = 0;
+    var kutular = [], tablolar = [];
 
     function baslikEkle(b) {
       heads.push({ t: b.t, sayfa: b.p, kind: b.kind, lv: b.lv, h: b.h || 0, x: b.x });
@@ -917,6 +1474,8 @@ var LEXOZET = (function () {
     for (i = 0; i < blocks.length; i++) {
       b = blocks[i];
       if (b.tur === 'baslik') { baslikEkle(b); continue; }
+      if (b.tur === 'kutu') { kutular.push({ kutu: b.kutu, sec: sec }); continue; }
+      if (b.tur === 'tablo2') { tablolar.push({ tablo: b.tablo, sec: sec }); continue; }
       if (b.tur === 'tablo') {
         /* iki nokta ile biten giristen sonra gelen tablo hucreleri liste ogesidir */
         var on = units.length ? units[units.length - 1] : null;
@@ -936,7 +1495,7 @@ var LEXOZET = (function () {
         var sents = bol(ptxt);
         var ornekPara = RE_ORNEK_BAS.test(lc(b.t));
         for (k = 0; k < sents.length; k++) {
-          var us = { t: sents[k], sayfa: b.p, sec: sec, aside: !!b.aside, kucuk: !!b.kucuk, para: paraNo, ilkPara: k === 0,
+          var us = { t: sents[k], sayfa: b.p, sec: sec, aside: !!b.aside, kucuk: !!b.kucuk, dipnot: !!b.dipnot, para: paraNo, ilkPara: k === 0,
             ornekPara: ornekPara, kaynak: 'para' };
           units.push(us);
         }
@@ -945,6 +1504,7 @@ var LEXOZET = (function () {
       if (b.tur === 'madde') {
         /* ardisik maddeleri grupla */
         var grup = [b];
+        grupNo++;
         while (i + 1 < blocks.length && blocks[i + 1].tur === 'madde' && !!blocks[i + 1].secenek === !!b.secenek) { grup.push(blocks[++i]); }
         var onceki = units.length ? units[units.length - 1] : null;
         if (b.secenek) {
@@ -971,7 +1531,7 @@ var LEXOZET = (function () {
           for (k = 0; k < grup.length; k++) {
             paraNo++;
             units.push({ t: grup[k].t, sayfa: grup[k].p, sec: sec, aside: !!grup[k].aside, kucuk: !!grup[k].kucuk, para: paraNo,
-              ilkPara: false, madde: true, kaynak: 'madde', isaret: grup[k].isaret });
+              ilkPara: false, madde: true, kaynak: 'madde', isaret: grup[k].isaret, grup: grupNo });
           }
         }
         paraNo++;
@@ -991,7 +1551,7 @@ var LEXOZET = (function () {
       yeniU.push(cu);
     }
     units = yeniU;
-    return { units: units, heads: heads, testler: testler };
+    return { units: units, heads: heads, testler: testler, kutular: kutular, tablolar: tablolar };
   }
 
   /* ------------------------------------------------------------------ */
@@ -1397,6 +1957,132 @@ var LEXOZET = (function () {
     return out;
   }
 
+
+
+  /* ------------------------------------------------------------------ */
+  /* Iskelet ozeti: zaten ozet olan notta baslik altindaki ana icerik     */
+  /* ------------------------------------------------------------------ */
+  var RE_YZ_LEAD = /(yapay zek[âa]\s+ek|yz\s+ek|derleyen|notu derleyen)/;
+  function iskeletOzet(units, heads, opts, R) {
+    var oran = typeof opts.oran === 'number' ? opts.oran : 0.2;
+    var capG = oran <= 0.15 ? 4 : (oran >= 0.3 ? 16 : 8);
+    var capM = oran <= 0.15 ? 3 : (oran >= 0.3 ? 12 : 6);
+    var capP = oran <= 0.15 ? 0 : (oran >= 0.3 ? 600 : 260);
+    var out = [], i, j, gorulen = {};
+    var grupSec = {}, secSira = [];
+    for (i = 0; i < units.length; i++) {
+      var u0 = units[i];
+      if (u0.test || u0.dipnot) { continue; }
+      if (!grupSec.hasOwnProperty(u0.sec)) { grupSec[u0.sec] = []; secSira.push(u0.sec); }
+      grupSec[u0.sec].push(u0);
+    }
+    function girisEkle(arr, u, t, tur, maddeler, oncelik) {
+      var key = t + '|' + (maddeler ? maddeler.join('|') : '');
+      if (gorulen[key]) { return; }
+      gorulen[key] = 1;
+      var g = { t: t, sayfa: u.sayfa, baslik: u.sec >= 0 ? heads[u.sec].t : '', baslikNo: u.sec, tur: tur, skor: 0, _o: oncelik };
+      if (maddeler && maddeler.length) {
+        g.maddeler = maddeler.slice(0, capM);
+        if (maddeler.length > capM) { g.daha = maddeler.length - capM; }
+      }
+      arr.push(g);
+    }
+    for (var si = 0; si < secSira.length; si++) {
+      var us = grupSec[secSira[si]], ent = [], sonGrup = -1, grupItems = null, grupU = null;
+      function grupBitir() {
+        if (grupItems && grupItems.length) { girisEkle(ent, grupU, '', ['liste'], grupItems, 2); }
+        grupItems = null; grupU = null; sonGrup = -1;
+      }
+      for (j = 0; j < us.length; j++) {
+        var u = us[j], f = u.f || {};
+        if (u.kaynak === 'madde') {
+          if (u.grup !== sonGrup) { grupBitir(); sonGrup = u.grup; grupItems = []; grupU = u; }
+          grupItems.push(maddeTemizle(u.t));
+          continue;
+        }
+        grupBitir();
+        if (u.maddeler && u.maddeler.length && RE_YZ_LEAD.test(lc(u.t))) {
+          R.ekBilgi.push({ t: u.t, sayfa: u.sayfa, baslik: u.sec >= 0 ? heads[u.sec].t : '', maddeler: u.maddeler.slice(), yz: true, etiket: 'YZ eki' });
+          continue;
+        }
+        if (f.meta && !f.tanim) { continue; }
+        if (u.maddeler && u.maddeler.length) {
+          girisEkle(ent, u, u.t, u.tur || [], u.maddeler, 2);
+          continue;
+        }
+        if (RE_YZ_LEAD.test(lc(u.t)) && /:$/.test(u.t)) { continue; }
+        if (/\?["”]?$/.test(u.t) && j + 1 < us.length && us[j + 1].para === u.para && us[j + 1].kaynak === 'para') {
+          girisEkle(ent, u, u.t + ' ' + us[j + 1].t, ['soru'], null, 2);
+          j++; continue;
+        }
+        var al = false, onc = 0;
+        if (u.ilkPara && !u.ornekPara) {
+          al = true; onc = 1;
+          /* kisa paragraf: butun cumleler (yogun notlarda ikinci cumle de bilgi tasir) */
+          var pj = j, topl = u.t.length;
+          while (pj + 1 < us.length && us[pj + 1].para === u.para && us[pj + 1].kaynak === 'para' && !us[pj + 1].maddeler) { pj++; topl += us[pj].t.length + 1; }
+          if (pj > j && topl <= capP && !/:$/.test(u.t)) {
+            var bt2 = u.t, pz;
+            for (pz = j + 1; pz <= pj; pz++) { bt2 += ' ' + us[pz].t; }
+            girisEkle(ent, u, bt2, u.tur || [], null, 1);
+            j = pj; continue;
+          }
+        }
+        if (f.tanim) { al = true; onc = 3; }
+        if (f.sart && u.ilkPara) { onc = Math.max(onc, 2); }
+        if (!al && RE_ETIKET_SATIR.test(u.t) && !/\?$/.test(u.t) && u.t.length >= 25) { al = true; onc = 1; }
+        if (u.ilkPara && /:$/.test(u.t) && !u.maddeler) { al = false; }
+        if (al) { girisEkle(ent, u, u.t, u.tur || [], null, onc); }
+      }
+      grupBitir();
+      if (ent.length > capG) {
+        var sirali = ent.map(function (e, ix) { return { e: e, ix: ix }; }).sort(function (a, b) { return (b.e._o - a.e._o) || (a.ix - b.ix); }).slice(0, capG);
+        sirali.sort(function (a, b) { return a.ix - b.ix; });
+        ent = sirali.map(function (x) { return x.e; });
+      }
+      for (j = 0; j < ent.length; j++) { delete ent[j]._o; out.push(ent[j]); }
+    }
+    return out;
+  }
+  /* ------------------------------------------------------------------ */
+  /* Not turu: normal (ozet) / zaten ozet niteliginde (iskelet)           */
+  /* ------------------------------------------------------------------ */
+  var RE_ETIKET_SATIR = /^[A-ZÇĞİÖŞÜ][^:.;?!]{1,45}:(\s+\S|$)/;
+  function notSinyalleri(L, units, heads, sayfa, R, ist) {
+    var i, n = 0, liste = 0, kisa = 0, lenRef = ist.lenRef, toplamC = 0, sayC = 0;
+    for (i = 0; i < L.length; i++) {
+      var ln = L[i];
+      if (ln.ph || ln.fn) { continue; }
+      n++;
+      if (RE_BUL.test(ln.t) || RE_ETIKET_SATIR.test(ln.t) || /^[→•]/.test(ln.t)) { liste++; }
+      if (ln.t.length < 0.5 * lenRef) { kisa++; }
+    }
+    for (i = 0; i < units.length; i++) {
+      if (units[i].kaynak === 'para' && !units[i].kucuk) { toplamC += kelimeSay(units[i].t); sayC++; }
+    }
+    var kutuS = R.sinavNotlari.length + R.ekBilgi.length;
+    return {
+      listeOrani: n ? Math.round(1000 * liste / n) / 1000 : 0,
+      ortCumleKelime: sayC ? Math.round(10 * toplamC / sayC) / 10 : 0,
+      kisaSatirOrani: n ? Math.round(1000 * kisa / n) / 1000 : 0,
+      baslikYogunlugu: sayfa ? Math.round(100 * heads.length / sayfa) / 100 : 0,
+      kutuSayisi: kutuS, tabloSayfaBasi: sayfa ? Math.round(100 * R.tablolar.length / sayfa) / 100 : 0
+    };
+  }
+  function modKarar(g) {
+    /* her sinyal 0..1 puan; esik 0.5 */
+    var p = 0, a = 0;
+    function ekle(deger, alt, ust, agirlik) { var v = (deger - alt) / (ust - alt); v = v < 0 ? 0 : v > 1 ? 1 : v; p += v * agirlik; a += agirlik; }
+    ekle(g.listeOrani, 0.08, 0.30, 2);
+    ekle(g.kisaSatirOrani, 0.10, 0.35, 1);
+    ekle(g.baslikYogunlugu, 1.5, 4, 2);
+    ekle(-g.ortCumleKelime, -34, -20, 1);
+    var kutu = g.kutuSayisi > 0 ? 1 : 0;
+    p += kutu * 1.5; a += 1.5;
+    ekle(g.tabloSayfaBasi, 0.1, 0.5, 1);
+    g.puan = Math.round(1000 * p / a) / 1000;
+    return g.puan >= 0.5 ? 'iskelet' : 'ozet';
+  }
   /* ------------------------------------------------------------------ */
   /* Seviye atama                                                         */
   /* ------------------------------------------------------------------ */
@@ -1471,8 +2157,33 @@ var LEXOZET = (function () {
     var R = {
       basliklar: [], tanimlar: [], sartlar: [], istisnalar: [], atiflar: [], kararlar: [], gorusler: [], ornekler: [],
       listeler: [], kanunlar: [], testler: bu.testler, ozet: [], qa: bl.qaModu, sayfaSayisi: hz.sayfaSayisi,
-      istatistik: { satir: hz.L.length, cumle: units.length }
+      istatistik: { satir: hz.L.length, cumle: units.length },
+      mod: 'ozet', sinavNotlari: [], ekBilgi: [], tablolar: [], klasikSorular: [], kapak: hz.kapak || null
     };
+    /* kutular */
+    function bslk(sec) { return sec >= 0 ? heads[sec].t : ''; }
+    for (i = 0; i < bu.kutular.length; i++) {
+      var kb0 = bu.kutular[i], ku = kb0.kutu;
+      var kit = { t: ku.t, sayfa: ku.sayfa, baslik: bslk(kb0.sec) };
+      if (ku.maddeler && ku.maddeler.length) { kit.maddeler = ku.maddeler; }
+      if (ku.etiket) { kit.etiket = ku.etiket; }
+      if (ku.tip === 'yz') { kit.yz = true; if (ku.ad) { kit.ad = ku.ad; } R.ekBilgi.push(kit); }
+      else { R.sinavNotlari.push(kit); }
+    }
+    /* tablolar */
+    for (i = 0; i < bu.tablolar.length; i++) {
+      var tb0 = bu.tablolar[i], tt0 = tb0.tablo;
+      if (tt0.rows.length < 2) { continue; }
+      var tk = { baslik: bslk(tb0.sec), sayfa: tt0.sayfa, sutunlar: tt0.rows[0], satirlar: tt0.rows.slice(1) };
+      if (tt0.sema) { tk.sema = true; }
+      R.tablolar.push(tk);
+    }
+    /* deneme sinavlari */
+    if (hz.sinavBolge && hz.sinavBolge.length) {
+      var sc0 = sinavCozumle(hz.sinavBolge);
+      R.testler = R.testler.concat(sc0.testler);
+      R.klasikSorular = sc0.klasik;
+    }
     for (i = 0; i < heads.length; i++) {
       R.basliklar.push({ t: heads[i].t, sayfa: heads[i].sayfa, seviye: heads[i].seviye });
     }
@@ -1551,6 +2262,22 @@ var LEXOZET = (function () {
       }
     }
 
+    /* tablo satirlari ve sinav kutularindaki atiflar */
+    var ekMetin = [], em;
+    for (i = 0; i < R.tablolar.length; i++) {
+      for (em = 0; em < R.tablolar[i].satirlar.length; em++) { ekMetin.push([R.tablolar[i].satirlar[em].join(' ; '), R.tablolar[i].sayfa]); }
+    }
+    for (i = 0; i < R.sinavNotlari.length; i++) { ekMetin.push([R.sinavNotlari[i].t + ' ' + (R.sinavNotlari[i].maddeler || []).join(' '), R.sinavNotlari[i].sayfa]); }
+    for (i = 0; i < ekMetin.length; i++) {
+      if (!/(\bm\.\s*\d|\bmd\.\s*\d|sayılı|\d+\.\s*madde)/.test(ekMetin[i][0])) { continue; }
+      atifBuf.atif.length = 0;
+      atiflariBul(ekMetin[i][0], atifBuf, { sonKanun: '' });
+      for (var ea = 0; ea < atifBuf.atif.length; ea++) {
+        if (atifBuf.atif[ea].belirsiz || !atifBuf.atif[ea].kanun) { continue; }
+        atifBuf.atif[ea].sayfa = ekMetin[i][1]; R.atiflar.push(atifBuf.atif[ea]);
+      }
+    }
+
     /* kanun listesi tekillestir */
     var kb = atifBuf.kanunlar, kvis = {};
     for (i = 0; i < kb.length; i++) {
@@ -1577,9 +2304,15 @@ var LEXOZET = (function () {
     }
     R.atiflar = atl;
 
-    R.ozet = ozetle(units, heads, opts, bl.qaModu);
+    var sg0 = notSinyalleri(hz.L, units, heads, hz.sayfaSayisi, R, govdeIst(hz.L));
+    R.mod = opts.mod === 'ozet' || opts.mod === 'iskelet' ? opts.mod : modKarar(sg0);
+    R.ozet = R.mod === 'iskelet' ? iskeletOzet(units, heads, opts, R) : ozetle(units, heads, opts, bl.qaModu);
+    var sg = sg0;
+    R.istatistik.sinyal = sg;
     R.istatistik.ozetCumle = R.ozet.length;
-    if (opts.debug) { R._birimler = units; }
+    var om = 0; for (i = 0; i < R.ozet.length; i++) { om += 1 + (R.ozet[i].maddeler ? R.ozet[i].maddeler.length : 0); }
+    R.istatistik.ozetMadde = om;
+    if (opts.debug) { R._birimler = units; R._bolge = hz.sinavBolge; R._L = hz.L; }
     R.istatistik.sureMs = (typeof Date !== 'undefined') ? (new Date().getTime() - t0) : 0;
     return R;
   }
@@ -1599,7 +2332,12 @@ var LEXOZET = (function () {
         var m = /^( *)/.exec(raw.replace(/\t/g, '    '));
         var t = raw.replace(/^\s+/, '').replace(/\s+$/, '');
         if (!t) { page.push({ t: '' }); continue; }
-        var o = { t: raw.replace(/\t/g, '    ').replace(/^\s+/, '').replace(/\s+$/, ''), x: m[1].length * 5.5 };
+        var duz = raw.replace(/\t/g, '    ');
+        var o = { t: duz.replace(/^\s+/, '').replace(/\s+$/, ''), x: m[1].length * 5.5 };
+        o.x2 = (m[1].length + o.t.length) * 5.5;
+        var rg = /\S+(?: {1,2}\S+)*/g, mc, cs = [];
+        while ((mc = rg.exec(duz))) { cs.push({ x: mc.index * 5.5, x2: (mc.index + mc[0].length) * 5.5, t: mc[0] }); }
+        if (cs.length >= 2) { o.c = cs; }
         page.push(o);
       }
       if (i === pgs.length - 1 && page.every(function (l) { return !l.t; })) { continue; }
@@ -1633,15 +2371,34 @@ var LEXOZET = (function () {
       var p = satirlar[i].parcalar.slice().sort(function (m, n) { return m.x - n.x; });
       var t = '', maxH = 0, prevEnd = null, j;
       var hd = [];
+      var hucreler = [], hc = null;
       for (j = 0; j < p.length; j++) {
-        if (prevEnd !== null && p[j].x - prevEnd > 2.2 * (p[j].h || 8)) { t = t.replace(/\s+$/, '') + '   '; }
+        if (!/\S/.test(p[j].s)) {
+          /* bosluk ogesi: genisligi sutunlari kapsayabilir; konuma katilmaz */
+          if (prevEnd !== null && p[j].s.length && !/\s$/.test(t)) { t += ' '; if (hc) { hc.t += ' '; } }
+          continue;
+        }
+        var bosKolon = prevEnd !== null && p[j].x - prevEnd > 2.2 * (p[j].h || 8);
+        if (bosKolon) { t = t.replace(/\s+$/, '') + '   '; }
         else if (prevEnd !== null && p[j].x - prevEnd > 0.15 * (p[j].h || 8) && !/^\s/.test(p[j].s) && !/\s$/.test(t)) { t += ' '; }
+        var bosHucre = prevEnd !== null && p[j].x - prevEnd > 0.9 * (p[j].h || 8);
+        if (hc === null || bosHucre) {
+          if (hc !== null && hc.t.replace(/\s+/g, '')) { hucreler.push(hc); }
+          hc = { x: p[j].x, x2: p[j].x + p[j].w, t: '' };
+        }
         t += p[j].s;
+        hc.t += p[j].s; hc.x2 = p[j].x + p[j].w;
         prevEnd = p[j].x + p[j].w;
         if (p[j].s.replace(/\s/g, '').length) { hd.push(p[j].h); }
       }
+      if (hc !== null && hc.t.replace(/\s+/g, '')) { hucreler.push(hc); }
       maxH = hd.length ? medyan(hd) : 0;
-      out.push({ t: t, h: maxH, y: satirlar[i].y, x: p[0].x });
+      var ol = { t: t, h: maxH, y: satirlar[i].y, x: p[0].x, x2: prevEnd };
+      if (hucreler.length >= 2) {
+        for (j = 0; j < hucreler.length; j++) { hucreler[j].t = hucreler[j].t.replace(/\s+/g, ' ').replace(/^ | $/g, ''); }
+        ol.c = hucreler;
+      }
+      out.push(ol);
     }
     return out;
   }

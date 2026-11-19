@@ -3,9 +3,12 @@
 # "android-test" sürümüne lex-odak-test.apk olarak konur.
 name: Android APK
 
+# Hız için APK her push'ta değil: commit mesajında [apk] varsa, elle başlatılınca ya da her gece derlenir.
 on:
   push:
     branches: [main]
+  schedule:
+    - cron: '47 0 * * *'   # her gece 03:47 (Türkiye)
   workflow_dispatch:
 
 permissions:
@@ -17,6 +20,7 @@ concurrency:
 
 jobs:
   apk:
+    if: github.event_name != 'push' || contains(github.event.head_commit.message, '[apk]')
     runs-on: ubuntu-latest
     env:
       # Play yükleme anahtarı (GitHub > Settings > Secrets and variables > Actions). Yoksa AAB geçici deneme anahtarıyla imzalanır.

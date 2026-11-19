@@ -1990,7 +1990,16 @@ var SEKIL = (function () {
     if(v.mod==='sunum'&&v.baslik)return {t:v.baslik,alt:d,dosya:d};
     return {t:d,alt:'',dosya:d};
   }
-  function sbKes(t,n){t=String(t||'');if(t.length<=n)return t;var k=t.substr(0,n).replace(/\s+\S*$/,'');return (k||t.substr(0,n))+'…';}
+  function sbKes(t,n){
+    t=String(t||'');if(t.length<=n)return t;
+    // önce sondaki parantez atfını at (atıf ortasında kesme)
+    var y=t.replace(/\s*\([^()]*\)?\s*$/,'');
+    if(y.length>=12&&y.length<=n)return y;
+    if(y.length>=12)t=y;
+    var k=t.substr(0,n).replace(/\s+\S*$/,'');if(!k)k=t.substr(0,n);
+    var a=k.lastIndexOf('(');if(a>=0&&k.indexOf(')',a)<0&&a>=12)k=k.substr(0,a).replace(/[\s,;]+$/,'');
+    return k.replace(/[\s,;:]+$/,'')+'…';
+  }
   function sbNorm(t){return String(t||'').toLocaleLowerCase('tr').replace(/^tanım\s*:\s*/,'').replace(/[^a-zçğıöşü0-9]+/g,' ').replace(/^ | $/g,'');}
   function sbH(s){var h=5381,i;s=String(s);for(i=0;i<s.length;i++)h=((h<<5)+h+s.charCodeAt(i))|0;return (h>>>0).toString(36);}
   function sbId(k,o){return k+':'+sbH(k==='a'?o.kanun+'|'+o.madde:k==='b'?(o.baslik||'')+'|'+(o.sutunlar||[]).join('|')+'|'+((o.satirlar||[])[0]||[]).join('|'):k==='q'?(o.deneme||'')+'|'+(o.no||'')+'|'+o.t:(o.t||(o.maddeler&&o.maddeler[0])||''));}
@@ -2082,14 +2091,14 @@ var SEKIL = (function () {
       testler:sade(r.testler,['t','secenekler','sayfa','no','deneme','cevap','aciklama']),
       klasikSorular:sade(r.klasikSorular,['t','no','puan','deneme','sayfa','cevapNoktalari']),
       ozet:{k:oz3(rk.ozet),o:oz3(r.ozet),u:oz3(ru.ozet)},
-      tanimlar:sade(r.tanimlar,['t','sayfa','baslik','terim','p']),
-      sartlar:(r.sartlar||[]).map(function(o){return {t:o.t,sayfa:o.sayfa,p:o.p,maddeler:(o.maddeler||[]).slice(0,10)};}),
-      istisnalar:sade(r.istisnalar,['t','sayfa','guc','p']),
+      tanimlar:sade(r.tanimlar,['t','sayfa','baslik','terim','p','baglam']),
+      sartlar:(r.sartlar||[]).map(function(o){return {t:o.t,sayfa:o.sayfa,p:o.p,baglam:o.baglam,maddeler:(o.maddeler||[]).slice(0,10)};}),
+      istisnalar:sade(r.istisnalar,['t','sayfa','guc','p','baglam']),
       atiflar:sade(r.atiflar,['t','kanun','madde','fikra','sayfa','sayfalar','adet','kanunAd','belirsiz','mulga','yok','no']),
       kanunlar:sade(r.kanunlar,['kanun','no','kisaltma']),
-      kararlar:sade(r.kararlar,['t','sayfa','mahkeme','p']),
-      gorusler:sade(r.gorusler,['t','sayfa','tur','p']),
-      ornekler:sade(r.ornekler,['t','sayfa','baslik','p'])
+      kararlar:sade(r.kararlar,['t','sayfa','mahkeme','p','baglam']),
+      gorusler:sade(r.gorusler,['t','sayfa','tur','p','baglam']),
+      ornekler:sade(r.ornekler,['t','sayfa','baslik','p','baglam'])
     };
     m.sablon={v:1,tarih:Date.now(),oran:onceki?onceki.oran:.1,kaldirilan:onceki?onceki.kaldirilan:[],not:onceki?onceki.not:'',sayfa:n,taranmis:tarama,veri:veri};
     try{await metaYaz(m);}catch(e){bildir(hataMesaji(e),true);}
@@ -2139,6 +2148,8 @@ var SEKIL = (function () {
   function sbGorunur(k){
     var l=sbListe(k);
     if(k==='i'&&!SB.ist)l=l.filter(function(x){return (x.o.guc||0)>=2;});
+    // bağlamsız cümleler (Bu durumda, Yani, Tüm bunlar…) Kısa/Orta'da ek bölümlere girmez
+    if(sbOK()!=='u'&&!SB.ist&&(k==='t'||k==='s'||k==='i'||k==='d'||k==='g'||k==='e'))l=l.filter(function(x){return !x.o.baglam;});
     var a=sbOK(),sirali=!!(k==='t'||k==='s'||k==='i'||k==='d'||k==='g'||k==='e');
     if(sirali&&!SB.ist&&!(k==='t'&&sbSunum())&&a!=='u'){
       var oz=sbOzetAnahtarlari();
@@ -2194,17 +2205,13 @@ var SEKIL = (function () {
     sira.forEach(function(k){g[k].l.forEach(function(e){e.sayfalar.sort(function(a,b){return a-b;});});g[k].l.sort(function(a,b){return (parseInt(a.madde,10)||0)-(parseInt(b.madde,10)||0)||String(a.madde).localeCompare(String(b.madde));});});
     return sira.map(function(k){return g[k];}).sort(function(a,b){return b.top-a.top;});
   }
+  var SB_ATIF_SATIR={k:4,o:8,u:999};
   function sbAtifSinirla(gr){
-    var a=sbOK(),tv=SB_TAVAN[a];
-    if(a==='u'||SB.tum.a)return {g:gr,kalan:0};
-    var say=0,top=0;gr.forEach(function(G){top+=G.l.length;});
-    if(top<=tv)return {g:gr,kalan:0};
-    var sec=[];
-    gr.forEach(function(G){G.l.forEach(function(e){sec.push({e:e,G:G});});});
-    sec.sort(function(x,y){return (y.e.adet-x.e.adet)||(y.G.top-x.G.top);});
-    var tut=sec.slice(0,tv);
-    var ng=gr.map(function(G){return {no:G.no,ad:G.ad,top:G.top,l:G.l.filter(function(e){return tut.some(function(t){return t.e===e;});})};}).filter(function(G){return G.l.length;});
-    return {g:ng,kalan:top-tv};
+    var a=sbOK(),tv=SB_ATIF_SATIR[a];
+    if(SB.tum.a||gr.length<=tv)return {g:gr,kalan:0};
+    // kanun satırı sayısına göre: en çok atıf alan kanunlar, her biri tüm maddeleriyle
+    var sec=gr.slice().sort(function(x,y){return y.top-x.top;}).slice(0,tv);
+    return {g:gr.filter(function(G){return sec.indexOf(G)>=0;}),kalan:gr.length-tv};
   }
   function sbSayfaListe(sf){
     var h='',i;
@@ -2291,7 +2298,7 @@ var SEKIL = (function () {
         });
         h+='</div>';
       });
-      if(sn.kalan>0)h+='<div class="sb-ek"><button type="button" class="sb-tum" data-k="a">…ve '+sn.kalan+' madde daha · tümünü göster</button></div>';
+      if(sn.kalan>0)h+='<div class="sb-ek"><button type="button" class="sb-tum" data-k="a">…ve '+sn.kalan+' kanun daha · tümünü göster</button></div>';
       if(bel)h+='<p class="pm-kucuk" style="margin:8px 0 0">Kesik çizgili olanlarda kanun adı net değil, madde bu kanunda bulunmuyor ya da kanun mülga; açmadan önce kontrol et.</p>';
     }else{
       l.forEach(function(x){h+=sbOge(k,x);});
@@ -2392,7 +2399,7 @@ var SEKIL = (function () {
         l.forEach(function(x){B.push({tip:'tablo',baslik:x.o.baslik||'Tablo',sayfa:x.o.sayfa,sutunlar:x.o.sutunlar||[],satirlar:x.o.satirlar||[]});});
       }else if(k==='a'){
         sbAtifSinirla(sbAtifGrup(l,v)).g.forEach(function(g){
-          B.push({tip:'madde',t:g.ad+(g.no?'':' (mülga kanun)')+': '+g.l.map(function(x){var sf=x.sayfalar.slice(0,4);return 'm. '+x.madde+(x.yok?' (bu kanunda yok)':'')+(sf.length?' (s. '+sf.join(', ')+')':'');}).join(', ')});
+          B.push({tip:'madde',t:g.ad+': '+g.l.map(function(x){var sf=x.sayfalar.slice(0,4);return 'm. '+x.madde+(x.yok?' (bu kanunda yok)':'')+(sf.length?' (s. '+sf.join(', ')+')':'');}).join(', ')});
         });
       }else if(k==='e'){
         var oe=null;

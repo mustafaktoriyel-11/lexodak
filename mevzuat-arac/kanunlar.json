@@ -1,0 +1,177 @@
+[
+ {
+  "no": "2709",
+  "ad": "Türkiye Cumhuriyeti Anayasası",
+  "kisa": "AY",
+  "tertip": 5,
+  "durum": "var"
+ },
+ {
+  "no": "4721",
+  "ad": "Türk Medeni Kanunu",
+  "kisa": "TMK",
+  "tertip": 5,
+  "durum": "var"
+ },
+ {
+  "no": "6098",
+  "ad": "Türk Borçlar Kanunu",
+  "kisa": "TBK",
+  "tertip": 5,
+  "durum": "var"
+ },
+ {
+  "no": "6102",
+  "ad": "Türk Ticaret Kanunu",
+  "kisa": "TTK",
+  "tertip": 5,
+  "durum": "var"
+ },
+ {
+  "no": "5237",
+  "ad": "Türk Ceza Kanunu",
+  "kisa": "TCK",
+  "tertip": 5,
+  "durum": "var"
+ },
+ {
+  "no": "5271",
+  "ad": "Ceza Muhakemesi Kanunu",
+  "kisa": "CMK",
+  "tertip": 5,
+  "durum": "var"
+ },
+ {
+  "no": "6100",
+  "ad": "Hukuk Muhakemeleri Kanunu",
+  "kisa": "HMK",
+  "tertip": 5,
+  "durum": "var"
+ },
+ {
+  "no": "2004",
+  "ad": "İcra ve İflas Kanunu",
+  "kisa": "İİK",
+  "tertip": 3,
+  "durum": "var"
+ },
+ {
+  "no": "2577",
+  "ad": "İdari Yargılama Usulü Kanunu",
+  "kisa": "İYUK",
+  "tertip": 5,
+  "durum": "var"
+ },
+ {
+  "no": "4857",
+  "ad": "İş Kanunu",
+  "kisa": "İşK",
+  "tertip": 5,
+  "durum": "var"
+ },
+ {
+  "no": "7201",
+  "ad": "Tebligat Kanunu",
+  "kisa": "TebK",
+  "tertip": 3,
+  "durum": "var"
+ },
+ {
+  "no": "1136",
+  "ad": "Avukatlık Kanunu",
+  "kisa": "AvK",
+  "tertip": 5,
+  "durum": "var"
+ },
+ {
+  "no": "5718",
+  "ad": "Milletlerarası Özel Hukuk ve Usul Hukuku Hakkında Kanun",
+  "kisa": "MÖHUK",
+  "tertip": 5,
+  "durum": "var"
+ },
+ {
+  "no": "5326",
+  "ad": "Kabahatler Kanunu",
+  "kisa": "KabK",
+  "tertip": 5,
+  "durum": "var"
+ },
+ {
+  "no": "2918",
+  "ad": "Karayolları Trafik Kanunu",
+  "kisa": "KTK",
+  "tertip": 5,
+  "durum": "var"
+ },
+ {
+  "no": "5275",
+  "ad": "Ceza ve Güvenlik Tedbirlerinin İnfazı Hakkında Kanun",
+  "kisa": "",
+  "tertip": null,
+  "durum": "aday"
+ },
+ {
+  "no": "213",
+  "ad": "Vergi Usul Kanunu",
+  "kisa": "",
+  "tertip": null,
+  "durum": "aday"
+ },
+ {
+  "no": "657",
+  "ad": "Devlet Memurları Kanunu",
+  "kisa": "",
+  "tertip": null,
+  "durum": "aday"
+ },
+ {
+  "no": "6698",
+  "ad": "Kişisel Verilerin Korunması Kanunu",
+  "kisa": "",
+  "tertip": null,
+  "durum": "aday"
+ },
+ {
+  "no": "6502",
+  "ad": "Tüketicinin Korunması Hakkında Kanun",
+  "kisa": "",
+  "tertip": null,
+  "durum": "aday"
+ },
+ {
+  "no": "5510",
+  "ad": "Sosyal Sigortalar ve Genel Sağlık Sigortası Kanunu",
+  "kisa": "",
+  "tertip": null,
+  "durum": "aday"
+ },
+ {
+  "no": "7036",
+  "ad": "İş Mahkemeleri Kanunu",
+  "kisa": "",
+  "tertip": null,
+  "durum": "aday"
+ },
+ {
+  "no": "6325",
+  "ad": "Hukuk Uyuşmazlıklarında Arabuluculuk Kanunu",
+  "kisa": "",
+  "tertip": null,
+  "durum": "aday"
+ },
+ {
+  "no": "2942",
+  "ad": "Kamulaştırma Kanunu",
+  "kisa": "",
+  "tertip": null,
+  "durum": "aday"
+ },
+ {
+  "no": "7545",
+  "ad": "Siber Güvenlik Kanunu",
+  "kisa": "",
+  "tertip": null,
+  "durum": "aday"
+ }
+]

@@ -1123,6 +1123,8 @@ html.mf-gece #kt-kart .kt-rozet{background:#9E3A4B}
 html.mf-gece #kt-kart .kt-rozet.final{background:#C9962B;color:#2B1F05}
 html.mf-gece #kt-kart .kt-durum{color:#E9B0BA}
 html.mf-gece .kt-panel{background:#2E1C20;color:#F4ECED}
+html.mf-gece .kt-mad-bas b,html.mf-gece .kt-mad-kn b{color:#F2DDA8}html.mf-gece .kt-mad-bas small,html.mf-gece .kt-mad-kn{color:#C9B8BC}
+.kt-panel.kt-surukle{transition:none!important}
 html.mf-gece .kt-mn-b{color:#F4ECED;border-top-color:#42272C}
 html.mf-gece .kt-mn-b.kt-sil{color:#FF8A80}
 html.mf-gece .kt-sh-uyari{color:#FF9C94}
@@ -5944,6 +5946,30 @@ var SEKIL = (function () {
   var RE_S=new RegExp('(?<!\\d)(\\d{4})\\s*(?:sayılı|s\\.)\\s*(?:[^\\d]{0,60}?)(?:Kanun|K\\.)\\S{0,6}\\s*(?:'+MAD+'\\s*)?'+NUM,'g');
   var RE_UC=new RegExp('(?:(?<!['+HARF+'])('+adlar.map(rx).join('|')+')(?:[\'’][a-zçğıöşü]{1,6})?[\\s,.]*)?(?<!['+HARF+'])(?:madde|md\\.?|m\\.)\\s*$');
   var RE_D=new RegExp('(?<!['+HARF+'])(?:madde|md\\.|m\\.)\\s*'+NUM,'g');
+  // satır sonu/başı bölünmüş atıflar (metin katmanı + OCR ortak). UE: satır sonu "KANUN" (m. yok), SU: "6098 sayılı ... Kanun [m.]", BAS: satır başı "[(] [m.] 36"
+  var RE_UE=new RegExp('(?<!['+HARF+'])('+adlar.map(rx).join('|')+')(?:[\'’][a-zçğıöşü]{1,6})?[\\s,.]*$');
+  var RE_SU=new RegExp('(?<!\\d)(\\d{4})\\s*(?:sayılı|s\\.)\\s*(?:[^\\d]{0,60}?)(?:Kanun|K\\.)\\S{0,6}\\s*(?:('+MAD+')\\s*)?$');
+  var RE_BAS=new RegExp('^[\\s(\\[]*(?:('+MAD+')\\s*)?'+NUM);
+  function caprazAtif(t1,t2,vars){
+    var bas=RE_BAS.exec(t2);if(!bas)return null;
+    var uc=RE_UC.exec(t1),su=RE_SU.exec(t1),ue,kn,v=0,u0,gerek=0; // gerek: satır başında "m." şart
+    if(su&&!KAN_NO[su[1]])su=null;
+    if(uc&&!uc[1]&&su)uc=null; // "6098 sayılı Kanun m.": kanun adı belli
+    if(uc){
+      if(bas[1])return null; // "m." + "m. 12": çift madde sözcüğü
+      kn=uc[1]?KAN_HARITA[uc[1]]:vars;v=uc[1]?0:1;
+      u0=uc.index;var q=t1.slice(u0).search(/[A-Za-zÇĞİÖŞÜçğıöşü]/);u0+=q<0?0:q;
+    }else if(su){
+      kn=su[1];u0=su.index;
+      if(su[2]){if(bas[1])return null;}else gerek=1;
+    }else if((ue=RE_UE.exec(t1))){kn=KAN_HARITA[ue[1]];u0=ue.index;gerek=1;}
+    else return null;
+    if(gerek&&!bas[1])return null; // "TBK" + alt satırda çıplak sayı: atıf sayma
+    var n=parseInt(bas[2],10);if(!(n>0)||n>1600||KAN_NO[bas[2]])return null;
+    var b0=bas[1]?bas[0].indexOf(bas[1]):bas[0].indexOf(bas[2]);
+    if(b0<0)b0=0;
+    return {no:kn,v:v,u0:u0,b0:b0,b1:bas[0].length,n:String(n),yalin:(v&&!vars)?1:0};
+  }
   var DERS_K=[['muhakeme','5271'],['cmk','5271'],['ceza','5237'],['medeni usul','6100'],['hmk','6100'],['usul','6100'],['borç','6098'],['icra','2004'],['iflas','2004'],['idari yarg','2577'],['iş hukuk','4857'],['ticaret','6102'],['şirket','6102'],['kıymetli','6102'],['eşya','4721'],['medeni','4721'],['aile','4721'],['miras','4721'],['kişiler','4721'],['anayasa','2709'],['möhuk','5718'],['özel hukuk','5718'],['kabahat','5326']];
   function dersKanun(d){d=String(d||'').toLocaleLowerCase('tr');for(var i=0;i<DERS_K.length;i++)if(d.indexOf(DERS_K[i][0])>=0)return DERS_K[i][1];return '';}
   var OLC=null;
@@ -5979,8 +6005,19 @@ var SEKIL = (function () {
   }
   function atifSatir(S,vars,VW,VH){
       var bulunan=[],yalin=0;
+      // satır sonunda "İİK m." / "TBK" / "(m." / "6098 sayılı Kanun m.", alt satır başında "36" / "m. 49": iki parça da aynı maddeye gider
+      for(var si=0;si+1<S.length;si++){
+        var a1=S[si],a2=S[si+1],cx=caprazAtif(a1.t,a2.t,vars);
+        if(!cx)continue;
+        if(cx.yalin)yalin++;
+        var o1={x:a1.x1[cx.u0]/VW,y:a1.ust/VH,w:(a1.x2[a1.t.length-1]-a1.x1[cx.u0])/VW,h:a1.yuk/VH,no:cx.no,n:cx.n};
+        var o2={x:a2.x1[cx.b0]/VW,y:a2.ust/VH,w:(a2.x2[cx.b1-1]-a2.x1[cx.b0])/VW,h:a2.yuk/VH,no:cx.no,n:cx.n};
+        if(cx.v){o1.v=o2.v=1;}
+        if(o1.w>0)bulunan.push(o1);if(o2.w>0)bulunan.push(o2);
+        (a2.dolu||(a2.dolu=[])).push([cx.b0,cx.b1]);
+      }
       S.forEach(function(sa){
-        var dolu=[];
+        var dolu=sa.dolu?sa.dolu.slice():[];
         function ekle(a,b,no,n,v){
           for(var i=0;i<dolu.length;i++)if(a<dolu[i][1]&&b>dolu[i][0])return;
           var na=parseInt(n,10);if(!(na>0)||na>1600||KAN_NO[n])return;
@@ -5994,18 +6031,6 @@ var SEKIL = (function () {
         while((m=RE_S.exec(sa.t)))if(KAN_NO[m[1]])ekle(m.index,m.index+m[0].length,m[1],m[2]);
         RE_D.lastIndex=0;while((m=RE_D.exec(sa.t))){if(!vars)yalin++;ekle(m.index,m.index+m[0].length,vars,m[1],1);}
       });
-      // "(m." satır sonunda, "62)" alt satırda
-      for(var si=0;si+1<S.length;si++){
-        var a1=S[si],a2=S[si+1],uc=RE_UC.exec(a1.t),bas=/^\s*\(?(\d{1,4})(?![\d])/.exec(a2.t);
-        if(!uc||!bas)continue;
-        var na=parseInt(bas[1],10);if(!(na>0)||na>1600||KAN_NO[bas[1]])continue;
-        var kn=uc[1]?KAN_HARITA[uc[1]]:vars,v=uc[1]?0:1;if(v&&!vars)yalin++;
-        var b0=bas.index+bas[0].length-bas[1].length,b1=bas.index+bas[0].length;
-        var o2={x:a2.x1[b0]/VW,y:a2.ust/VH,w:(a2.x2[b1-1]-a2.x1[b0])/VW,h:a2.yuk/VH,no:kn,n:String(na)},u0=uc.index+uc[0].length-uc[0].replace(/^[^A-Za-zÇĞİÖŞÜçğıöşü]*/,'').length;
-        var o1={x:a1.x1[u0]/VW,y:a1.ust/VH,w:(a1.x2[a1.t.length-1]-a1.x1[u0])/VW,h:a1.yuk/VH,no:kn,n:String(na)};
-        if(v){o1.v=o2.v=1;}
-        if(o1.w>0)bulunan.push(o1);if(o2.w>0)bulunan.push(o2);
-      }
       bulunan.yalin=yalin;bulunan.metin=S.map(function(sa){return sa.t;}).join(' ').slice(0,6000);
       return bulunan;
   }
@@ -6067,6 +6092,34 @@ var SEKIL = (function () {
     if(!geriden&&window.LEX_GERI)window.LEX_GERI.dus('kt-mad');
   }
   $('kt-mad').addEventListener('click',function(e){if(e.target.getAttribute('data-kapat'))madKapat();});
+  (function(){
+    var P=null;
+    function kaydirilir(el,panel){for(;el&&el!==panel;el=el.parentElement){if(el.scrollHeight>el.clientHeight+2&&/auto|scroll/.test(getComputedStyle(el).overflowY))return el;}return null;}
+    document.addEventListener('touchstart',function(e){
+      var t=e.target;if(e.touches.length!==1||!t.closest)return;
+      var pn=t.closest('.kt-ort .kt-panel');if(!pn||!pn.querySelector('.kt-tut'))return;
+      if(t.closest('button,input,select,textarea,a'))return;
+      var sk=kaydirilir(t,pn);if(sk&&!t.closest('.kt-tut'))return;            // içerik kaydırılıyorsa dokunma
+      if(!t.closest('.kt-tut')&&pn.scrollTop>0)return;
+      P={pn:pn,y0:e.touches[0].clientY,dy:0,t0:Date.now(),kilit:false};
+    },{passive:true});
+    document.addEventListener('touchmove',function(e){
+      if(!P)return;var dy=e.touches[0].clientY-P.y0;
+      if(!P.kilit){if(Math.abs(dy)<8)return;if(dy<0){P=null;return;}P.kilit=true;P.pn.classList.add('kt-surukle');}
+      P.dy=Math.max(0,dy);P.pn.style.transform='translateY('+P.dy+'px)';
+      if(e.cancelable)e.preventDefault();
+    },{passive:false});
+    function bit(){
+      if(!P)return;var p=P;P=null;if(!p.kilit)return;
+      var hiz=p.dy/Math.max(1,Date.now()-p.t0),kapat=p.dy>Math.min(140,p.pn.offsetHeight*.3)||hiz>.6;
+      p.pn.classList.remove('kt-surukle');p.pn.style.transition='transform .2s ease';
+      if(kapat){
+        p.pn.style.transform='translateY(100%)';
+        setTimeout(function(){p.pn.style.transition='';p.pn.style.transform='';var pr=p.pn.parentNode&&p.pn.parentNode.querySelector('[data-kapat]');if(pr)pr.click();},190);
+      }else{p.pn.style.transform='';setTimeout(function(){p.pn.style.transition='';},210);}
+    }
+    document.addEventListener('touchend',bit,{passive:true});document.addEventListener('touchcancel',bit,{passive:true});
+  })();
   $('kt-mad-kapat').addEventListener('click',function(){madKapat();});
   $('kt-mad-kn').addEventListener('click',function(){madKapat();var g=G;if(g)setTimeout(function(){knSor(g,'',true);},window.LEX_GERI?80:0);});
   $('kt-mad-git').addEventListener('click',function(){

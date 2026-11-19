@@ -5959,7 +5959,7 @@ var SEKIL = (function () {
 
 
   // ---------- PDF'teki kanun atıfları: "TBK m. 49" -> dokun, madde açılsın ----------
-  var KAN_AD=[['2709',['Anayasa','ANAYASA','AY','Any.']],['4721',['TMK','MK']],['6098',['TBK']],['6102',['TTK']],['5237',['TCK']],['5271',['CMK']],['6100',['HMK']],['2004',['İİK','IIK']],['2577',['İYUK','IYUK']],['4857',['İşK','İş K.','İş Kanunu']],['7201',['TebK','Teb. K.','Tebligat Kanunu']],['1136',['AvK','Av. K.','Avukatlık Kanunu']],['5718',['MÖHUK','MOHUK']],['5326',['KabK','Kab. K.','Kabahatler Kanunu']],['2918',['KTK','KarTK']]];
+  var KAN_AD=[['2709',['Anayasa','ANAYASA','AY','Any.']],['4721',['TMK','MK']],['6098',['TBK']],['6102',['TTK']],['5237',['TCK']],['5271',['CMK']],['6100',['HMK']],['2004',['İİK','IIK']],['2577',['İYUK','IYUK']],['4857',['İşK','İş K.','İş Kanunu']],['7201',['TebK','Teb. K.','Tebligat Kanunu']],['1136',['AvK','Av. K.','Avukatlık Kanunu']],['5718',['MÖHUK','MOHUK']],['5326',['KabK','Kab. K.','Kabahatler Kanunu']],['2918',['KTK','KarTK']],['5275',['İnfaz Kanunu','İnfazK','CGTİK','CGTİHK']],['213',['VUK','Vergi Usul Kanunu']],['657',['DMK','Devlet Memurları Kanunu']],['6698',['KVKK','KVK Kanunu']],['6502',['TKHK','Tüketici Kanunu']],['5510',['SSGSSK']],['7036',['İş Mahkemeleri Kanunu','İMK']],['6325',['HUAK','Arabuluculuk Kanunu']],['2942',['KamK','Kamulaştırma Kanunu']],['7545',['Siber Güvenlik Kanunu','SiberGK']]];
   var KAN_HARITA={},KAN_NO={},adlar=[];
   KAN_AD.forEach(function(x){KAN_NO[x[0]]=1;x[1].forEach(function(a){KAN_HARITA[a]=x[0];adlar.push(a);});});
   adlar.sort(function(a,b){return b.length-a.length;});
@@ -5995,7 +5995,7 @@ var SEKIL = (function () {
     if(b0<0)b0=0;
     return {no:kn,v:v,u0:u0,b0:b0,b1:bas[0].length,n:String(n),yalin:(v&&!vars)?1:0};
   }
-  var DERS_K=[['muhakeme','5271'],['cmk','5271'],['ceza','5237'],['medeni usul','6100'],['hmk','6100'],['usul','6100'],['borç','6098'],['icra','2004'],['iflas','2004'],['idari yarg','2577'],['iş hukuk','4857'],['ticaret','6102'],['şirket','6102'],['kıymetli','6102'],['eşya','4721'],['medeni','4721'],['aile','4721'],['miras','4721'],['kişiler','4721'],['anayasa','2709'],['möhuk','5718'],['özel hukuk','5718'],['kabahat','5326']];
+  var DERS_K=[['infaz','5275'],['siber','7545'],['vergi','213'],['tüketici','6502'],['kişisel veri','6698'],['sosyal güvenlik','5510'],['arabulucu','6325'],['kamulaştırma','2942'],['muhakeme','5271'],['cmk','5271'],['ceza','5237'],['medeni usul','6100'],['hmk','6100'],['usul','6100'],['borç','6098'],['icra','2004'],['iflas','2004'],['idari yarg','2577'],['iş hukuk','4857'],['ticaret','6102'],['şirket','6102'],['kıymetli','6102'],['eşya','4721'],['medeni','4721'],['aile','4721'],['miras','4721'],['kişiler','4721'],['anayasa','2709'],['möhuk','5718'],['özel hukuk','5718'],['kabahat','5326']];
   function dersKanun(d){d=String(d||'').toLocaleLowerCase('tr');for(var i=0;i<DERS_K.length;i++)if(d.indexOf(DERS_K[i][0])>=0)return DERS_K[i][1];return '';}
   var OLC=null;
   function olc(t){if(!OLC){OLC=document.createElement('canvas').getContext('2d');OLC.font='100px Arial, Helvetica, sans-serif';}return OLC.measureText(t).width;}

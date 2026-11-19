@@ -107,71 +107,71 @@
  {
   "no": "5275",
   "ad": "Ceza ve Güvenlik Tedbirlerinin İnfazı Hakkında Kanun",
-  "kisa": "",
-  "tertip": null,
-  "durum": "aday"
+  "kisa": "İnfazK",
+  "tertip": 5,
+  "durum": "var"
  },
  {
   "no": "213",
   "ad": "Vergi Usul Kanunu",
-  "kisa": "",
-  "tertip": null,
-  "durum": "aday"
+  "kisa": "VUK",
+  "tertip": 4,
+  "durum": "var"
  },
  {
   "no": "657",
   "ad": "Devlet Memurları Kanunu",
-  "kisa": "",
-  "tertip": null,
-  "durum": "aday"
+  "kisa": "DMK",
+  "tertip": 5,
+  "durum": "var"
  },
  {
   "no": "6698",
   "ad": "Kişisel Verilerin Korunması Kanunu",
-  "kisa": "",
-  "tertip": null,
-  "durum": "aday"
+  "kisa": "KVKK",
+  "tertip": 5,
+  "durum": "var"
  },
  {
   "no": "6502",
   "ad": "Tüketicinin Korunması Hakkında Kanun",
-  "kisa": "",
-  "tertip": null,
-  "durum": "aday"
+  "kisa": "TKHK",
+  "tertip": 5,
+  "durum": "var"
  },
  {
   "no": "5510",
   "ad": "Sosyal Sigortalar ve Genel Sağlık Sigortası Kanunu",
-  "kisa": "",
-  "tertip": null,
-  "durum": "aday"
+  "kisa": "SSGSSK",
+  "tertip": 5,
+  "durum": "var"
  },
  {
   "no": "7036",
   "ad": "İş Mahkemeleri Kanunu",
-  "kisa": "",
-  "tertip": null,
-  "durum": "aday"
+  "kisa": "İMK",
+  "tertip": 5,
+  "durum": "var"
  },
  {
   "no": "6325",
   "ad": "Hukuk Uyuşmazlıklarında Arabuluculuk Kanunu",
-  "kisa": "",
-  "tertip": null,
-  "durum": "aday"
+  "kisa": "HUAK",
+  "tertip": 5,
+  "durum": "var"
  },
  {
   "no": "2942",
   "ad": "Kamulaştırma Kanunu",
-  "kisa": "",
-  "tertip": null,
-  "durum": "aday"
+  "kisa": "KamK",
+  "tertip": 5,
+  "durum": "var"
  },
  {
   "no": "7545",
   "ad": "Siber Güvenlik Kanunu",
-  "kisa": "",
-  "tertip": null,
-  "durum": "aday"
+  "kisa": "SiberGK",
+  "tertip": 5,
+  "durum": "var"
  }
 ]

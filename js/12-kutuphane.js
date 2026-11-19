@@ -2435,8 +2435,8 @@ var SEKIL = (function () {
     var b64=function(ab){var u=new Uint8Array(ab),s='',i;for(i=0;i<u.length;i+=8192)s+=String.fromCharCode.apply(null,u.subarray(i,i+8192));return btoa(s);};
     sbPdfLP=Promise.all([
       window.jspdf?Promise.resolve():new Promise(function(ok,hata){var sc=document.createElement('script');sc.src='lib/jspdf.umd.min.js';sc.onload=ok;sc.onerror=function(){hata(new Error('jspdf'));};document.head.appendChild(sc);}),
-      beta('lib/NotoSans-Regular.ttf'),beta('lib/NotoSans-Bold.ttf')
-    ]).then(function(r){return {jsPDF:window.jspdf.jsPDF,r:b64(r[1]),b:b64(r[2])};}).catch(function(e){sbPdfLP=null;throw e;});
+      beta('lib/NotoSans-Regular.ttf'),beta('lib/NotoSans-Bold.ttf'),beta('icon-192.png').catch(function(){return null;})
+    ]).then(function(r){return {jsPDF:window.jspdf.jsPDF,r:b64(r[1]),b:b64(r[2]),logo:r[3]?'data:image/png;base64,'+b64(r[3]):null};}).catch(function(e){sbPdfLP=null;throw e;});
     return sbPdfLP;
   }
   function sbPdfYap(K,B,kaynak,ad){
@@ -2535,7 +2535,8 @@ var SEKIL = (function () {
     var n=doc.getNumberOfPages(),i;
     for(i=1;i<=n;i++){
       doc.setPage(i);doc.setTextColor(110,96,99);
-      if(kaynak){yaz('normal',8);var ls=doc.splitTextToSize(SB_ALT.replace('@',sbTemizAd(ad)),GEN-22);doc.text(ls,M,H-ALT+10);}
+      var lx=0;if(K.logo){try{doc.addImage(K.logo,'PNG',M,kaynak?H-ALT+7:H-12.5,6,6,'lexlogo','FAST');lx=8;}catch(e){}}
+      if(kaynak){yaz('normal',8);var ls=doc.splitTextToSize(SB_ALT.replace('@',sbTemizAd(ad)),GEN-22-lx);doc.text(ls,M+lx,H-ALT+10);}
       yaz('normal',9);doc.text(i+' / '+n,W-M,H-8,{align:'right'});
       doc.setTextColor(0,0,0);
     }

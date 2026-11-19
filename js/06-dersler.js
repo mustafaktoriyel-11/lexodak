@@ -111,7 +111,7 @@
     $('lex-okkart-kapat').addEventListener('click',function(){yaz('lex-okkart-red',(+oku('lex-okkart-red',0)||0)+1);yaz('lex-okkart-sonra',Date.now()+3*864e5);okKart();});
   }
   okKart();
-  (function(){var e=$('lex-cihaz-k');if(!e)return;var c='';try{c=localStorage.getItem('mf-cihaz')||'';}catch(x){}if(c)e.textContent='Anonim cihaz kimliğin: '+c;})();
+  (function(){var e=$('lex-cihaz-k');if(!e)return;var c='';try{c=localStorage.getItem('mf-cihaz')||'';}catch(x){}if(!c)return;var a=document.createElement('a');a.href='mailto:odak.lex@gmail.com?subject='+encodeURIComponent('Kullanım kayıtlarımın silinmesi')+'&body='+encodeURIComponent('Merhaba,\n\nBu cihaza ait anonim kullanım kayıtlarının silinmesini istiyorum.\nCihaz kimliği: '+c+'\n');a.textContent='Kullanım kayıtlarımın silinmesini iste';e.appendChild(a);})();
 
   // ---------- dersleri düzenle ----------
   var dp=$('lex-dr-p'),sec=[],ozel=[],ilk=false,secSinif=null;

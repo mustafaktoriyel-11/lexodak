@@ -1,9 +1,9 @@
 // Lex Odak - service worker
-var SURUM = 'lex-odak-v122';
+var SURUM = 'lex-odak-v123';
 var MEVZUAT = 'lex-mevzuat-3';
 var MEVZUAT_ESKI = 'lex-mevzuat-2';  // tek dosyalı eski mevzuat.json önbelleği; kanun dosyaları tamamen inene dek silinmez (aşağıda 'message')
 var OCR = 'lex-ocr-1';  // taranmış PDF okuma motoru (jsdelivr), bir kez iner  // kanun metinleri sürüm değişse de silinmez
-var DOSYALAR = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png', './gizlilik.html'];
+var DOSYALAR = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png', './gizlilik.html', './ozet.js'];
 
 self.addEventListener('install', function (e) {
   e.waitUntil(caches.open(SURUM).then(function (c) { return c.addAll(DOSYALAR); }));

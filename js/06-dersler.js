@@ -144,9 +144,7 @@
     yaz('lex-dersler',sira);if(secSinif)yaz('lex-sinif',secSinif);location.reload();
   });
   var db=$('lex-ders-btn');if(db)db.addEventListener('click',function(){drAc(false);});
-  (function(){var du=oku('pm-durum',null);if(du&&du.calisiyor)return;
-    OKSOZ.then(function(){
-    if(!oku('lex-dersler',null))setTimeout(function(){drAc(true);},400);});})();
+  /* ilk açılışta ders penceresi açılmaz: varsayılan liste kullanılır, kullanıcı ana ekrandaki "Dersleri düzenle" ile değiştirir */
 
   // ---------- sınav takvimi ----------
   var SN_K='lex-sinavlar',TURLER=['Vize','Final','Bütünleme','HMGS','Diğer'];

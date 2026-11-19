@@ -1874,17 +1874,6 @@ body.uf-kilit{overflow:hidden}
 .uf-bas,.uf-sbas{padding-top:50px}
 /* perspektifli Roma yolu */
 .uf-balon.yalniz{margin-bottom:12px}.uf-balon.yalniz::before{display:none}
-.uf-3d{--yz0:#F3E4BF;--yz1:#F8F1E3;--tas:#E8DCC6;--tas2:#DDCDB0;--kenar:#B9A27A;position:relative;height:470px;margin:0 0 8px;border:1px solid var(--uf-cz);border-radius:20px;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none;background:radial-gradient(ellipse 70% 38% at 50% 60px,rgba(248,214,107,.55),rgba(248,214,107,0) 70%),linear-gradient(#F5E9C8 0,#FBF7F2 140px,#FBF7F2 100%);outline:none}
-.uf-3d:focus-visible{box-shadow:0 0 0 3px #C9A227}
-html.mf-gece .uf-3d{--yz0:#4A3338;--yz1:#2F1D21;--tas:#3D2A2E;--tas2:#4A3338;--kenar:#7A5A4A;background:radial-gradient(ellipse 70% 38% at 50% 60px,rgba(201,162,39,.35),rgba(201,162,39,0) 70%),linear-gradient(#4A3A26 0,#2B1A1D 150px,#281619 100%)}
-.uf-3d-yol{position:absolute;left:0;top:0;pointer-events:none}
-.uf-gs0{stop-color:var(--yz0)}.uf-gs1{stop-color:var(--yz1)}
-.uf-zemin{fill:url(#uf-g-yol)}
-.uf-bant{fill:var(--tas2);opacity:.75}
-.uf-kenar{fill:none;stroke:var(--kenar);stroke-width:3;stroke-linecap:round;opacity:.8}
-.uf-ar{position:absolute;left:0;top:0;width:70px;height:140px;transform-origin:35px 140px;pointer-events:none;will-change:transform,opacity}
-.uf-ar svg{display:block;fill:none;stroke:#B9A27A;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
-html.mf-gece .uf-ar svg{stroke:#7A5A4A}
 .uf-sl{position:absolute;left:0;top:0;width:76px;height:76px;margin:0;padding:0;border:0;background:none;transform-origin:38px 38px;will-change:transform,opacity;cursor:pointer;color:var(--uf-s);-webkit-tap-highlight-color:transparent;outline:none}
 .uf-sl:focus-visible .uf-sl-s{outline:3px solid #C9A227;outline-offset:2px;border-radius:50%}
 .uf-sl-s{display:block;overflow:visible}
@@ -1898,7 +1887,7 @@ html.mf-gece .uf-c-gec{fill:#6E5C2C;stroke:#8F7A3A}html.mf-gece .uf-c-gk{stroke:
 .uf-saty{fill:#FBF7F2;stroke:#C9A227;stroke-width:1.5}.uf-sat2{color:#7A5A10}html.mf-gece .uf-saty{fill:#392327}html.mf-gece .uf-sat2{color:#E2C473}
 .uf-sl.sal .uf-sl-s{animation:uf-sal .5s ease-in-out 1}
 @keyframes uf-sal{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px) rotate(-5deg)}45%{transform:translateX(6px) rotate(5deg)}70%{transform:translateX(-3px)}}
-.uf-3d-aslan{position:absolute;left:0;top:0;z-index:600;pointer-events:none;will-change:transform}
+.uf-3d-aslan{position:absolute;left:0;top:0;z-index:3;pointer-events:none;will-change:transform,opacity;transition:opacity .2s}
 .uf-3d-ok{position:absolute;right:8px;top:50%;margin-top:-46px;z-index:700;display:flex;flex-direction:column;gap:6px}
 .uf-3d-ok button{width:44px;height:44px;border-radius:50%;border:1px solid var(--uf-cz);background:var(--uf-kart);color:var(--uf-b);display:flex;align-items:center;justify-content:center;padding:0;cursor:pointer;opacity:.92}
 html.mf-gece .uf-3d-ok button{color:#E7B7BF}
@@ -1913,3 +1902,20 @@ html.mf-gece .uf-3d-don{background:#9E3A4B}
 .uf-gecnot{display:flex;align-items:center;gap:8px;margin:0 0 10px;padding:8px 12px;border-radius:12px;background:var(--uf-ac);color:var(--uf-bas);font-size:13px;font-weight:600}
 .uf-gecnot .lx-i{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
 @media (prefers-reduced-motion: reduce){.uf-3d-don{transition:none}.uf-sl.sal .uf-sl-s{animation:none}}
+
+/* yol v2: sabit düz arka plan + kıvrımlı patika */
+.uf-3d{position:relative;height:360px;max-width:440px;margin:0 auto 8px;border:1px solid var(--uf-cz);border-radius:20px;overflow:hidden;touch-action:pan-y;user-select:none;-webkit-user-select:none;outline:none;background:radial-gradient(ellipse 80% 45% at 50% 105px,rgba(248,214,107,.5),rgba(248,214,107,0) 70%),linear-gradient(#F6ECD2 0,#FBF7F2 55%,#FBF7F2 100%)}
+.uf-3d:focus-visible{box-shadow:0 0 0 3px #C9A227}
+html.mf-gece .uf-3d{background:radial-gradient(ellipse 80% 45% at 50% 105px,rgba(201,162,39,.3),rgba(201,162,39,0) 70%),linear-gradient(#45351F 0,#2B1A1D 55%,#281619 100%)}
+.uf-3d-bg{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none}
+.uf-3d-bg g{stroke:#E3D6C1;stroke-width:2}
+.uf-3d-bg .uf-col{stroke:#EADFCB}.uf-3d-bg .uf-col2{stroke:#EEE4D2;stroke-width:5}
+html.mf-gece .uf-3d-bg g{stroke:#4A2F34}html.mf-gece .uf-3d-bg .uf-col{stroke:#3E282C}html.mf-gece .uf-3d-bg .uf-col2{stroke:#35232A}
+.uf-3d-sur{position:absolute;left:25%;width:50%;top:0;bottom:0;z-index:1;touch-action:none}
+.uf-3d-yol{position:absolute;left:0;top:0;pointer-events:none;z-index:2;-webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 16%,#000 88%,transparent 100%);mask-image:linear-gradient(to bottom,transparent 0,#000 16%,#000 88%,transparent 100%)}
+.uf-pat-b{fill:none;stroke:#8A2F3F;stroke-width:5;stroke-linecap:round}
+.uf-pat-d{fill:none;stroke:#CDBFAE;stroke-width:4;stroke-linecap:round;stroke-dasharray:1 10}
+html.mf-gece .uf-pat-b{stroke:#C9A227}html.mf-gece .uf-pat-d{stroke:#7A5A4A}
+.uf-sl{touch-action:none}
+.uf-sl.fo .lb{left:82px;right:auto;text-align:left}
+.uf-sl.L.fo:not(.bugun) .lb{left:82px;right:auto;text-align:left}

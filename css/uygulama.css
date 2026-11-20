@@ -1917,3 +1917,68 @@ html.mf-gece .tb-soz b{color:#F2DDA8}html.mf-gece .tb-soz-t{color:#F1E4E6}html.m
 #bld-kart .bld-den{cursor:default;border-bottom:0}
 #bld-kart .bld-den-b{flex:none;min-height:40px;padding:0 16px;border-radius:12px;border:1px solid #E6CBD0;background:#FBF4F5;color:#762B37;font:inherit;font-size:14px;font-weight:700;cursor:pointer}
 html.mf-gece #bld-kart .bld-liste,html.mf-gece #bld-kart .bld-sat{border-color:#4A2D33}html.mf-gece #bld-kart .bld-y b{color:#F4ECED}html.mf-gece #bld-kart .bld-y small{color:#C9B8BB}html.mf-gece #bld-kart .bld-den-b{background:#2E2124;border-color:#4A3236;color:#F2DDA8}
+
+/* Ufuk: Roma yolu sahnesi (Gemini ile üretildi) */
+.uf-hero{position:relative;isolation:isolate;margin:-6px -4px 14px;padding:16px 14px 4px;border-radius:22px;overflow:hidden;min-height:340px;display:flex;flex-direction:column;justify-content:space-between}
+.uf-hero-bg{position:absolute;inset:0;z-index:-1;background:url(../img/ufuk-duz.webp) center 60%/cover no-repeat}
+.uf-hero-bg::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(251,247,242,.85) 0%,rgba(251,247,242,.55) 24%,rgba(251,247,242,0) 44%,rgba(251,247,242,0) 70%,rgba(251,247,242,.3) 100%)}
+.uf-hero .uf-bas{margin:0}
+.uf-hero .uf-konus{margin:0}
+.uf-hero .uf-balon{background:rgba(255,253,250,.92);backdrop-filter:blur(2px)}
+@media(min-width:700px){.uf-hero{min-height:300px}.uf-hero-bg{background-position:center 62%}}
+html.mf-gece .uf-hero-bg{filter:brightness(.42) saturate(.9)}
+html.mf-gece .uf-hero-bg::after{background:linear-gradient(180deg,rgba(26,14,16,.6) 0%,rgba(26,14,16,0) 40%,rgba(26,14,16,.3) 100%)}
+html.mf-gece .uf-hero .uf-balon{background:rgba(46,33,36,.92)}
+.uf-hero .uf-tipsat{color:#4A2F34;font-weight:600}html.mf-gece .uf-hero .uf-tipsat{color:#E6D3D6}
+
+/* ---- Ufuk 3B yol sahnesi ---- */
+.uf-sahne{position:relative;height:min(58vh,540px);min-height:360px;margin:-6px -4px 0;border-radius:22px;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none;background:#F6E3D3;outline:none;isolation:isolate}
+.uf-sahne:focus-visible{box-shadow:0 0 0 3px #C9A227}
+.uf-sahne.sal{animation:ufSal .45s}
+@keyframes ufSal{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.uf-s-bg{position:absolute;left:0;top:0;transform-origin:0 0;will-change:transform;pointer-events:none}
+.uf-s-bg img{position:absolute;inset:0;width:100%;height:100%;display:block;-webkit-user-drag:none}
+.uf-s-gece{opacity:0}html.mf-gece .uf-s-gece{opacity:1}html.mf-gece .uf-s-gun{opacity:0}
+html.mf-gece .uf-sahne{background:#2A0E15}
+.uf-s-sis{position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(251,247,242,.82) 0%,rgba(251,247,242,.4) 16%,rgba(251,247,242,0) 30%)}
+html.mf-gece .uf-s-sis{background:linear-gradient(180deg,rgba(20,8,11,.6) 0%,rgba(20,8,11,0) 28%)}
+.uf-sahne .uf-bas{position:absolute;left:16px;right:16px;top:14px;margin:0;z-index:1100;pointer-events:none}
+.uf-s-asl{position:absolute;left:1%;bottom:-6px;z-index:1100;pointer-events:none;width:28%;max-width:150px}
+.uf-s-asl .uf-m,.uf-s-asl .as-buyu,.uf-s-asl .as-govde,.uf-s-asl svg{width:100%!important;height:auto!important;max-width:none!important}
+@media(min-width:700px){.uf-s-asl{width:17%;max-width:170px}}
+.uf-s-lv{position:absolute;inset:0}
+.uf-lv{position:absolute;left:0;top:0;width:100px;height:120px;margin:-120px 0 0 -50px;padding:0;border:0;background:none;transform-origin:50% 100%;will-change:transform,opacity;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.uf-lv svg{display:block;width:100%;height:100%;overflow:visible;filter:drop-shadow(0 6px 6px rgba(63,18,25,.28))}
+.uf-lv.odak svg{filter:drop-shadow(0 0 14px rgba(232,196,90,.85)) drop-shadow(0 6px 6px rgba(63,18,25,.3))}
+.uf-lv-et{position:absolute;left:50%;top:100%;transform:translateX(-50%);margin-top:6px;white-space:nowrap;text-align:center;font-size:15px;font-weight:700;color:#fff;background:rgba(63,18,25,.88);border-radius:10px;padding:3px 10px 4px;pointer-events:none;opacity:0;transition:opacity .2s;line-height:1.25}
+.uf-lv-et small{display:block;font-size:12.5px;font-weight:600;color:#F2DDA8}
+.uf-lv.etg .uf-lv-et{opacity:1}
+html.mf-gece .uf-lv-et{background:rgba(20,8,11,.9)}
+.uf-lv .lv-rom{font-family:Georgia,'Times New Roman',serif;font-weight:700;font-size:34px;fill:#3F1219}
+.uf-lv .lv-kil rect{fill:#CDBFAE}.uf-lv .lv-kil path{stroke:#8A7A7D}
+/* gündüz renkleri */
+.t-tam .lv-gv{fill:#5E1F2A;stroke:#C9A227}.t-tam .lv-tb{stroke:#C9A227}.t-tam .lv-ic{stroke:#F8EBC4}
+.t-gec .lv-gv{fill:#B88A2A;stroke:#F8EBC4}.t-gec .lv-tb{stroke:#F8EBC4}.t-gec .lv-ic{stroke:#3F1219}
+.t-bos .lv-gv{fill:rgba(251,247,242,.35);stroke:rgba(94,31,42,.55);stroke-dasharray:7 6}.t-bos .lv-tb{stroke:rgba(94,31,42,.55)}.t-bos .lv-ic{stroke:#5E1F2A}
+.t-bugun .lv-gv,.t-bugunTam .lv-gv{fill:#C9A227;stroke:#fff}.t-bugun .lv-tb,.t-bugunTam .lv-tb{stroke:#fff}.t-bugunTam .lv-ic{stroke:#3F1219}
+.t-kilit .lv-gv{fill:#EDE3D6;stroke:#CDBFAE}.t-kilit .lv-tb{stroke:#CDBFAE}
+/* gece renkleri: levhalar altın */
+html.mf-gece .t-tam .lv-gv{fill:#C9A227;stroke:#F7DE92}html.mf-gece .t-tam .lv-tb{stroke:#F7DE92}html.mf-gece .t-tam .lv-ic{stroke:#3F1219}
+html.mf-gece .t-gec .lv-gv{fill:#8A6A2A;stroke:#E8C25A}html.mf-gece .t-gec .lv-tb{stroke:#E8C25A}html.mf-gece .t-gec .lv-ic{stroke:#F7DE92}
+html.mf-gece .t-bos .lv-gv{fill:rgba(201,162,39,.12);stroke:#C9A227}html.mf-gece .t-bos .lv-tb{stroke:#C9A227}html.mf-gece .t-bos .lv-ic{stroke:#C9A227}
+html.mf-gece .t-bugun .lv-gv,html.mf-gece .t-bugunTam .lv-gv{fill:#F2CF5B;stroke:#FFF3C4}html.mf-gece .t-bugun .lv-tb,html.mf-gece .t-bugunTam .lv-tb{stroke:#FFF3C4}
+html.mf-gece .t-kilit .lv-gv{fill:#3A1520;stroke:#9C7A2A}html.mf-gece .t-kilit .lv-tb{stroke:#9C7A2A}html.mf-gece .uf-lv .lv-kil rect{fill:#9C7A2A}html.mf-gece .uf-lv .lv-kil path{stroke:#C9A227}
+.uf-s-ok{display:flex;gap:8px;margin:10px 0 0}
+.uf-s-ok button{flex:1;min-height:46px;border-radius:14px;border:1px solid #E6DAC8;background:#fff;color:#5E1F2A;font:inherit;font-size:15px;font-weight:700;cursor:pointer}
+.uf-s-ok button.b{flex:.8}
+.uf-s-ok button:disabled{opacity:.4;cursor:default}
+html.mf-gece .uf-s-ok button{background:#2E2124;border-color:#4A3236;color:#F2DDA8}
+.uf-s-bilgi{margin-top:10px;background:#fff;border:1px solid #E6DAC8;border-radius:16px;padding:12px 14px;display:flex;align-items:center;gap:12px;min-height:64px}
+.uf-s-bilgi .m{flex:1;min-width:0}.uf-s-bilgi b{display:block;font-size:16px;color:#351E22}.uf-s-bilgi small{display:block;font-size:13px;color:#6B5A5D;margin-top:2px;line-height:1.4}
+.uf-s-bilgi .uf-btn2{flex:none;width:auto;margin:0;padding:0 14px;min-height:42px}
+html.mf-gece .uf-s-bilgi{background:#2E2124;border-color:#4A3236}html.mf-gece .uf-s-bilgi b{color:#F4ECED}html.mf-gece .uf-s-bilgi small{color:#C9B8BB}
+.uf-konus-s{margin:12px 0 0}.uf-konus-s .uf-balon{margin-left:0}.uf-konus-s .uf-balon::before{display:none}
+@media (prefers-reduced-motion:reduce){.uf-sahne.sal{animation:none}}
+.uf-s-yazi{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.uf-s-yazi text{font-family:Georgia,'Times New Roman',serif;font-weight:700;font-size:38px;letter-spacing:12px;fill:#5E1F2A;opacity:.8}
+html.mf-gece .uf-s-yazi text{fill:#E8C25A;opacity:.95}

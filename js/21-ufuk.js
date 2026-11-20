@@ -146,7 +146,7 @@
   }
   /* ---- unvan töreni: geçilemez ---- */
   var tAktif=false,tZ=[];
-  function tEngel(e){if(!tAktif)return;e.preventDefault();e.stopPropagation();}
+  function tEngel(e){if(!tAktif)return;if(e.target&&e.target.classList&&e.target.classList.contains('tr-devam')&&!e.target.hidden)return;e.preventDefault();e.stopPropagation();}
   /* yol sahnesindeki/iç mekândaki bir noktayı ekrana 'cover' ile yerleştir */
   function kapla(el,W,H,iw,ih,ax,ay){var s=Math.max(W/iw,H/ih),x=W/2-ax*s,y=H/2-ay*s;
     x=Math.min(0,Math.max(W-iw*s,x));y=Math.min(0,Math.max(H-ih*s,y));
@@ -154,17 +154,17 @@
   function toren(eski,yeni,bitti){
     if(tAktif)return false;tAktif=true;
     var reduce=az(),u=UNV[yeni],S=window.LEX_UFUK_SAHNE,gece=document.documentElement.classList.contains('mf-gece');
-    var T1=reduce?0:2300,T2=T1+(reduce?300:650),sure=T2+(reduce?3600:4800);
+    var T1=reduce?0:2300,T2=T1+(reduce?300:650),hazir=false;
     var o=document.createElement('div');o.className='uf-toren uf-tr2';o.setAttribute('role','alertdialog');o.setAttribute('aria-modal','true');o.setAttribute('aria-label','Yeni rütbe: '+u[0]+', '+u[1]);o.tabIndex=-1;
     o.innerHTML='<div class="tr-yol" aria-hidden="true"><img src="img/'+(gece?'ufuk-gece':'ufuk-duz')+'.webp" alt="">'+(S?S.katman():'')+'</div>'+
       '<div class="tr-ic" aria-hidden="true"><img src="img/ufuk-ic.webp" alt=""><svg class="tr-huzme" viewBox="0 0 2431 1512" preserveAspectRatio="none"><defs><linearGradient id="trh" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F6D98A" stop-opacity=".42"/><stop offset="1" stop-color="#FFF3CF" stop-opacity=".55"/></linearGradient><radialGradient id="trd"><stop offset="0" stop-color="#FFF6DA" stop-opacity=".9"/><stop offset="1" stop-color="#FFF6DA" stop-opacity="0"/></radialGradient></defs><path d="M1038 1012 L1396 1012 L1455 1150 L975 1150 Z" fill="url(#trh)"/><ellipse cx="1215" cy="1150" rx="300" ry="62" fill="url(#trd)"/></svg>'+
-      '<div class="tr-m"></div></div><div class="tr-kara" aria-hidden="true"></div>'+
-      '<div class="tr-yazi"><div class="uf-tr-st">Yeni rütbe</div><div class="tr-lat">'+esc(u[0])+'</div><div class="uf-tr-ad" role="status">'+esc(u[1])+(yeni===UST?'':' oldun')+'</div><p>'+esc(u[2])+'</p></div>';
+      '<div class="tr-m"><div class="tr-m1"></div><div class="tr-m2"></div></div></div><div class="tr-kara" aria-hidden="true"></div>'+
+      '<div class="tr-yazi"><div class="uf-tr-st">Yeni rütbe</div><div class="tr-lat">'+esc(u[0])+'</div><div class="uf-tr-ad" role="status">'+esc(u[1])+(yeni===UST?'':' oldun')+'</div><p>'+esc(u[2])+'</p><button type="button" class="tr-devam" hidden>Devam et</button></div>';
     document.body.appendChild(o);document.body.classList.add('uf-kilit');
     try{if(document.activeElement&&document.activeElement.blur)document.activeElement.blur();o.focus();}catch(e){}
     ['keydown','keyup','keypress'].forEach(function(t){document.addEventListener(t,tEngel,true);});
-    ['touchstart','touchmove','touchend','click','pointerdown'].forEach(function(tp){o.addEventListener(tp,function(e){e.stopPropagation();if(e.cancelable)e.preventDefault();},{passive:false});});
-    var geri=function(){if(tAktif&&window.LEX_GERI)LEX_GERI.ekle('ufk-toren',geri);};
+    ['touchstart','touchmove','touchend','click','pointerdown'].forEach(function(tp){o.addEventListener(tp,function(e){if(hazir&&e.target.closest&&e.target.closest('.tr-devam'))return;e.stopPropagation();if(e.cancelable)e.preventDefault();},{passive:false});});
+    var geri=function(){if(hazir){kapat();return;}if(tAktif&&window.LEX_GERI)LEX_GERI.ekle('ufk-toren',geri);};
     if(window.LEX_GERI)LEX_GERI.ekle('ufk-toren',geri);
     var W=o.clientWidth,H=o.clientHeight,yol=o.querySelector('.tr-yol'),ic=o.querySelector('.tr-ic'),kara=o.querySelector('.tr-kara'),yz=o.querySelector('.tr-yazi'),mk=o.querySelector('.tr-m');
     var IW=2431,IH=1512,KX=1214.5,KY=672;   /* kapı */
@@ -172,7 +172,7 @@
     yol.style.transformOrigin=dx-a.x+'px '+(dy-a.y)+'px';
     var b=kapla(ic,W,H,IW,IH,1215,980),mp=Math.min(W*.42,H*.26,230);if(W>H)o.classList.add('yatay');
     mk.style.left=(1215*b.s-mp/2)+'px';mk.style.top=(1150*b.s-mp*.97)+'px';mk.style.width=mp+'px';mk.style.height=mp+'px';
-    mk.innerHTML=maskot(Math.round(mp),'uf-m-t',eski);
+    var m1=mk.querySelector('.tr-m1'),m2=mk.querySelector('.tr-m2');m1.innerHTML=maskot(Math.round(mp),'uf-m-t',eski);m2.innerHTML=maskot(Math.round(mp),'uf-m-t toren',yeni,{on:'<div class="isik" aria-hidden="true"></div>'});m2.style.opacity=0;
     function anim(el,k,op){try{return el.animate(k,op);}catch(e){return null;}}
     if(!reduce){
       anim(yol,[{transform:'scale(1)'},{transform:'scale(1.6)',offset:.45},{transform:'scale(5)',offset:.8},{transform:'scale(46)'}],{duration:T1,easing:'cubic-bezier(.55,0,.85,.45)',fill:'forwards'});
@@ -182,17 +182,23 @@
       anim(kara,[{opacity:1},{opacity:0}],{duration:reduce?400:900,easing:'ease-out',fill:'forwards'});
       if(!reduce)anim(ic,[{transform:'scale(1.07)'},{transform:'scale(1)'}],{duration:3200,easing:'cubic-bezier(.2,.6,.3,1)',fill:'forwards'});
       var hz=o.querySelector('.tr-huzme');anim(hz,[{opacity:.35},{opacity:1,offset:.45},{opacity:.85}],{duration:1800,fill:'forwards'});
-      tZ.push(setTimeout(function(){mk.innerHTML=maskot(Math.round(mp),'uf-m-t toren',yeni,{on:'<div class="isik" aria-hidden="true"></div>'});},reduce?200:1000));
-      tZ.push(setTimeout(function(){yz.classList.add('acik');},reduce?300:1300));
+      /* yumuşak dönüşüm: eski maskot ışıkta erir, yenisi ışıktan belirir */
+      tZ.push(setTimeout(function(){
+        anim(m1,[{opacity:1,filter:'brightness(1)',transform:'scale(1)'},{opacity:1,filter:'brightness(1.8)',transform:'scale(1.03)',offset:.45},{opacity:0,filter:'brightness(2.6)',transform:'scale(1.06)'}],{duration:reduce?600:1700,easing:'ease-in-out',fill:'forwards'});
+        anim(m2,[{opacity:0,filter:'brightness(2.6)',transform:'scale(.94)'},{opacity:.6,filter:'brightness(1.9)',transform:'scale(.98)',offset:.5},{opacity:1,filter:'brightness(1)',transform:'scale(1)'}],{duration:reduce?700:1900,delay:reduce?0:700,easing:'ease-out',fill:'forwards'});
+        anim(o.querySelector('.tr-huzme'),[{opacity:.85},{opacity:1},{opacity:.85}],{duration:2400,delay:200});
+      },reduce?200:900));
+      tZ.push(setTimeout(function(){yz.classList.add('acik');},reduce?600:2700));
+      tZ.push(setTimeout(function(){hazir=true;var d=o.querySelector('.tr-devam');d.hidden=false;d.addEventListener('click',kapat);try{d.focus();}catch(e){}},reduce?1600:4200));
     },T2));
-    tZ.push(setTimeout(function(){
+    function kapat(){if(!tAktif)return;tZ.forEach(clearTimeout);
       tAktif=false;tZ=[];
       kayitYaz({v:2,r:yeni});
       ['keydown','keyup','keypress'].forEach(function(t){document.removeEventListener(t,tEngel,true);});
       if(o.parentNode)o.parentNode.removeChild(o);document.body.classList.remove('uf-kilit');
       if(window.LEX_GERI)LEX_GERI.dus('ufk-toren');
       sinifGuncelle();if(bitti)bitti();
-    },sure));
+    }
     return true;
   }
   /* ---- rütbeler ve nasıl yükselinir ---- */

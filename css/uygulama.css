@@ -2048,3 +2048,7 @@ html.mf-gece .uf-s-yazi .gs1{stop-color:#BE8923}html.mf-gece .uf-s-yazi .gs2{sto
 .uf-tr2 p{margin:6px auto 0;max-width:420px;font-size:14.5px;line-height:1.5;color:#E9D8D2}
 .uf-tr2.yatay .tr-yazi{top:0;bottom:auto;padding:calc(26px + env(safe-area-inset-top)) 24px 70px;background:linear-gradient(0deg,rgba(18,5,7,0),rgba(18,5,7,.85) 50%);transform:translateY(-14px)}
 .uf-tr2.yatay .tr-yazi.acik{transform:none}
+.uf-tr2 .tr-m1,.uf-tr2 .tr-m2{position:absolute;inset:0}
+.uf-tr2 .tr-devam{margin:16px auto 0;display:block;min-height:46px;padding:0 28px;border:1px solid #C9A227;border-radius:14px;background:rgba(201,162,39,.16);color:#F8EBC4;font:inherit;font-size:15px;font-weight:700;cursor:pointer;animation:uf-gir .5s ease-out}
+.uf-tr2 .tr-devam[hidden]{display:none}
+.uf-tr2 .tr-devam:focus-visible{outline:2px solid #F2DDA8;outline-offset:3px}

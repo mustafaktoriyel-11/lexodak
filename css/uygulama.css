@@ -2052,3 +2052,9 @@ html.mf-gece .uf-s-yazi .gs1{stop-color:#BE8923}html.mf-gece .uf-s-yazi .gs2{sto
 .uf-tr2 .tr-devam{margin:16px auto 0;display:block;min-height:46px;padding:0 28px;border:1px solid #C9A227;border-radius:14px;background:rgba(201,162,39,.16);color:#F8EBC4;font:inherit;font-size:15px;font-weight:700;cursor:pointer;animation:uf-gir .5s ease-out}
 .uf-tr2 .tr-devam[hidden]{display:none}
 .uf-tr2 .tr-devam:focus-visible{outline:2px solid #F2DDA8;outline-offset:3px}
+/* Ufuk: sınıf seçimi */
+.uf-snf{margin:12px 0 8px}.uf-snf b{display:block;font:700 18px Georgia,'Times New Roman',serif;color:var(--uf-b)}.uf-snf p{margin:4px 0 10px;font-size:13.5px;color:var(--uf-s);line-height:1.45}
+.uf-snf-c{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.uf-snf-c button{min-height:46px;border-radius:12px;border:1px solid var(--uf-cz);background:var(--uf-kart);color:var(--uf-y);font:inherit;font-size:15px;font-weight:700;cursor:pointer}
+.uf-snf-c button:active{background:var(--uf-ac)}
+.uf-snf-s{text-align:center;font-size:13px;color:var(--uf-s);margin:8px 0 0}.uf-snf-s button{border:0;background:none;color:var(--uf-b);font:inherit;font-weight:700;text-decoration:underline;cursor:pointer;padding:6px 2px}

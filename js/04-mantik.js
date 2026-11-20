@@ -151,6 +151,7 @@
       $('uf-geri').addEventListener('click',function(){SK.git(SK.odak()-1);});
       $('uf-ileri').addEventListener('click',function(){SK.git(SK.odak()+1);});
       $('uf-bugun').addEventListener('click',function(){SK.git(i0);});}
+    [].forEach.call(document.querySelectorAll('#mt-giris .uf-rk-ac'),function(b){b.addEventListener('click',function(){U.rutbeler(d);});});
     rozet();setTimeout(torenDene,700);
   }
   function rozet(){var e=$('nav-mantik');if(!e)return;var r=oku()[haftaNo()],yeni=!r;

@@ -4,7 +4,7 @@
    Sürükleme parmağı izler: yolu yukarı it = geçmişe, aşağı çek = ileriye. */
 (function(){
   'use strict';
-  var IW=2431,IH=1512,VPX=.5,VPY=.528;     /* görseldeki kaçış noktası */
+  var IW=2431,IH=1512,VPX=.5,VPY=.528,TY=640/1512;   /* TY: tapınağın ortası */     /* görseldeki kaçış noktası */
   var ZF=1.75,ARA=1;                        /* odak derinliği, günler arası mesafe */
   function esc(x){return String(x).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
   function az(){try{return matchMedia('(prefers-reduced-motion: reduce)').matches;}catch(e){return false;}}
@@ -21,7 +21,7 @@
   /* G: [{k, t:'tam'|'gec'|'bos'|'bugun'|'bugunTam'|'kilit', lab, alt, aria, rom}] ; hk: bugünün k'si */
   function html(G,ust){
     var o='<div class="uf-sahne" tabindex="0" role="group" aria-label="Günlerin yolu. Önceki ve sonraki gün düğmeleriyle ya da yukarı aşağı sürükleyerek gezin.">'+
-      '<div class="uf-s-bg" aria-hidden="true"><img class="uf-s-gun" src="img/ufuk-duz.webp" alt="" draggable="false"><img class="uf-s-gece" src="img/ufuk-gece.webp" alt="" draggable="false"><svg class="uf-s-yazi" viewBox="0 0 2431 1512" aria-hidden="true"><defs><path id="uf-yay" d="M1007 690 A208 208 0 0 1 1423 690"/></defs><text><textPath href="#uf-yay" startOffset="50%" text-anchor="middle">IVSTITIA</textPath></text></svg></div>'+
+      '<div class="uf-s-bg" aria-hidden="true"><img class="uf-s-gun" src="img/ufuk-duz.webp" alt="" draggable="false"><img class="uf-s-gece" src="img/ufuk-gece.webp" alt="" draggable="false"><svg class="uf-s-yazi" viewBox="0 0 2431 1512" aria-hidden="true"><text x="1216.5" y="614.2" text-anchor="middle">IVSTITIA</text></svg></div>'+
       '<div class="uf-s-sis" aria-hidden="true"></div>'+(ust||'')+'<div class="uf-s-lv">';
     G.forEach(function(g,n){o+='<button type="button" class="uf-lv t-'+g.t+'" data-n="'+n+'" aria-label="'+esc(g.aria)+'" tabindex="-1">'+levha(g)+'<span class="uf-lv-et">'+esc(g.lab)+'<small>'+esc(g.alt)+'</small></span></button>';});
     return o+'</div></div>';
@@ -35,13 +35,17 @@
       oy=Math.min(0,Math.max(H-IH*s0,oy));vy=oy+VPY*IH*s0;ox=Math.min(0,Math.max(W-IW*s0,ox));vx=ox+VPX*IW*s0;
       bg.style.width=IW*s0+'px';bg.style.height=IH*s0+'px';}
     function ciz(){if(!W)return;
-      var bs=Math.min(1.9,Math.max(1,1.28*Math.pow(1.055,c-i0)));
-      bg.style.transform='translate('+(vx-(vx-ox)*bs).toFixed(1)+'px,'+(vy-(vy-oy)*bs).toFixed(1)+'px) scale('+bs.toFixed(4)+')';
-      var k=H-vy,bW=Math.min(W,H*1.2)/400,odak=Math.round(c);
+      var f=c-i0,F=Math.max(1,G.length-1-i0),bs;
+      if(f<=0)bs=Math.max(1,1.28*Math.pow(1.055,f));
+      else{var hT=Math.max(1.6,(.46*Math.min(W,H*.9)/146)/s0);bs=1.28*Math.pow(hT/1.28,Math.pow(Math.min(1,f/F),1.6));}
+      /* ileri giderken kamera tapınağa döner: tapınak ekranın ortasına iner */
+      var tt=f>0?Math.min(1,f/F):0,ty=vy+(TY-VPY)*IH*s0*bs,dy=tt*tt*(H*.5-ty);
+      bg.style.transform='translate('+(vx-(vx-ox)*bs).toFixed(1)+'px,'+(vy-(vy-oy)*bs+dy).toFixed(1)+'px) scale('+bs.toFixed(4)+')';
+      var vY=vy+dy,k=Math.max(60,H-vY),bW=Math.min(W,H*1.2)/400,odak=Math.round(c);
       G.forEach(function(g,n){var e=EL[n],z=(n-c)*ARA+ZF;
         if(z<.85||z>9){if(e.style.display!=='none')e.style.display='none';return;}
         if(e.style.display)e.style.display='';
-        var y=vy+k/z*.95,x=vx+(n%2?1:-1)*(y-vy)*.42,sc=bW/z*1.05;
+        var y=vY+k/z*.95,x=vx+(n%2?1:-1)*(y-vY)*.42,sc=bW/z*1.05;
         var op=z>5?Math.max(0,1-(z-5)/4):z<1.3?Math.max(0,(z-.85)/.45):1;
         e.style.transform='translate('+x.toFixed(1)+'px,'+y.toFixed(1)+'px) scale('+sc.toFixed(4)+')';
         e.style.opacity=op.toFixed(3);e.style.zIndex=Math.round(1000-z*100);

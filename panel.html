@@ -58,6 +58,7 @@ input[type=text],input[type=password],input[type=search]{width:100%;padding:10px
 @media (prefers-color-scheme:dark){.uyari{background:#3a3010;color:#f3deaa}}
 pre{background:var(--kart);border:1px solid var(--cizgi);border-radius:10px;padding:10px;overflow:auto;font-size:12px;max-width:100%;white-space:pre-wrap;word-break:break-word}
 .kucuk{font-size:12px;color:var(--soluk);margin-top:18px;word-break:break-word}
+.donem{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 12px}
 .gizli{display:none!important}
 .satirbtn{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
 </style>
@@ -80,6 +81,7 @@ pre{background:var(--kart);border:1px solid var(--cizgi);border-radius:10px;padd
 <div id="durum" class="kart mesaj gizli"></div>
 
 <div id="icerik" class="gizli">
+  <div class="donem gizli" id="donemKap"><span class="alt">Dönem:</span><div class="sec" id="donem" role="group" aria-label="Dönem"><button type="button" data-n="1" aria-pressed="false">Bugün</button><button type="button" data-n="7" aria-pressed="true">7 gün</button><button type="button" data-n="30" aria-pressed="false">30 gün</button><button type="button" data-n="0" aria-pressed="false">Tümü</button></div></div>
   <div class="kpi" id="kpi"></div>
   <div class="kart">
     <div class="bas"><h2>Günlük kullanım</h2>
@@ -119,7 +121,7 @@ var SAYAC_URL='https://script.google.com/macros/s/AKfycbxVbGhs7Gjpt_nkIjYZmiuLL0
 var DENEME=location.hash==='#deneme';
 var ANAHTAR_ANA='lex-panel-k';
 var $=function(i){return document.getElementById(i)};
-var veri=null, aralik=30, tumOkul=false, yukleniyor=false;
+var veri=null, donem=7, aralik=30, tumOkul=false, yukleniyor=false;
 
 function ac(el){el.classList.remove('gizli')} function kapat(el){el.classList.add('gizli')}
 function temiz(el){while(el.firstChild)el.removeChild(el.firstChild);return el}
@@ -168,17 +170,28 @@ function yukle(){
 }
 
 /* ---------- Çizim ---------- */
+function V(){return (veri&&veri.pencere&&veri.pencere[donem])||veri}
+var DONEM_AD={1:'Bugün',7:'Son 7 gün',30:'Son 30 gün',0:'Tüm zamanlar'};
 function ciz(){
   bolumler('icerik');
   var g=new Date(veri.guncel);
   $('guncel').textContent='Son güncelleme: '+(isNaN(g)?'—':g.toLocaleString('tr-TR',{day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'}));
   var k=temiz($('kpi'));
-  var okS=0,shS=0;(veri.okullar||[]).forEach(function(o){if(o.ad==='Seçilmemiş')return;if(o.ad.indexOf('Şehir: ')===0)shS+=o.kisi;else okS+=o.kisi});
-  var tp=veri.toplamKisi||0,oran=tp?Math.round(okS/tp*100):0,shOran=tp?Math.round(shS/tp*100):0;
-  [['Bugün aktif',veri.bugunAktif],['Son 7 gün',veri.son7Aktif],['Son 30 gün',veri.son30Aktif],['Toplam kişi',veri.toplamKisi],['Kurulu uygulama (kişi)',veri.kuruluKisi],['Okul seçen · '+sayi(okS)+' kişi','%'+oran],['Yalnız şehir seçen · '+sayi(shS)+' kişi','%'+shOran]].forEach(function(x){
-    var d=e('div');d.appendChild(e('b','',typeof x[1]==='string'?x[1]:sayi(x[1])));d.appendChild(e('span','',x[0]));k.appendChild(d)});
+  var P=V(),okS=0,shS=0;(P.okullar||[]).forEach(function(o){if(o.ad==='Seçilmemiş')return;if(o.ad.indexOf('Şehir: ')===0)shS+=o.kisi;else okS+=o.kisi});
+  var liste;
+  if(veri.pencere){
+    ac($('donemKap'));
+    var tp=P.aktif||0,oran=tp?Math.min(100,Math.round(okS/tp*100)):0;
+    liste=[[DONEM_AD[donem]+' giren',P.aktif],['İlk kez gelen',P.yeni],['Yeni kurulum',P.yeniKurulum],['Kurulu uygulamayla açan',P.kuruluKullanan],['Okul seçen · '+sayi(okS)+' kişi','%'+oran],['Toplam kişi (tüm zamanlar)',veri.toplamKisi]];
+  }else{
+    kapat($('donemKap'));
+    var tp=veri.toplamKisi||0,oran=tp?Math.round(okS/tp*100):0,shOran=tp?Math.round(shS/tp*100):0;
+    liste=[['Bugün aktif',veri.bugunAktif],['Son 7 gün',veri.son7Aktif],['Son 30 gün',veri.son30Aktif],['Toplam kişi',veri.toplamKisi],['Kurulu uygulama (kişi)',veri.kuruluKisi],['Okul seçen · '+sayi(okS)+' kişi','%'+oran],['Yalnız şehir seçen · '+sayi(shS)+' kişi','%'+shOran]];
+  }
+  liste.forEach(function(x){
+    var d=e('div');d.appendChild(e('b','',typeof x[1]==='string'?x[1]:sayi(x[1]||0)));d.appendChild(e('span','',x[0]));k.appendChild(d)});
   grafik();okulListe();sehirListe();
-  dagilim('platform',veri.platformlar,true);if(veri.siniflar&&veri.siniflar.length){ac($('sinifKart'));var so=['1. sınıf','2. sınıf','3. sınıf','4. sınıf','HMGS','Seçilmemiş'];dagilim('sinif',veri.siniflar.slice().sort(function(x,y){var a=so.indexOf(x.ad),b=so.indexOf(y.ad);return (a<0?99:a)-(b<0?99:b)}),false);}else kapat($('sinifKart'));dagilim('mod',veri.modlar,false);
+  var P2=V();dagilim('platform',P2.platformlar,true);if(P2.siniflar&&P2.siniflar.length){ac($('sinifKart'));var so=['1. sınıf','2. sınıf','3. sınıf','4. sınıf','HMGS','Seçilmemiş'];dagilim('sinif',P2.siniflar.slice().sort(function(x,y){var a=so.indexOf(x.ad),b=so.indexOf(y.ad);return (a<0?99:a)-(b<0?99:b)}),false);}else kapat($('sinifKart'));dagilim('mod',P2.modlar,false);
   var es=veri.eslesme||{};
   $('eslesme').textContent='Eşleşme: '+JSON.stringify(es);
 }
@@ -234,7 +247,7 @@ function grafik(){
 }
 function okulListe(){
   var q=$('ara').value.toLocaleLowerCase('tr-TR').trim();
-  var hepsi=[],shSay=0;(veri.okullar||[]).forEach(function(o){if(o.ad.indexOf('Şehir: ')===0)shSay+=o.kisi;else hepsi.push(o)});
+  var hepsi=[],shSay=0;(V().okullar||[]).forEach(function(o){if(o.ad.indexOf('Şehir: ')===0)shSay+=o.kisi;else hepsi.push(o)});
   if(shSay){var se=hepsi.filter(function(o){return o.ad==='Seçilmemiş'})[0];if(se)se={ad:'Seçilmemiş',kisi:se.kisi+shSay};hepsi=hepsi.filter(function(o){return o.ad!=='Seçilmemiş'});hepsi.push(se||{ad:'Seçilmemiş',kisi:shSay});hepsi.sort(function(x,y){return y.kisi-x.kisi});}
   var l=hepsi.filter(function(o){return !q||o.ad.toLocaleLowerCase('tr-TR').indexOf(q)>-1});
   var goster=(tumOkul||q)?l:l.slice(0,15);
@@ -252,7 +265,7 @@ function sehirListe(){
   var kap=temiz($('sehirler'));
   if(!OKUL_SEHIR){kap.appendChild(e('p','alt','Yükleniyor…'));return;}
   var h={};
-  (veri.okullar||[]).forEach(function(o){
+  (V().okullar||[]).forEach(function(o){
     var ad=o.ad.indexOf('Şehir: ')===0?o.ad.slice(7):(o.ad==='Seçilmemiş'?'Belirtilmemiş':(OKUL_SEHIR[o.ad]||'Bilinmeyen şehir'));
     h[ad]=(h[ad]||0)+o.kisi;
   });
@@ -301,6 +314,7 @@ function ornekVeri(){
     return {guncel:bugun.toISOString(),toplamKisi:s,son7Aktif:420,son30Aktif:1130,bugunAktif:gunler[89].aktif,kuruluKisi:Math.round(s*.34),gunler:gunler,siniflar:[{ad:'1. sınıf',kisi:210},{ad:'2. sınıf',kisi:260},{ad:'3. sınıf',kisi:240},{ad:'4. sınıf',kisi:310},{ad:'HMGS',kisi:180},{ad:'Seçilmemiş',kisi:461}],okullar:okullar,
       platformlar:[{ad:'Android',kisi:Math.round(s*.62)},{ad:'iPhone',kisi:Math.round(s*.26)},{ad:'Bilgisayar',kisi:Math.round(s*.12)}],
       modlar:[{ad:'Tarayıcı',kisi:Math.round(s*.5)},{ad:'Kurulu',kisi:Math.round(s*.34)},{ad:'Instagram/TikTok',kisi:Math.round(s*.16)}],
+      pencere:(function(){var r={};[[1,.08],[7,.35],[30,.8],[0,1]].forEach(function(z){var f=z[1],sc=function(l){return l.map(function(x){return {ad:x.ad,kisi:Math.max(1,Math.round(x.kisi*f))}})};r[z[0]]={aktif:Math.round(s*f*.9),yeni:Math.round(s*f*.3),yeniKurulum:Math.round(s*f*.1),kuruluKullanan:Math.round(s*f*.3),okullar:sc(okullar),platformlar:sc([{ad:'Android',kisi:s*.62},{ad:'iPhone',kisi:s*.26},{ad:'Bilgisayar',kisi:s*.12}]),modlar:sc([{ad:'Tarayıcı',kisi:s*.5},{ad:'Kurulu',kisi:s*.34}]),siniflar:sc([{ad:'1. sınıf',kisi:210},{ad:'2. sınıf',kisi:260},{ad:'3. sınıf',kisi:240},{ad:'4. sınıf',kisi:310},{ad:'Seçilmemiş',kisi:461}])}});return r})(),
       eslesme:{yontem:'örnek',sutunlar:{zaman:0,tip:1,cihaz:2,platform:3,mod:4,okul:5}}};
   });
 }
@@ -316,6 +330,11 @@ $('aralik').addEventListener('click',function(ev){
   var b=ev.target.closest('button');if(!b)return;aralik=+b.dataset.n;
   Array.prototype.forEach.call($('aralik').children,function(x){x.setAttribute('aria-pressed',x===b)});
   $('ipucu').textContent='Bir güne dokunarak ayrıntıyı gör.';grafik();
+});
+$('donem').addEventListener('click',function(ev){
+  var b=ev.target.closest('button');if(!b)return;donem=+b.dataset.n;
+  Array.prototype.forEach.call($('donem').children,function(x){x.setAttribute('aria-pressed',x===b)});
+  if(veri)ciz();
 });
 $('ara').addEventListener('input',function(){if(veri)okulListe()});
 $('tumu').onclick=function(){tumOkul=!tumOkul;okulListe()};

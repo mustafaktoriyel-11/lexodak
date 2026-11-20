@@ -88,6 +88,25 @@ function doGet(e) {
     say(ok, c.okul || 'Seçilmemiş'); say(pl, c.platform || 'Bilinmiyor'); say(md, c.mod || 'Bilinmiyor'); say(sn, c.sinif || 'Seçilmemiş');
   });
   var sirala = function (h) { return Object.keys(h).map(function (a) { return {ad: a, kisi: h[a]}; }).sort(function (x, y) { return y.kisi - x.kisi; }); };
+  /* Dönem özetleri: 1 = bugün, 7 / 30 gün, 0 = tüm zamanlar */
+  var pencere = {};
+  [1, 7, 30, 0].forEach(function (n) {
+    var icinde = function (g) { return n === 0 || gunFark(g) < n; };
+    var P = {aktif: 0, yeni: 0, yeniKurulum: 0, kuruluKullanan: 0}, pk = {}, pp = {}, pm = {}, ps = {};
+    Object.keys(C).forEach(function (id) {
+      var c = C[id];
+      if (!Object.keys(c.gun).some(icinde)) return;
+      P.aktif++;
+      if (icinde(c.ilk)) P.yeni++;
+      var kg = Object.keys(c.kur).sort();
+      if (kg.some(icinde)) P.kuruluKullanan++;
+      if (kg.length && icinde(kg[0])) P.yeniKurulum++;
+      say(pk, c.okul || 'Seçilmemiş'); say(pp, c.platform || 'Bilinmiyor'); say(pm, c.mod || 'Bilinmiyor'); say(ps, c.sinif || 'Seçilmemiş');
+    });
+    P.okullar = sirala(pk); P.platformlar = sirala(pp); P.modlar = sirala(pm); P.siniflar = sirala(ps);
+    pencere[n] = P;
+  });
+  o.pencere = pencere;
   o.gunler = liste; o.okullar = sirala(ok); o.platformlar = sirala(pl); o.modlar = sirala(md); o.siniflar = sirala(sn);
   o.eslesme = {yontem: SAYFA + ': Zaman, Cihaz, Platform, Açılış, Okul, Sınıf'};
   return cevap_(o);

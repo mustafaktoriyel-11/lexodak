@@ -147,20 +147,44 @@
   /* ---- unvan töreni: geçilemez ---- */
   var tAktif=false,tZ=[];
   function tEngel(e){if(!tAktif)return;e.preventDefault();e.stopPropagation();}
+  /* yol sahnesindeki/iç mekândaki bir noktayı ekrana 'cover' ile yerleştir */
+  function kapla(el,W,H,iw,ih,ax,ay){var s=Math.max(W/iw,H/ih),x=W/2-ax*s,y=H/2-ay*s;
+    x=Math.min(0,Math.max(W-iw*s,x));y=Math.min(0,Math.max(H-ih*s,y));
+    el.style.width=iw*s+'px';el.style.height=ih*s+'px';el.style.left=x+'px';el.style.top=y+'px';return {s:s,x:x,y:y};}
   function toren(eski,yeni,bitti){
     if(tAktif)return false;tAktif=true;
-    var reduce=az(),sure=reduce?2000:3300,u=UNV[yeni];
-    var son='<div class="muhur" aria-hidden="true"><b>'+esc(u[0].toUpperCase())+'</b><span>'+esc(u[1])+'</span></div>';
-    var o=document.createElement('div');o.className='uf-toren';o.setAttribute('role','alertdialog');o.setAttribute('aria-modal','true');o.setAttribute('aria-label','Yeni rütbe: '+u[0]+', '+u[1]);o.tabIndex=-1;
-    o.innerHTML='<div class="uf-tr-k"><div class="uf-tr-st">Yeni rütbe</div>'+maskot(220,'uf-m-t toren',reduce?yeni:eski,{on:'<div class="isik" aria-hidden="true"></div>',son:son})+
-      '<div class="uf-tr-ad" role="status">'+esc(u[1])+(yeni===UST?'':' oldun')+'</div><p>'+esc(u[2])+'</p></div>';
+    var reduce=az(),u=UNV[yeni],S=window.LEX_UFUK_SAHNE,gece=document.documentElement.classList.contains('mf-gece');
+    var T1=reduce?0:2300,T2=T1+(reduce?300:650),sure=T2+(reduce?3600:4800);
+    var o=document.createElement('div');o.className='uf-toren uf-tr2';o.setAttribute('role','alertdialog');o.setAttribute('aria-modal','true');o.setAttribute('aria-label','Yeni rütbe: '+u[0]+', '+u[1]);o.tabIndex=-1;
+    o.innerHTML='<div class="tr-yol" aria-hidden="true"><img src="img/'+(gece?'ufuk-gece':'ufuk-duz')+'.webp" alt="">'+(S?S.katman():'')+'</div>'+
+      '<div class="tr-ic" aria-hidden="true"><img src="img/ufuk-ic.webp" alt=""><svg class="tr-huzme" viewBox="0 0 2431 1512" preserveAspectRatio="none"><defs><linearGradient id="trh" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F6D98A" stop-opacity=".42"/><stop offset="1" stop-color="#FFF3CF" stop-opacity=".55"/></linearGradient><radialGradient id="trd"><stop offset="0" stop-color="#FFF6DA" stop-opacity=".9"/><stop offset="1" stop-color="#FFF6DA" stop-opacity="0"/></radialGradient></defs><path d="M1038 1012 L1396 1012 L1455 1150 L975 1150 Z" fill="url(#trh)"/><ellipse cx="1215" cy="1150" rx="300" ry="62" fill="url(#trd)"/></svg>'+
+      '<div class="tr-m"></div></div><div class="tr-kara" aria-hidden="true"></div>'+
+      '<div class="tr-yazi"><div class="uf-tr-st">Yeni rütbe</div><div class="tr-lat">'+esc(u[0])+'</div><div class="uf-tr-ad" role="status">'+esc(u[1])+(yeni===UST?'':' oldun')+'</div><p>'+esc(u[2])+'</p></div>';
     document.body.appendChild(o);document.body.classList.add('uf-kilit');
     try{if(document.activeElement&&document.activeElement.blur)document.activeElement.blur();o.focus();}catch(e){}
     ['keydown','keyup','keypress'].forEach(function(t){document.addEventListener(t,tEngel,true);});
     ['touchstart','touchmove','touchend','click','pointerdown'].forEach(function(tp){o.addEventListener(tp,function(e){e.stopPropagation();if(e.cancelable)e.preventDefault();},{passive:false});});
     var geri=function(){if(tAktif&&window.LEX_GERI)LEX_GERI.ekle('ufk-toren',geri);};
     if(window.LEX_GERI)LEX_GERI.ekle('ufk-toren',geri);
-    if(!reduce)tZ.push(setTimeout(function(){var m=o.querySelector('.uf-m');if(m)m.outerHTML=maskot(220,'uf-m-t toren',yeni,{on:'<div class="isik" aria-hidden="true"></div>',son:son});},1150));
+    var W=o.clientWidth,H=o.clientHeight,yol=o.querySelector('.tr-yol'),ic=o.querySelector('.tr-ic'),kara=o.querySelector('.tr-kara'),yz=o.querySelector('.tr-yazi'),mk=o.querySelector('.tr-m');
+    var IW=2431,IH=1512,KX=1214.5,KY=672;   /* kapı */
+    var a=kapla(yol,W,H,IW,IH,KX,KY),dx=a.x+KX*a.s,dy=a.y+KY*a.s;
+    yol.style.transformOrigin=dx-a.x+'px '+(dy-a.y)+'px';
+    var b=kapla(ic,W,H,IW,IH,1215,980),mp=Math.min(W*.42,H*.26,230);if(W>H)o.classList.add('yatay');
+    mk.style.left=(1215*b.s-mp/2)+'px';mk.style.top=(1150*b.s-mp*.97)+'px';mk.style.width=mp+'px';mk.style.height=mp+'px';
+    mk.innerHTML=maskot(Math.round(mp),'uf-m-t',eski);
+    function anim(el,k,op){try{return el.animate(k,op);}catch(e){return null;}}
+    if(!reduce){
+      anim(yol,[{transform:'scale(1)'},{transform:'scale(1.6)',offset:.45},{transform:'scale(5)',offset:.8},{transform:'scale(46)'}],{duration:T1,easing:'cubic-bezier(.55,0,.85,.45)',fill:'forwards'});
+      anim(kara,[{opacity:0},{opacity:0,offset:.72},{opacity:1}],{duration:T1,fill:'forwards'});
+    }else{kara.style.opacity=1;yol.style.display='none';}
+    tZ.push(setTimeout(function(){yol.style.display='none';ic.style.visibility='visible';
+      anim(kara,[{opacity:1},{opacity:0}],{duration:reduce?400:900,easing:'ease-out',fill:'forwards'});
+      if(!reduce)anim(ic,[{transform:'scale(1.07)'},{transform:'scale(1)'}],{duration:3200,easing:'cubic-bezier(.2,.6,.3,1)',fill:'forwards'});
+      var hz=o.querySelector('.tr-huzme');anim(hz,[{opacity:.35},{opacity:1,offset:.45},{opacity:.85}],{duration:1800,fill:'forwards'});
+      tZ.push(setTimeout(function(){mk.innerHTML=maskot(Math.round(mp),'uf-m-t toren',yeni,{on:'<div class="isik" aria-hidden="true"></div>'});},reduce?200:1000));
+      tZ.push(setTimeout(function(){yz.classList.add('acik');},reduce?300:1300));
+    },T2));
     tZ.push(setTimeout(function(){
       tAktif=false;tZ=[];
       kayitYaz({v:2,r:yeni});
@@ -186,6 +210,9 @@
     var s=el.querySelector('li.simdi');if(s)setTimeout(function(){s.scrollIntoView({block:'center'});},30);
     el.querySelector('.uf-rk-x').focus();
   }
+  /* önizleme: lexodak.com/#toren-3 → 2. rütbeden 3.'ye tören (kayıt değişmez) */
+  window.addEventListener('load',function(){var m=/^#toren-([2-6])$/.exec(location.hash);if(!m)return;
+    var k=kayit();setTimeout(function(){toren(+m[1]-2,+m[1]-1,function(){if(k)kayitYaz(k);else try{localStorage.removeItem(ANAHTAR);}catch(e){}});},1200);});
   window.LEX_UFUK={rutbeler:rutbeler,kediMi:kediMi,rom:rom,UNV:UNV,hesap:hesap,kayitR:kayitR,baslat:baslat,maskot:maskot,sinifGuncelle:sinifGuncelle,yolOzet:yolOzet,yolIlerle:yolIlerle,seriKart:seriKart,unvanKart:unvanKart,yol:yol,liste:liste,toren:toren,
     kur:function(ns){NS=ns;},aktifToren:function(){return tAktif;},esc:esc};
 })();

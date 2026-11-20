@@ -133,7 +133,7 @@
     var SNF=sinifU(),SAD={'0':'Temel sorular','1':'1. sınıf soruları','2':'2. sınıf soruları','3':'3. sınıf soruları','4':'4. sınıf soruları','H':'HMGS · tüm sınıflar'};
     if(UFV&&SNF!==null)o+='<p class="uf-snf-s">'+(SAD[SNF]||'')+' · <button type="button" id="uf-snf-d">Değiştir</button></p>';
     o+='<p class="uf-bilgi">Yeni set '+(kalS<=1?'1 saatten kısa süre sonra':kalS+' saat sonra')+' açılıyor.</p>';
-    if(UFV&&SNF===null&&!bu&&!devam){o+='<div class="mt-kart uf-snf" id="uf-snf"><b>Sorular sınıfına göre gelir</b><p>Sana kendi derslerinden soru sorabilmemiz için. Seçimin yalnızca bu cihazda kalır, istediğin zaman değiştirirsin. Seçmeden başlarsan temel sorularla devam edersin.</p><div class="uf-snf-c">'+
+    if(UFV&&SNF===null){o+='<div class="mt-kart uf-snf" id="uf-snf"><b>Sorular sınıfına göre gelir</b><p>Sana kendi derslerinden soru sorabilmemiz için. Seçimin yalnızca bu cihazda kalır, istediğin zaman değiştirirsin. Seçmeden başlarsan temel sorularla devam edersin.</p><div class="uf-snf-c">'+
       [['1','1. sınıf'],['2','2. sınıf'],['3','3. sınıf'],['4','4. sınıf'],['H','HMGS / mezun'],['0','Öğrenci değilim']].map(function(x){return '<button type="button" data-s="'+x[0]+'">'+x[1]+'</button>';}).join('')+'</div></div>';}
     if(!bu)o+='<button type="button" class="uf-btn altin" id="mt-basla">'+(devam?'Teste devam et':'Bugünün setini başlat')+'</button>';
     else{var sv=seviye(bu.d,bu.sn,bu.cev&&bu.cev.length);

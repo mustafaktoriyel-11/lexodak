@@ -1980,7 +1980,7 @@ html.mf-gece .uf-s-bilgi{background:#2E2124;border-color:#4A3236}html.mf-gece .u
 .uf-konus-s{margin:12px 0 0}.uf-konus-s .uf-balon{margin-left:0}.uf-konus-s .uf-balon::before{display:none}
 @media (prefers-reduced-motion:reduce){.uf-sahne.sal{animation:none}}
 .uf-s-yazi{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
-.uf-s-yazi text{font-family:Georgia,'Times New Roman',serif;font-weight:700;font-size:8.6px;letter-spacing:1.6px;fill:#6E3A2E;opacity:.92}
+.uf-s-yazi text{font-family:Georgia,'Times New Roman',serif;font-weight:700;font-size:7.2px;letter-spacing:1.1px;fill:#6E3A2E;opacity:.92}
 html.mf-gece .uf-s-yazi text{fill:#5A3A0E;opacity:.9}
 
 /* rütbe sembolleri (yeni 6 rütbe: p-1..p-6); levha herkeste */
@@ -2023,3 +2023,6 @@ html.mf-gece .uf-rk-u h3,html.mf-gece .uf-rk-t b{color:#F2DDA8}html.mf-gece .uf-
 html.mf-gece .uf-rk-g,html.mf-gece .uf-rk-t p,html.mf-gece .uf-rk-d{color:#C9B8BB}html.mf-gece .uf-rk-t small{background:#3A262A;color:#F2DDA8}
 .uf-rk-u{position:sticky;top:-16px;background:inherit;margin:-16px -16px 0;padding:12px 16px 6px;z-index:1}
 .uf-rk-k{background-color:#FBF7F2}html.mf-gece .uf-rk-k{background-color:#241619}
+/* vektör tapınak: yakınlaşınca keskin kalsın */
+.uf-tapinak .tp-a{fill:#FBF1E4}.uf-tapinak .tp-b{fill:#E9DAC6}.uf-tapinak .tp-c{fill:#D4C1AA}.uf-tapinak .tp-d{fill:#B7947E}.uf-tapinak .tp-e{fill:#884E4C}
+html.mf-gece .uf-tapinak .tp-a{fill:#F5CF6A}html.mf-gece .uf-tapinak .tp-b{fill:#E1AC42}html.mf-gece .uf-tapinak .tp-c{fill:#C08E32}html.mf-gece .uf-tapinak .tp-d{fill:#A77127}html.mf-gece .uf-tapinak .tp-e{fill:#7A352E}

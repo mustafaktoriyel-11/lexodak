@@ -129,6 +129,13 @@
     var cx=(mx-px)/z/sc,cy=(my-py)/z/sc,b=nesneBul(cx,cy);
     if(b){kutuyaGit(b[0],b[1],b[2],b[3]);return;}
     git(2.5,SW/2-cx*sc*2.5,SH/2-cy*sc*2.5);}
+  /* ---- ayrıntı katmanı: odanın detay vektörü (SVG), tek sefer indirilip önbelleğe alınır; satır içi eklenir (alevler sonra canlandırılabilsin) ---- */
+  var DT={};
+  function detayYukle(src){
+    if(!src)return Promise.resolve('');
+    if(DT[src])return Promise.resolve(DT[src]);
+    return fetch(src).then(function(r){if(!r.ok)throw 0;return r.text();}).then(function(t){
+      if(t.indexOf('<svg')<0)return '';DT[src]=t;return t;},function(){return '';});}
   function resimYukle(src){return new Promise(function(ok,hata){
     var im=new Image();im.decoding='async';im.onerror=function(){hata();};
     im.onload=function(){(im.decode?im.decode().catch(function(){}):Promise.resolve()).then(function(){ok(im);});};
@@ -136,7 +143,8 @@
   function goster(id,kayit){
     var r=D.odalar[id],t=++tok;if(!r||!el)return Promise.resolve();
     el.classList.add('yuk');
-    return resimYukle(r.img).then(function(im){
+    return Promise.all([resimYukle(r.img),detayYukle(r.detay)]).then(function(ar){
+      var im=ar[0],dt=ar[1];
       if(t!==tok||!el)return;
       kartKapat(true);sinavKapat(true);
       oda=id;
@@ -144,7 +152,7 @@
       L.forEach(function(x,i){var b=x.k,cls='tp-hs tp-'+(x.t==='eser'?'eser':'kapi')+(x.t==='eser'&&b.__y&&b.__y.length?' tp-hs-y':'')+(x.t==='kapi'&&b.kilit?' kilit':'')+(gor(id,x)?' gor':'');
         h+='<button type="button" class="'+cls+'" data-i="'+i+'" style="left:'+b.x+'%;top:'+b.y+'%;width:'+b.w+'%;height:'+b.h+'%" aria-label="'+esc(x.aria)+'"'+(x.t==='kapi'&&b.kilit?' aria-disabled="true"':'')+'><i class="tp-ring" aria-hidden="true"></i><span class="tp-et" aria-hidden="true">'+esc(x.ad)+'</span></button>';});
       var s=bul('.tp-sahne'),eski=s.querySelector('.tp-kutu');if(eski)s.removeChild(eski);
-      s.insertAdjacentHTML('afterbegin','<div class="tp-kutu"><img src="'+esc(r.img)+'" alt="" draggable="false">'+yzHtml(r)+h+'</div>');
+      s.insertAdjacentHTML('afterbegin','<div class="tp-kutu"><img src="'+esc(r.img)+'" alt="" draggable="false">'+(dt?'<div class="tp-dt" aria-hidden="true">'+dt+'</div>':'')+yzHtml(r)+h+'</div>');
       s.setAttribute('aria-label',r.ad+(id==='ana'?'. Kapılara dokunarak odalara gir.':'. Eserlere dokun ya da aşağıdaki listeyi kullan.'));
       var k=bul('.tp-kutu');k.className='tp-kutu tp-gir';
       SW=0;cw=0;olc();yzSigdir();

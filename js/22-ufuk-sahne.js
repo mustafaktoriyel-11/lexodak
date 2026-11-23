@@ -45,7 +45,11 @@
       var by=vy+(TB-VPY)*IH*s0*bs+dy,eg=1+tt*tt*tt*.16,on=eg>1.002?'translate('+vx.toFixed(1)+'px,'+by.toFixed(1)+'px) scale(1,'+eg.toFixed(4)+') translate('+(-vx).toFixed(1)+'px,'+(-by).toFixed(1)+'px) ':'';
       if(TK){var tz=tt>=.9;TK.classList.toggle('acik',tz);TK.tabIndex=tz?0:-1;if(KT)KT.classList.toggle('tp-hazir',tz);}
       /* kapıdan yayılan ışık: uzaktan belirgin (kamera yakınlaştıkça halo küçülür), yaklaştıkça güçlenir (opaklık+dönüşüm; nefes alma CSS'te; gecede --uk varışa doğru yumuşatır) */
-      if(IS){var ge=Math.max(1,Math.min(1.9,2.5/bs)),uo=.5+.5*Math.pow(tt,1.25);IS.style.setProperty('--uo',uo.toFixed(3));IS.style.transform='scale('+ge.toFixed(3)+')';IS.style.setProperty('--uk',(1-.4*tt*tt*tt).toFixed(3));IS.style.setProperty('--ub',(1+.7*(1-tt)).toFixed(3));}
+      if(IS){var ge=Math.max(1,Math.min(1.9,2.5/bs)),uo=.5+.5*Math.pow(tt,1.25);IS.style.setProperty('--uo',uo.toFixed(3));var mg=1.6+90*Math.pow(1-tt,3.2),sy=Math.min(1,(56+1.9*mg)/(91*ge)),sx=Math.min(1,(24+1.9*mg)/(91*ge)),ax=ge*sx,ay=ge*sy;IS.style.transform='scale('+ax.toFixed(3)+','+ay.toFixed(3)+')';
+        /* kırpma/maske ekran birimiyle hesaplanır (yerel % = birim/(1.9*ölçek)); kapı: yarı en 6.5, yarı boy 19.5; taban 32.5 aşağıda */
+        var mu=2+28*Math.pow(Math.min(1,(1-tt)/.15),1.5),px=function(u){return u/(1.9*ax)},py=function(u){return u/(1.9*ay)};
+        IS.style.clipPath=tt>=.85?'inset('+(50-py(19.5+mu)).toFixed(2)+'% '+(50-px(6.5+mu)).toFixed(2)+'% '+(50-py(19.5+mu)).toFixed(2)+'% '+(50-px(6.5+mu)).toFixed(2)+'%)':'none';
+        var bu=32.5+150*Math.pow(1-tt,6),m1=50+py(bu),m2=50+py(bu+9),mk=tt>.02?'linear-gradient(to bottom,#000 '+m1.toFixed(2)+'%,transparent '+m2.toFixed(2)+'%)':'none';IS.style.webkitMaskImage=mk;IS.style.maskImage=mk;IS.style.setProperty('--uk',(1-.4*tt*tt*tt).toFixed(3));IS.style.setProperty('--ub',(1+.7*(1-tt)).toFixed(3));}
       if(window.LEX_UFUK_MUZIK)LEX_UFUK_MUZIK.ilerleme(tt);
       if(BAS)BAS.style.opacity=Math.max(0,1-tt*1.6).toFixed(2);
       bg.style.transform=on+'translate('+(vx-(vx-ox)*bs).toFixed(1)+'px,'+(vy-(vy-oy)*bs+dy).toFixed(1)+'px) scale('+bs.toFixed(4)+')';

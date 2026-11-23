@@ -2090,11 +2090,11 @@ html.mf-gece .sc-p .sc-ic #pm-ozel-k{color:#CBB6BA}
 .uf-s-bg .uf-tp-kapi{position:absolute;left:45.6%;top:39.8%;width:8.8%;height:7.4%;pointer-events:none;background:none;border:0;padding:0;margin:0;cursor:pointer;border-radius:10px;-webkit-tap-highlight-color:transparent}
 .uf-s-bg .uf-tp-kapi.acik{pointer-events:auto}
 .uf-s-yazi.tp-hazir .uf-tapinak .tp-e{animation:tpKapi 2.2s ease-in-out infinite}
-/* kapıdan yayılan ışık: uzaktan seçilir, yaklaştıkça güçlenir (opaklığı js/22 verir; burada yalnız nefes alma: transform+opacity) */
+/* kapıdan yayılan ışık: uzaktan seçilir, yaklaşınca küçülüp kapı dikdörtgenine kırpılır (js/22: ölçek+clip-path; sütunlar aydınlanmaz), yaklaştıkça güçlenir (opaklığı js/22 verir; burada yalnız nefes alma: transform+opacity) */
 .uf-s-bg .uf-tp-isik{position:absolute;left:46.1%;top:38.1%;width:7.8%;height:12.57%;pointer-events:none;opacity:var(--uo,.5);will-change:opacity,transform}
 html.mf-gece .uf-s-bg .uf-tp-isik{opacity:calc(var(--uo,.5)*var(--uk,1))}
 .uf-tp-isik i{position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle,rgba(255,236,160,1) 0,rgba(255,206,100,.92) 10%,rgba(255,176,56,.62) 26%,rgba(240,142,34,.26) 46%,rgba(240,142,34,0) 68%);animation:tpNefes 5s ease-in-out infinite;will-change:transform,opacity}
-html.mf-gece .uf-tp-isik i{background:radial-gradient(circle,rgba(255,250,224,1) 0,rgba(255,236,162,.95) 10%,rgba(255,208,108,.62) 26%,rgba(250,175,66,.26) 46%,rgba(250,175,66,0) 70%)}
+html.mf-gece .uf-tp-isik i{background:radial-gradient(circle,rgba(255,246,206,1) 0,rgba(255,226,140,.95) 10%,rgba(255,196,92,.62) 26%,rgba(250,166,56,.26) 46%,rgba(250,166,56,0) 70%)}
 @keyframes tpNefes{0%,100%{transform:scale(calc(1 - .14*var(--ub,1)));opacity:.72}50%{transform:scale(calc(1 + .14*var(--ub,1)));opacity:1}}
 @media (prefers-reduced-motion:reduce){.uf-tp-isik i{animation:none;transform:none;opacity:.9}}
 .uf-s-bg .uf-tp-kapi:focus-visible{outline:3px solid #F2CF5B;outline-offset:2px}
@@ -2105,9 +2105,9 @@ html.mf-gece .uf-tp-isik i{background:radial-gradient(circle,rgba(255,250,224,1)
 .uf-sahne>.uf-mz{position:absolute;right:10px;top:10px;z-index:1200}
 .tp-ust .uf-mz{border-radius:14px;border-color:rgba(201,162,39,.55);background:rgba(251,247,242,.08)}
 .tp-ust .uf-mz.ac{background:#C9A227;color:#3F1219;border-color:#FFF3C4}
-@keyframes tpKapi{50%{fill:#C48A52;filter:drop-shadow(0 0 6px rgba(242,207,91,.95))}}
+@keyframes tpKapi{50%{fill:#C48A52;filter:drop-shadow(0 0 1.5px rgba(242,207,91,.45))}}
 html.mf-gece .uf-s-yazi.tp-hazir .uf-tapinak .tp-e{animation-name:tpKapiG}
-@keyframes tpKapiG{50%{fill:#9C5A3C;filter:drop-shadow(0 0 3px rgba(242,207,91,.4))}}
+@keyframes tpKapiG{50%{fill:#9C5A3C;filter:drop-shadow(0 0 1px rgba(242,207,91,.25))}}
 .tp-kap{position:fixed;inset:0;z-index:3000;display:flex;flex-direction:column;background:#1E0E12;color:#F8EBC4;opacity:0;transition:opacity .3s;overscroll-behavior:contain}
 .tp-kap.ac{opacity:1}.tp-kap.kapan{opacity:0;transition-duration:.22s}
 .tp-ust{flex:none;display:flex;align-items:center;gap:8px;padding:calc(8px + env(safe-area-inset-top)) 10px 8px;min-height:56px}

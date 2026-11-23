@@ -97,6 +97,7 @@
     sc=W<H?H/IH:Math.min(W/IW,H/IH);
     cw=IW*sc;ch=IH*sc;k.style.width=cw+'px';k.style.height=ch+'px';
     var yl=k.querySelector('.tp-yl');if(yl)yl.style.transform='scale('+sc+')';
+    var cn=k.querySelector('.tp-cn');if(cn)cn.style.transform='scale('+sc+')';
     SW=W;SH=H;
     px=W/2-u*cw*z;py=H/2-v*ch*z;sinirla();uygula();}
   function animIptal(){if(anim){cancelAnimationFrame(anim);anim=null;}}
@@ -154,7 +155,7 @@
         h+='<button type="button" class="'+cls+'" data-i="'+i+'" style="left:'+b.x+'%;top:'+b.y+'%;width:'+b.w+'%;height:'+b.h+'%" aria-label="'+esc(x.aria)+'"'+(x.t==='kapi'&&b.kilit?' aria-disabled="true"':'')+'><i class="tp-ring" aria-hidden="true"></i><span class="tp-et" aria-hidden="true">'+esc(x.ad)+'</span></button>';});
       derinDurdur();
       var s=bul('.tp-sahne'),eski=s.querySelector('.tp-kutu');if(eski)s.removeChild(eski);
-      s.insertAdjacentHTML('afterbegin','<div class="tp-kutu"><img src="'+esc(r.img)+'" alt="" draggable="false">'+(dt?'<div class="tp-dt" aria-hidden="true">'+dt+'</div>':'')+yzHtml(r)+h+'</div>');
+      s.insertAdjacentHTML('afterbegin','<div class="tp-kutu"><img src="'+esc(r.img)+'" alt="" draggable="false">'+(dt?'<div class="tp-dt" aria-hidden="true">'+dt+'</div>':'')+canliHtml(r)+yzHtml(r)+h+'</div>');
       s.setAttribute('aria-label',r.ad+(id==='ana'?'. Kapılara dokunarak odalara gir.':'. Eserlere dokun ya da aşağıdaki listeyi kullan.'));
       var k=bul('.tp-kutu');k.className='tp-kutu tp-gir';
       SW=0;cw=0;olc();yzSigdir();
@@ -337,6 +338,48 @@
     ['gesturestart','gesturechange','gestureend'].forEach(function(g){s.addEventListener(g,function(e){e.preventDefault();});});
     s.addEventListener('dragstart',function(e){e.preventDefault();});
   }
+  /* ---- canlı ayrıntılar: alevler titrer, ışık halesi kıpırdar (tasarım uzayı 1600x995; r.canli.alevler = [tabanX,tabanY,genişlik,yükseklik]) ----
+     Yalnızca transform/opacity; hareket azaltma tercihinde CSS durdurur. */
+  var ALEV='<svg viewBox="0 0 20 40" aria-hidden="true"><path d="M10 1C13 9 19 17 19 27C19 34 15 39 10 39S1 34 1 27C1 17 7 9 10 1Z" fill="url(#tpAlD)"/><path d="M10 13C12 19 15 23 15 29C15 33 13 36 10 36S5 33 5 29C5 23 8 19 10 13Z" fill="url(#tpAlI)"/></svg>';
+  function canliHtml(r){
+    var A=(r.canli&&r.canli.alevler)||[];if(!A.length)return '';
+    var h='<div class="tp-cn" aria-hidden="true"><svg class="tp-al-df" width="0" height="0"><defs><radialGradient id="tpAlD" cx="50%" cy="72%" r="62%"><stop offset="0" stop-color="#FFE9A0"/><stop offset=".55" stop-color="#FFB443"/><stop offset="1" stop-color="#F0782A"/></radialGradient><radialGradient id="tpAlI" cx="50%" cy="70%" r="60%"><stop offset="0" stop-color="#FFFFF4"/><stop offset=".7" stop-color="#FFF1B8"/><stop offset="1" stop-color="#FFE07A"/></radialGradient></defs></svg>';
+    A.forEach(function(a,i){
+      var w=a[2]*1.22,hh=a[3]*1.14,R=Math.max(a[3]*2.4,a[2]*5,26),sd=(i*7919%100)/100;
+      h+='<i class="tp-al" style="left:'+(a[0]-w/2).toFixed(1)+'px;top:'+(a[1]-hh).toFixed(1)+'px;width:'+w.toFixed(1)+'px;height:'+hh.toFixed(1)+'px;--t:'+(0.9+sd*0.7).toFixed(2)+'s;--h:'+(1.6+sd*1.3).toFixed(2)+'s;--d:-'+(sd*3).toFixed(2)+'s">'
+        +'<b class="tp-al-h" style="width:'+(2*R).toFixed(0)+'px;height:'+(2*R).toFixed(0)+'px;margin:-'+R.toFixed(0)+'px 0 0 -'+R.toFixed(0)+'px"></b>'+ALEV+'</i>';});
+    return h+'</div>';}
+  /* ---- ana salon havuzu: suda yakamoz, arada zıplayan bir balık (katman-4-on içinde, 2431x1512 uzayı) ---- */
+  var HV={x:910,y:1042,w:610,h:98},balT=0;
+  function havuzKur(ly){
+    var d=document.createElement('div');d.className='tp-hv';
+    d.style.cssText='left:'+(HV.x/DK*100).toFixed(4)+'%;top:'+(HV.y/DH*100).toFixed(4)+'%;width:'+(HV.w/DK*100).toFixed(4)+'%;height:'+(HV.h/DH*100).toFixed(4)+'%';
+    var g='',i,r=function(n){return ((Math.sin(n*12.9898)*43758.5453)%1+1)%1;};
+    for(i=0;i<11;i++){var x=40+r(i+1)*520,y=14+r(i+7)*70,l=22+r(i+3)*34;
+      g+='<path class="tp-hv-s" d="M'+x.toFixed(0)+' '+y.toFixed(0)+'q'+(l/2).toFixed(0)+' -3 '+l.toFixed(0)+' 0" style="--d:-'+(r(i+11)*6).toFixed(2)+'s;--t:'+(4.5+r(i+5)*3).toFixed(2)+'s"/>';}
+    for(i=0;i<9;i++){var cx=60+r(i+21)*490,cy=16+r(i+29)*64;
+      g+='<circle class="tp-hv-p" cx="'+cx.toFixed(0)+'" cy="'+cy.toFixed(0)+'" r="2.2" style="--d:-'+(r(i+33)*3).toFixed(2)+'s;--t:'+(2+r(i+37)*2).toFixed(2)+'s"/>';}
+    d.innerHTML='<svg viewBox="0 0 '+HV.w+' '+HV.h+'" aria-hidden="true"><defs><clipPath id="tpHvK"><ellipse cx="305" cy="49" rx="301" ry="46"/></clipPath><linearGradient id="tpBl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F7A845"/><stop offset=".6" stop-color="#E0702A"/><stop offset="1" stop-color="#FBE3B8"/></linearGradient></defs>'
+      +'<g clip-path="url(#tpHvK)">'+g+'</g>'
+      +'<ellipse class="tp-hv-h tp-hv-h1" rx="16" ry="4"/><ellipse class="tp-hv-h tp-hv-h2" rx="16" ry="4"/>'
+      +'<g class="tp-bl"><path d="M-19 -6L-12 0L-19 6L-17 0Z" fill="#E0702A"/><path d="M-13 0C-7 -6 6 -7 12 -1C13 0 13 1 12 1C6 6 -7 6 -13 0Z" fill="url(#tpBl)"/><circle cx="7.5" cy="-1.5" r="1.1" fill="#2A1A12"/><path d="M-2 -5.5L2 -9L4 -5" fill="#E8853A"/></g></svg>';
+    ly.appendChild(d);
+    if(!az())balikPlanla(6000+Math.random()*5000);}
+  function balikPlanla(ms){clearTimeout(balT);balT=setTimeout(balikZipla,ms);}
+  function balikZipla(){
+    var hv=el&&el.querySelector('.tp-hv');if(!hv||!P25||az())return;
+    if(document.hidden){balikPlanla(4000);return;}
+    var f=hv.querySelector('.tp-bl'),h1=hv.querySelector('.tp-hv-h1'),h2=hv.querySelector('.tp-hv-h2');
+    if(!f||!f.animate){return;}
+    var yon=Math.random()<.5?-1:1,L=70+Math.random()*40,Hh=55+Math.random()*25,
+      x0=305-yon*L/2+(Math.random()-.5)*300,y0=40+Math.random()*30,x1=x0+yon*L,K=[],n=16,i,du=950+Math.random()*250;
+    for(i=0;i<=n;i++){var u=i/n,x=x0+(x1-x0)*u,y=y0-Hh*4*u*(1-u),dx=(x1-x0)/n,dy=-Hh*4*(1-2*u)/n,a=Math.atan2(dy,dx)*180/Math.PI;
+      if(yon<0)a+=180;
+      K.push({transform:'translate('+x.toFixed(1)+'px,'+y.toFixed(1)+'px) rotate('+a.toFixed(1)+'deg) scale('+(yon<0?-1.4:1.4)+',1.4)',opacity:(u<.04||u>.96)?0:1});}
+    f.animate(K,{duration:du,easing:'linear'});
+    [[h1,x0,y0,0],[h2,x1,y0,du*.96]].forEach(function(q){
+      q[0].animate([{transform:'translate('+q[1].toFixed(1)+'px,'+q[2].toFixed(1)+'px) scale(.2)',opacity:.85},{transform:'translate('+q[1].toFixed(1)+'px,'+q[2].toFixed(1)+'px) scale(1.6)',opacity:0}],{duration:900,delay:q[3],easing:'ease-out',fill:'backwards'});});
+    balikPlanla(12000+Math.random()*14000);}
   /* ---- 2.5D ana salon: derinlik katmanları (img/tapinak/salon/) ----
      Katmanlar 2431x1512 uzayında, kaçış noktası (1215.5,770) etrafında ölçeklenir ve yatayda sx (-1..1) ile kayar:
      dx = -sx*maxKayma, s = 1+(yuruOlcek-1)*yuru. Tek ham görsel önce gösterilir; 6 katman inince üstüne yumuşakça geçilir,
@@ -356,6 +399,7 @@
     sz.className='tp-sz';st.className='tp-st';hz.className='tp-hz';
     ims.forEach(function(im,i){var d=document.createElement('div'),c=im.cloneNode(false);d.className='tp-ly'+(i===5?' tp-is':'');c.alt='';c.draggable=false;var cr=KT[i].c;if(cr)c.style.cssText='inset:0 auto auto 0;width:'+(cr[2]/DK*100).toFixed(4)+'%;height:'+(cr[3]/DH*100).toFixed(4)+'%;transform:translate('+(cr[0]/cr[2]*100).toFixed(4)+'%,'+(cr[1]/cr[3]*100).toFixed(4)+'%)';d.appendChild(c);st.appendChild(d);ly.push(d);});
     for(i=0;i<4;i++){var g=document.createElement('div');g.className='tp-hy';hz.appendChild(g);hy.push(g);}
+    if(ly[4])havuzKur(ly[4]);
     [].forEach.call(k.querySelectorAll('.tp-hs'),function(b){
       var cx=(parseFloat(b.style.left)+parseFloat(b.style.width)/2)/100*DK,cy=(parseFloat(b.style.top)+parseFloat(b.style.height)/2)/100*DH;
       hy[katBul(cx,cy)].appendChild(b);});
@@ -369,7 +413,7 @@
     egimDuzenle();
     if(!az())derinAnim(0,700,eOut,null,null);else derinUyan();}
   function derinDurdur(){
-    if(kRaf)cancelAnimationFrame(kRaf);kRaf=0;clearTimeout(kT);
+    if(kRaf)cancelAnimationFrame(kRaf);kRaf=0;clearTimeout(kT);clearTimeout(balT);
     removeEventListener('deviceorientation',gyroH);document.removeEventListener('visibilitychange',gorunur);
     var b=bul('.tp-egim');if(b)b.parentNode.removeChild(b);
     var s=bul('.tp-sahne');if(s)s.classList.remove('tp-yr');

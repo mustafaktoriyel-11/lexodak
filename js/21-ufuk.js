@@ -161,6 +161,7 @@
       '<div class="tr-m"><div class="tr-m1"></div><div class="tr-m2"></div></div></div><div class="tr-kara" aria-hidden="true"></div>'+
       '<div class="tr-yazi"><div class="uf-tr-st">Yeni rütbe</div><div class="tr-lat">'+esc(u[0])+'</div><div class="uf-tr-ad" role="status">'+esc(u[1])+(yeni===UST?'':' oldun')+'</div><p>'+esc(u[2])+'</p><button type="button" class="tr-devam" hidden>Devam et</button></div>';
     document.body.appendChild(o);document.body.classList.add('uf-kilit');
+    if(window.LEX_UFUK_MUZIK)LEX_UFUK_MUZIK.toren();
     try{if(document.activeElement&&document.activeElement.blur)document.activeElement.blur();o.focus();}catch(e){}
     ['keydown','keyup','keypress'].forEach(function(t){document.addEventListener(t,tEngel,true);});
     ['touchstart','touchmove','touchend','click','pointerdown'].forEach(function(tp){o.addEventListener(tp,function(e){if(hazir&&e.target.closest&&e.target.closest('.tr-devam'))return;e.stopPropagation();if(e.cancelable)e.preventDefault();},{passive:false});});
@@ -197,6 +198,7 @@
       ['keydown','keyup','keypress'].forEach(function(t){document.removeEventListener(t,tEngel,true);});
       if(o.parentNode)o.parentNode.removeChild(o);document.body.classList.remove('uf-kilit');
       if(window.LEX_GERI)LEX_GERI.dus('ufk-toren');
+      if(window.LEX_UFUK_MUZIK)LEX_UFUK_MUZIK.torenBitti();
       sinifGuncelle();if(bitti)bitti();
     }
     return true;

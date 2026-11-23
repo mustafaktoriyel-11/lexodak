@@ -166,12 +166,13 @@
     sesUrl[key]=wavUrl(sr,y);
     return sesUrl[key];
   }
+  function uMz(v){if(window.LEX_UFUK_MUZIK)LEX_UFUK_MUZIK.calismaSesi(v);}   /* çalışma sesi çalarken Ufuk müziği susar */
   function sesGuncelle(){
     var tur=$('pm-ses').value,sev=+$('pm-seviye').value/100;hedefSes=sev;
     if(!tur||(!d.calisiyor&&!sesOnizle)){sesDur();return;}
     if(!sesA){sesA=new Audio();sesA.preload='auto';sesA.loop=true;aktifSes=sesA;sesA.addEventListener('ended',function(){if(sesTur==='debussy'){DEB_I=(DEB_I+1)%DEB.length;try{localStorage.setItem('lex-deb-i2',DEB_I);}catch(e){}debCal();}});}
-    if(sesTur!==tur){sesDur();sesTur=tur;if(tur==='debussy'){sesA.loop=false;debCal();sesA.volume=sev;return;}sesA.loop=true;sesA.src=gurultu(tur,0);}
-    sesA.volume=sev;
+    if(sesTur!==tur){sesDur();sesTur=tur;if(tur==='debussy'){sesA.loop=false;debCal();sesA.volume=sev;uMz(true);return;}sesA.loop=true;sesA.src=gurultu(tur,0);}
+    sesA.volume=sev;uMz(true);
     if(sesA.paused&&sesA.src){var p=sesA.play();if(p&&p.catch)p.catch(function(){});}
   }
   var sesOnizle=false,sesA=null,sesB=null,aktifSes=null,sesTur='',hedefSes=0.4,fadeT=null;
@@ -194,7 +195,7 @@
   var DEB_D='';function sesKunye(dr){if(dr!==undefined)DEB_D=dr;dr=DEB_D;var k=$('ses-kunye');if(!k)return;
     if($('pm-ses').value!=='debussy'){k.hidden=true;return;}k.hidden=false;
     k.innerHTML=(dr==='yukleniyor'?'Parça indiriliyor (ilk seferde, ~3 MB)…':dr==='hata'?'Parça indirilemedi. İnternete bağlanıp tekrar seç.':'<svg class="ses-ik-k" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/></svg> <b>'+DEB[DEB_I][1]+'</b>')+'<br><small>Claude Debussy · '+(DEB[DEB_I][2]==='gh'?'Piyano: Laurens Goedhart (2011) · <a href="https://creativecommons.org/licenses/by/3.0/deed.tr" target="_blank" rel="noopener">CC BY 3.0</a>':'Piyano: Patrizia Prati (canlı kayıt, Madrid 2016) · <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.tr" target="_blank" rel="noopener">CC BY-SA 4.0</a>')+' · Wikimedia Commons · sıkıştırılarak kullanıldı</small>';}
-  function sesDur(){if(sesA)sesA.pause();}
+  function sesDur(){if(sesA)sesA.pause();uMz(false);}
   // --- ekran kilitliyken uyanik kalma ---
   // Telefon kilitlenince tarayici sessiz sayfalari uyutur ve sayac durur.
   // Sayac calisirken duyulmayacak kadar kisik bir ses dongusu calinir; boylece sayfa uyanik kalir,

@@ -121,7 +121,7 @@
         else{var nn=k-h;g.t='kilit';g.lab=nn===1?'Yarın':gunAd(k);g.alt='kilitli';g.aria=g.lab+', kilitli';}
         GN.push(g);}
       o+=S.html(GN,'<header class="uf-bas"><div class="uf-ust">LEX · XII · TABULARUM</div><h2>Hukukçunun Ufku</h2></header><div class="uf-s-asl">'+U.maskot(84)+'</div>');
-      o+='<div class="uf-s-ok"><button type="button" id="uf-geri">‹ Önceki</button><button type="button" class="b" id="uf-bugun">Bugün</button><button type="button" id="uf-ileri">Sonraki ›</button><button type="button" class="tp-giris" id="uf-tp" aria-label="Tapınağa gir">Tapınak</button></div>';
+      o+='<div class="uf-s-ok"><button type="button" id="uf-geri">‹ Önceki</button><button type="button" class="b" id="uf-bugun">Bugün</button><button type="button" id="uf-ileri">Sonraki ›</button></div>';
       o+='<div class="uf-s-bilgi" id="uf-sb" aria-live="polite"></div>';
       o+='<div class="uf-konus uf-konus-s"><div class="uf-balon">'+soz+'</div></div>';
     }else{
@@ -164,17 +164,16 @@
         if(g.t==='tam'||g.t==='gec'){var r=v[g.k]||GC[g.k];t=gunAd(g.k);a=(g.t==='gec'?'Sonradan çözüldü · ':'')+r.d+'/'+(r.cev?r.cev.length:NS)+' doğru'+(g.t==='gec'?' · seriye sayılmaz':'');btn='<button type="button" class="uf-btn2" data-a="ac">Sonuca bak</button>';}
         else if(g.t==='bos'){t=gunAd(g.k);a='Bu gün çözülmedi. Sonradan çözebilirsin; seriye ve unvana sayılmaz.';btn='<button type="button" class="uf-btn2" data-a="gec">Sonradan çöz</button>';}
         else if(g.t==='bugun'||g.t==='bugunTam'){t='Bugün · '+g.rom+'. levha';a=bu?bu.d+'/'+(bu.cev?bu.cev.length:NS)+' doğru · tamamlandı':nS(setNo(h))+' soru'+(devam?' · yarıda kaldı':'');}
-        else{var nn=g.k-h;t=g.lab;a='Kilitli. '+(nn===1?'Yarın':nn+' gün sonra')+' açılır.'+(n===GN.length-1?' Yolun sonunda tapınak var.':'');if(n===GN.length-1)btn='<button type="button" class="uf-btn2" data-a="tapinak">Tapınağa gir</button>';}
+        else{var nn=g.k-h;t=g.lab;a='Kilitli. '+(nn===1?'Yarın':nn+' gün sonra')+' açılır.';}
         SB.innerHTML='<div class="m"><b>'+U.esc(t)+'</b><small>'+U.esc(a)+'</small></div>'+btn;
-        var bb=SB.querySelector('button');if(bb)bb.addEventListener('click',function(){if(bb.dataset.a==='tapinak'){if(window.LEX_TAPINAK)LEX_TAPINAK.ac();}else if(bb.dataset.a==='gec')basla(false,g.k);else ac(g.k);});
+        var bb=SB.querySelector('button');if(bb)bb.addEventListener('click',function(){if(bb.dataset.a==='gec')basla(false,g.k);else ac(g.k);});
         $('uf-geri').disabled=n<=0;$('uf-ileri').disabled=n>=GN.length-1;$('uf-bugun').disabled=n===i0;}
       function dokun(n){var g=GN[n];if(g.t==='kilit'){sh.classList.remove('sal');void sh.offsetWidth;sh.classList.add('sal');return;}
         if(g.t==='bos')basla(false,g.k);else ac(g.k);}
       var SK=S.bagla(sh,GN,i0,bilgi,dokun);bilgi(i0);
       $('uf-geri').addEventListener('click',function(){SK.git(SK.odak()-1);});
       $('uf-ileri').addEventListener('click',function(){SK.git(SK.odak()+1);});
-      $('uf-bugun').addEventListener('click',function(){SK.git(i0);});
-      $('uf-tp').addEventListener('click',function(){if(window.LEX_TAPINAK)LEX_TAPINAK.ac();});}
+      $('uf-bugun').addEventListener('click',function(){SK.git(i0);});}
     [].forEach.call(document.querySelectorAll('#mt-giris .uf-rk-ac'),function(b){b.addEventListener('click',function(){U.rutbeler(d);});});
     [].forEach.call(document.querySelectorAll('#uf-snf button'),function(b){b.addEventListener('click',function(){var v=b.dataset.s;
       try{localStorage.setItem('lex-ufuk-sinif',JSON.stringify(v));if(/^[1-4H]$/.test(v)&&localStorage.getItem('lex-sinif')===null)localStorage.setItem('lex-sinif',JSON.stringify(v));}catch(e){}giris();});});

@@ -448,16 +448,30 @@
       setTimeout(function(){ /* oda açılmadıysa (yükleme hatası) salona geri dön */
         if(el&&P25===p&&oda==='ana'){var q=kisit(1,0,0);p.k.style.opacity='';p.yr=false;s.classList.remove('tp-yr');derinAnim(0,400,eIO,{z:1,x:q[0],y:q[1]},null);}},2500);});
     return true;}
+  /* ---- ekran yönü: manifest 'portrait' kilidi tapınakta açılır (yalnız kurulu PWA'da işler; tarayıcı sekmesinde ve tabletlerde etkisiz) ---- */
+  var yonGeri=false;
+  function kurulu(){try{return matchMedia('(display-mode: standalone)').matches||matchMedia('(display-mode: fullscreen)').matches;}catch(e){return false;}}
+  function yonAc(){
+    try{var so=screen.orientation;if(!so||!so.lock)return;
+      /* girişte dikeydeyse (manifest kilidi) ve telefonsa, çıkışta dikeye geri kilitlenir; tablet manifest yönünü zaten yok sayar */
+      yonGeri=kurulu()&&/portrait/.test(String(so.type||''))&&Math.min(screen.width,screen.height)<600;
+      var p=so.lock('any');if(p&&p.catch)p.catch(function(){});}catch(e){}
+  }
+  function yonKapat(){
+    var g=yonGeri;yonGeri=false;if(!g||!kurulu())return;
+    try{var p=screen.orientation.lock('portrait');if(p&&p.catch)p.catch(function(){});}catch(e){}
+  }
   /* ---- açma / kapama ---- */
   function ac(odaId){
     if(el||kapaniyor)return Promise.resolve();
     var U=window.LEX_UFUK;if(U&&U.aktifToren&&U.aktifToren())return Promise.resolve();
     odak0=document.activeElement;
     el=document.createElement('div');el.className='tp-kap yuk';el.setAttribute('role','dialog');el.setAttribute('aria-modal','true');el.setAttribute('aria-label','Tapınak');
-    el.innerHTML='<div class="tp-ust"><button type="button" class="tp-geri" hidden>‹ Ana salon</button><div class="tp-bas"><b>Tapınak</b><small></small></div><button type="button" class="tp-x" aria-label="Tapınaktan çık">×</button></div>'+
+    el.innerHTML='<div class="tp-ust"><button type="button" class="tp-geri" hidden>‹ Ana salon</button><div class="tp-bas"><b>Tapınak</b><small></small></div>'+(window.LEX_UFUK_MUZIK?LEX_UFUK_MUZIK.dugme():'')+'<button type="button" class="tp-x" aria-label="Tapınaktan çık">×</button></div>'+
       '<div class="tp-sahne" role="group" tabindex="-1"><div class="tp-zk z1" role="group" aria-label="Yakınlaştırma"><button type="button" class="tp-z" data-z="+" aria-label="Yakınlaştır">+</button><button type="button" class="tp-z" data-z="-" aria-label="Uzaklaştır">−</button><button type="button" class="tp-z tp-z1" data-z="0" aria-label="Sığdır">1x</button></div></div><div class="tp-chip" role="group" aria-label="Kapılar ve eserler"></div>'+
       '<div class="tp-ort" hidden><div class="tp-kart" role="dialog" aria-modal="true"></div></div>';
     document.body.appendChild(el);document.body.classList.add('uf-kilit');
+    yonAc();
     var kp=el;
     requestAnimationFrame(function(){if(kp===el)el.classList.add('ac');});
     bagla();
@@ -510,7 +524,7 @@
   /* kapat(): arayüzden (geçmişi düşürür). kapat(zorla,geriden): geri tuşuyla geldiyse kayıtlar zaten düşmüştür. */
   function kapat(zorla,geriden){
     if(!el||kapaniyor)return;
-    var odada=oda&&oda!=='ana',e=el;kapaniyor=true;tok++;derinDurdur();
+    var odada=oda&&oda!=='ana',e=el;kapaniyor=true;tok++;derinDurdur();yonKapat();
     if(e.__ro)e.__ro.disconnect();
     e.classList.remove('ac');e.classList.add('kapan');
     setTimeout(function(){

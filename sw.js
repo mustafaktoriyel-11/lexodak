@@ -1,9 +1,10 @@
 // Lex Odak - service worker
-var SURUM = 'lex-odak-v180';
+var SURUM = 'lex-odak-v181';
 var MEVZUAT = 'lex-mevzuat-3';
 var MEVZUAT_ESKI = 'lex-mevzuat-2';  // tek dosyalı eski mevzuat.json önbelleği; kanun dosyaları tamamen inene dek silinmez (aşağıda 'message')
+var MUZIK = 'lex-muzik-1';  // Ufuk yolculuk müziği (ses/ufuk/*.m4a, ~5 MB): ilk çalışta iner, sonra önbellekten; SURUM değişince silinmez
 var OCR = 'lex-ocr-1';  // taranmış PDF okuma motoru (jsdelivr), bir kez iner  // kanun metinleri sürüm değişse de silinmez
-var DOSYALAR = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png', './favicon-32.png', './gizlilik.html', './kosullar.html', './ozet.js', './veri/mantik.json', './veri/okul.json', './veri/sozler.json', './veri/ufuk.json', './veri/tapinak.json', './img/tapinak/t01-ana-salon.webp', './img/tapinak/t02-xii-levha.webp', './img/tapinak/t02-xii-levha-detay.svg', './img/tapinak/t03-praetor.webp', './img/tapinak/t04-kutuphane.webp', './img/tapinak/t05-iustinianus.webp', './img/tapinak/t06-miras.webp', './img/tapinak/t07-sinav.webp', './img/tapinak/salon/katman-0-arka.webp', './img/tapinak/salon/katman-1-uzak.webp', './img/tapinak/salon/katman-2-orta.webp', './img/tapinak/salon/katman-3-yakin.webp', './img/tapinak/salon/katman-4-on.webp', './img/tapinak/salon/isik.webp', './img/ufuk-duz.webp', './img/ufuk-gece.webp', './img/ufuk-ic.webp', './css/uygulama.css', './js/01-dosya.js', './js/02-sayac-anonim.js', './js/03-cekirdek.js', './js/04-mantik.js', './js/05-olcu.js', './js/06-dersler.js', './js/07-icerik.js', './js/08-mevzuat.js', './js/09-ders-testleri.js', './js/10-bildirim.js', './js/11-yedek.js', './js/12-kutuphane.js', './js/13-kadran.js', './js/14-tablet.js', './js/15-kisayol.js', './js/16-mini-sayac.js', './js/17-sayac-katla.js', './js/18-program-sablon.js', './js/19-ses-paneli.js', './js/20-aslan.js', './js/21-ufuk.js', './js/22-ufuk-sahne.js', './js/23-secim.js', './js/24-tapinak.js', './lib/jspdf.umd.min.js', './lib/pdf-lib.min.js', './lib/NotoSans-Regular.ttf', './lib/NotoSans-Bold.ttf'];
+var DOSYALAR = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png', './favicon-32.png', './gizlilik.html', './kosullar.html', './ozet.js', './veri/mantik.json', './veri/okul.json', './veri/sozler.json', './veri/ufuk.json', './veri/tapinak.json', './img/tapinak/t01-ana-salon.webp', './img/tapinak/t02-xii-levha.webp', './img/tapinak/t02-xii-levha-detay.svg', './img/tapinak/t03-praetor.webp', './img/tapinak/t04-kutuphane.webp', './img/tapinak/t05-iustinianus.webp', './img/tapinak/t06-miras.webp', './img/tapinak/t07-sinav.webp', './img/tapinak/salon/katman-0-arka.webp', './img/tapinak/salon/katman-1-uzak.webp', './img/tapinak/salon/katman-2-orta.webp', './img/tapinak/salon/katman-3-yakin.webp', './img/tapinak/salon/katman-4-on.webp', './img/tapinak/salon/isik.webp', './img/ufuk-duz.webp', './img/ufuk-gece.webp', './img/ufuk-ic.webp', './css/uygulama.css', './js/01-dosya.js', './js/02-sayac-anonim.js', './js/03-cekirdek.js', './js/04-mantik.js', './js/05-olcu.js', './js/06-dersler.js', './js/07-icerik.js', './js/08-mevzuat.js', './js/09-ders-testleri.js', './js/10-bildirim.js', './js/11-yedek.js', './js/12-kutuphane.js', './js/13-kadran.js', './js/14-tablet.js', './js/15-kisayol.js', './js/16-mini-sayac.js', './js/17-sayac-katla.js', './js/18-program-sablon.js', './js/19-ses-paneli.js', './js/20-aslan.js', './js/21-ufuk.js', './js/22-ufuk-sahne.js', './js/23-secim.js', './js/24-tapinak.js', './js/25-muzik.js', './lib/jspdf.umd.min.js', './lib/pdf-lib.min.js', './lib/NotoSans-Regular.ttf', './lib/NotoSans-Bold.ttf'];
 
 self.addEventListener('install', function (e) {
   e.waitUntil(caches.open(SURUM).then(function (c) { return c.addAll(DOSYALAR.map(function (u) { return new Request(u, { cache: 'reload' }); })); }));
@@ -12,7 +13,7 @@ self.addEventListener('install', function (e) {
 
 self.addEventListener('activate', function (e) {
   e.waitUntil(caches.keys().then(function (ks) {
-    return Promise.all(ks.filter(function (k) { return k !== SURUM && k !== MEVZUAT && k !== MEVZUAT_ESKI && k !== OCR && k !== 'lex-muzik-1'; }).map(function (k) { return caches.delete(k); }));
+    return Promise.all(ks.filter(function (k) { return k !== SURUM && k !== MEVZUAT && k !== MEVZUAT_ESKI && k !== OCR && k !== MUZIK; }).map(function (k) { return caches.delete(k); }));
   }));
   self.clients.claim();
 });
@@ -81,6 +82,15 @@ self.addEventListener('fetch', function (e) {
     return;
   }
   if (e.request.method !== 'GET' || u.origin !== location.origin) return;
+  // Ufuk müziği: önbellek-öncelikli (dosyalar sürümsüz, değişmez); ilk seferde ağdan gelir ve saklanır. Tam yanıt (200) saklanır, Range istekleri doğrudan ağa gider.
+  if (/\/ses\/ufuk\/[\w-]+\.m4a$/.test(u.pathname) && !e.request.headers.has('range')) {
+    e.respondWith(caches.open(MUZIK).then(function (c) {
+      return c.match(e.request).then(function (r) {
+        return r || fetch(e.request).then(function (y) { if (y.ok && y.status === 200) c.put(e.request, y.clone()); return y; });
+      });
+    }));
+    return;
+  }
   if (/\/mevzuat\/(index|\d+)\.json$/.test(u.pathname)) { e.respondWith(mevzuatAl(e.request)); return; }
   if (/\/mevzuat\.json$/.test(u.pathname)) { e.respondWith(mevzuatEskiAl(e.request)); return; }
   e.respondWith(

@@ -2189,8 +2189,6 @@ html.mf-gece .uf-s-yazi.tp-hazir .uf-tapinak .tp-e{animation-name:tpKapiG}
 .tp-btn2{border:1px solid #C9A227;background:#fff;color:#5E1F2A}
 .tp-sn-d{display:flex;gap:10px;margin-top:14px}.tp-sn-d .tp-btn{margin-top:0;flex:1}.tp-sn-d .tp-btn2{flex:1}
 @media(min-width:700px){.tp-ort{align-items:center}.tp-kart{border-radius:22px;max-height:80%}.tp-tut{display:none}}
-html.mf-gece .tp-kutu img,html.mf-gece .tp-dt{filter:brightness(.7) saturate(.92)}
-html.mf-gece .tp-kutu .tp-st img{filter:none}html.mf-gece .tp-kutu .tp-st{filter:brightness(.7) saturate(.92)}
 html.mf-gece .tp-kap{background:#140A0C}
 html.mf-gece .tp-ch{background:#2E2124;border-color:#9C7A2A;color:#F2DDA8}
 html.mf-gece .tp-ch.sin{background:#8A6A2A;color:#FFF3C4}html.mf-gece .tp-ch.tp-ch-g{background:#241619}
@@ -2213,7 +2211,7 @@ html.mf-gece .tp-btn{background:#C9A227;color:#2A1317}html.mf-gece .tp-btn2{back
 .tp-yz-tunc .tp-yt{font:700 16px Cinzel,'Trajan Pro',Georgia,serif;letter-spacing:.06em;text-transform:uppercase;text-shadow:0 1px 0 rgba(255,220,150,.35),0 -1px 0 rgba(30,10,0,.25)}
 .tp-yz-parsomen,.tp-yz-kitap{color:rgba(59,36,24,.9)}
 .tp-yz-parsomen .tp-yt,.tp-yz-kitap .tp-yt{font:italic 500 16px Georgia,'Times New Roman',serif;letter-spacing:.01em}
-html.mf-gece .tp-yl{filter:brightness(.78) saturate(.95)}
+
 .tp-yk{margin:12px 0 2px;padding:10px 12px;border-radius:12px;border-left:4px solid #C9A227;background:#F4EADF}
 .tp-yk-la{margin:0;font:italic 600 16px/1.45 Georgia,'Times New Roman',serif;color:#3B2418}
 .tp-yk-tr{margin:6px 0 0;font-size:15px;line-height:1.5;color:#351E22}

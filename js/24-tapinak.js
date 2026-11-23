@@ -24,12 +24,56 @@
   /* ---- geri yığını ---- */
   function geriEkle(k,fn){if(window.LEX_GERI)LEX_GERI.ekle(k,fn);}
   function geriDus(k){if(window.LEX_GERI)LEX_GERI.dus(k);}
+  /* ---- yazıtlar: levha ve kitaplara perspektifle oturtulmuş gerçek Latince metinler ----
+     Her yazıt, görsel pikselindeki 4 köşesine matrix3d (homografi) ile eşlenen sabit boyutlu (YW genişlik) bir kutudur.
+     Katman, tıklama alanlarıyla aynı kutuda (.tp-kutu) durur; olc() katmanı görselle birlikte ölçekler. */
+  var YW=400;
+  function homog(k,w,h){ /* (0,0),(w,0),(w,h),(0,h) -> k[0..3]; CSS matrix3d dizgesi */
+    var S=[[0,0],[w,0],[w,h],[0,h]],A=[],B=[],i,j,m;
+    for(i=0;i<4;i++){var x=S[i][0],y=S[i][1],X=k[i][0],Y=k[i][1];
+      A.push([x,y,1,0,0,0,-X*x,-X*y]);B.push(X);A.push([0,0,0,x,y,1,-Y*x,-Y*y]);B.push(Y);}
+    for(i=0;i<8;i++){var p=i;for(j=i+1;j<8;j++)if(Math.abs(A[j][i])>Math.abs(A[p][i]))p=j;
+      m=A[i];A[i]=A[p];A[p]=m;m=B[i];B[i]=B[p];B[p]=m;
+      for(j=i+1;j<8;j++){var f=A[j][i]/A[i][i];for(var c=i;c<8;c++)A[j][c]-=f*A[i][c];B[j]-=f*B[i];}}
+    var q=[];for(i=7;i>=0;i--){var t=B[i];for(j=i+1;j<8;j++)t-=A[i][j]*q[7-j];q[7-i]=t/A[i][i];}
+    q=q.reverse();
+    return 'matrix3d('+[q[0],q[3],0,q[6],q[1],q[4],0,q[7],0,0,1,0,q[2],q[5],0,1].map(function(v){return +v.toFixed(7);}).join(',')+')';}
+  function uz(a,b){return Math.hypot(a[0]-b[0],a[1]-b[1]);}
+  function yzSekil(y){ /* tunç levha: klasik Roma büyük harfleri, U yerine V */
+    return y.stil==='tunc'?y.la.toUpperCase().replace(/U/g,'V'):y.la;}
+  function yzIc(b,y){ /* yazıtın tıklama alanı (eser kutusu) içinde mi? */
+    var cx=0,cy=0;y.kose.forEach(function(p){cx+=p[0]/4;cy+=p[1]/4;});
+    return cx>=b.x/100*IW&&cx<=(b.x+b.w)/100*IW&&cy>=b.y/100*IH&&cy<=(b.y+b.h)/100*IH;}
+  function yzEsle(r){ /* her yazıt, üstüne düştüğü eserin kartına bağlanır; hiçbirine düşmezse kendi dokunma alanı olur */
+    (r.eserler||[]).forEach(function(e){e.__y=[];});
+    (r.yazitlar||[]).forEach(function(y){y.__e=null;
+      (r.eserler||[]).some(function(e){if(yzIc(e,y)){e.__y.push(y);y.__e=e;return true;}return false;});});}
+  function yzHtml(r){
+    var Y=r.yazitlar||[];if(!Y.length)return '';
+    var h='<div class="tp-yl" aria-hidden="true">';
+    Y.forEach(function(y,i){
+      var k=y.kose,w=YW,hh=Math.round(YW*((uz(k[0],k[3])+uz(k[1],k[2]))/2)/((uz(k[0],k[1])+uz(k[3],k[2]))/2));
+      var d=y.dolgu||['#c27335','#a25634'];
+      var tag=y.__e?'div':'button type="button"',son=y.__e?'div':'button';
+      h+='<'+tag+' class="tp-yz tp-yz-'+esc(y.stil)+(y.__e?'':' tp-yz-b')+'" data-yi="'+i+'" style="width:'+w+'px;height:'+hh+'px;transform:'+homog(k,w,hh)+';background:linear-gradient(135deg,'+d[0]+','+d[1]+')"'+(y.__e?'':' aria-label="'+esc('Yazıt: '+y.kaynak+' (kartı aç)')+'"')+'><span class="tp-yt" lang="la">'+esc(yzSekil(y))+'</span></'+son+'>';});
+    return h+'</div>';}
+  function yzSigdir(){ /* metni kutuyu ~%80-90 dolduracak en büyük punto ile yerleştir (tasarım uzayında, ölçekten bağımsız) */
+    [].forEach.call(el.querySelectorAll('.tp-yz'),function(z){
+      var t=z.querySelector('.tp-yt'),cs=getComputedStyle(z),
+        ih=z.clientHeight-parseFloat(cs.paddingTop)-parseFloat(cs.paddingBottom),lo=3,hi=Math.min(110,ih),m;
+      for(var n=0;n<14;n++){m=(lo+hi)/2;t.style.fontSize=m+'px';
+        if(t.offsetHeight<=ih&&t.scrollWidth<=t.clientWidth+1)lo=m;else hi=m;}
+      t.style.fontSize=lo+'px';});}
+  function yzKart(es){
+    if(!es||!es.length)return '';
+    return es.map(function(y){return '<section class="tp-yk" aria-label="Latince yazıt"><p class="tp-yk-la" lang="la">'+esc(y.la)+'</p><p class="tp-yk-tr">'+esc(y.tr)+'</p><small class="tp-yk-k">Kaynak: '+esc(y.kaynak)+'</small></section>';}).join('');}
   /* ---- görünüm ---- */
   var UY={t:'Gelenek / tartışmalı: tarihler ve ayrıntılar kaynağa göre değişebilir.',y:'Tarih ve ayrıntılar kaynağa göre değişebilir; ders kitabınla karşılaştır.'};
   function liste(r){var L=[];
     if(r.kapilar)r.kapilar.forEach(function(k){L.push({t:'kapi',k:k,ad:k.ad,aria:k.kilit?'Tören salonu, kilitli. Yalnızca dönüşüm törenlerinde açılır':k.ad+' kapısı. '+k.ip});});
     if(r.sinav)L.push({t:'sinav',k:r.sinav,ad:r.sinav.ad,aria:'Kum saati: sınavı başlat'});
-    (r.eserler||[]).forEach(function(e){L.push({t:'eser',k:e,ad:e.ad,aria:e.ad+' (eser kartını aç)'});});
+    yzEsle(r);
+    (r.eserler||[]).forEach(function(e){L.push({t:'eser',k:e,ad:e.ad,aria:e.ad+' (eser kartını aç'+(e.__y&&e.__y.length?', Latince yazıt içerir':'')+')'});});
     return L;}
   function gor(id,L){return L.t==='kapi'?!L.k.kilit&&!!oku().o[L.k.hedef]:L.t==='eser'?eserVar(id,L.k.id):L.t==='sinav'?!!oku().s:false;}
   function olc(){
@@ -38,6 +82,7 @@
     var oran=SW>0&&kw>0?(s.scrollLeft+SW/2)/kw:.5;
     var sc=W<H?H/IH:Math.min(W/IW,H/IH);
     kw=IW*sc;k.style.width=kw+'px';k.style.height=IH*sc+'px';
+    var yl=k.querySelector('.tp-yl');if(yl)yl.style.transform='scale('+sc+')';
     if(kw>W)s.scrollLeft=Math.max(0,oran*kw-W/2);
     SW=W;SH=H;}
   function ortala(){var s=bul('.tp-sahne');if(s&&kw>s.clientWidth)s.scrollLeft=(kw-s.clientWidth)/2;}
@@ -53,13 +98,13 @@
       kartKapat(true);sinavKapat(true);
       oda=id;
       var L=liste(r),h='';
-      L.forEach(function(x,i){var b=x.k,cls='tp-hs tp-'+(x.t==='eser'?'eser':'kapi')+(x.t==='kapi'&&b.kilit?' kilit':'')+(gor(id,x)?' gor':'');
+      L.forEach(function(x,i){var b=x.k,cls='tp-hs tp-'+(x.t==='eser'?'eser':'kapi')+(x.t==='eser'&&b.__y&&b.__y.length?' tp-hs-y':'')+(x.t==='kapi'&&b.kilit?' kilit':'')+(gor(id,x)?' gor':'');
         h+='<button type="button" class="'+cls+'" data-i="'+i+'" style="left:'+b.x+'%;top:'+b.y+'%;width:'+b.w+'%;height:'+b.h+'%" aria-label="'+esc(x.aria)+'"'+(x.t==='kapi'&&b.kilit?' aria-disabled="true"':'')+'><i class="tp-ring" aria-hidden="true"></i><span class="tp-et" aria-hidden="true">'+esc(x.ad)+'</span></button>';});
       var s=bul('.tp-sahne');
-      s.innerHTML='<div class="tp-kutu"><img src="'+esc(r.img)+'" alt="" draggable="false">'+h+'</div>';
+      s.innerHTML='<div class="tp-kutu"><img src="'+esc(r.img)+'" alt="" draggable="false">'+yzHtml(r)+h+'</div>';
       s.setAttribute('aria-label',r.ad+(id==='ana'?'. Kapılara dokunarak odalara gir.':'. Eserlere dokun ya da aşağıdaki listeyi kullan.'));
       var k=bul('.tp-kutu');k.className='tp-kutu tp-gir';
-      SW=0;kw=0;olc();ortala();
+      SW=0;kw=0;olc();ortala();yzSigdir();
       bul('.tp-bas b').textContent=r.ad;
       var sm=bul('.tp-bas small'),yk=kw>bul('.tp-sahne').clientWidth+2;sm.textContent=id==='ana'?odaSay()+'/'+(Object.keys(D.odalar).length-1)+' oda gezildi'+(yk?' · yana kaydır':''):r.giris;
       bul('.tp-geri').hidden=id==='ana';
@@ -118,12 +163,17 @@
     kartAc=tetik||null;eserGordu(id,e.id);
     var u='';if(e.uyari&&e.uyari.length)u='<p class="tp-uyari">'+esc(e.uyari.indexOf('t')>=0?UY.t:UY.y)+'</p>';
     var tr='';if(e.terimler&&e.terimler.length){tr='<h4>Latince terimler</h4><ul class="tp-terim">'+e.terimler.map(function(t){return '<li><b lang="la">'+esc(t[0])+'</b> '+esc(t[1])+'</li>';}).join('')+'</ul>';}
-    pencere('<div class="tp-tut" aria-hidden="true"></div><div class="tp-ku"><div><span class="tp-ko">'+esc(D.odalar[id].ad)+'</span><h3 id="tp-kb">'+esc(e.ad)+'</h3></div><button type="button" class="tp-kx" aria-label="Kartı kapat">×</button></div><p class="tp-km">'+esc(e.metin)+'</p>'+u+tr);
+    pencere('<div class="tp-tut" aria-hidden="true"></div><div class="tp-ku"><div><span class="tp-ko">'+esc(D.odalar[id].ad)+'</span><h3 id="tp-kb">'+esc(e.ad)+'</h3></div><button type="button" class="tp-kx" aria-label="Kartı kapat">×</button></div>'+yzKart(e.__y)+'<p class="tp-km">'+esc(e.metin)+'</p>'+u+tr);
     var o=bul('.tp-ort');o.querySelector('.tp-kart').setAttribute('aria-labelledby','tp-kb');
     var h=el.querySelector('.tp-hs[data-i="'+(el.__L||[]).findIndex(function(x){return x.k===e;})+'"]');
     if(h)h.classList.add('gor');
     var c=el.querySelector('.tp-ch[data-i="'+(el.__L||[]).findIndex(function(x){return x.k===e;})+'"]');if(c)c.classList.add('gor');
     o.querySelector('.tp-kx').focus();
+  }
+  function yazitKart(i,tetik){ /* eserin üstüne düşmeyen yazıt: yalnızca yazıt kartı */
+    var y=D.odalar[oda].yazitlar[i];if(!y)return;kartAc=tetik||null;
+    pencere('<div class="tp-tut" aria-hidden="true"></div><div class="tp-ku"><div><span class="tp-ko">'+esc(D.odalar[oda].ad)+'</span><h3 id="tp-kb">Latince yazıt</h3></div><button type="button" class="tp-kx" aria-label="Kartı kapat">×</button></div>'+yzKart([y]));
+    var o=bul('.tp-ort');o.querySelector('.tp-kart').setAttribute('aria-labelledby','tp-kb');o.querySelector('.tp-kx').focus();
   }
   function sinavKapat(hizli){if(!sinav)return;sinav=null;kartKapat(hizli);}
   /* sınav: tüm odaların sorularından 10 soru, şıklar karışık */
@@ -196,6 +246,7 @@
       if(t===bul('.tp-ort')){if(!sinav)kartKapat();return;}
       var so=t.closest('.tp-so');if(so&&sinav){cevap(+so.getAttribute('data-i'));return;}
       if(t.closest('.tp-yeniden')){sinavBasla(kartAc);return;}
+      var yb=t.closest('.tp-yz-b');if(yb){yazitKart(+yb.getAttribute('data-yi'),yb);return;}
       var hs=t.closest('.tp-hs');if(hs){etkin(+hs.getAttribute('data-i'),hs);return;}
       var ch=t.closest('.tp-ch');if(ch){
         if(ch.getAttribute('data-g')){anaSalon();return;}

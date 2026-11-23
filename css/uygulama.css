@@ -2171,3 +2171,19 @@ html.mf-gece .tp-so.dogru{background:#1D3A29;border-color:#4FA878}html.mf-gece .
 html.mf-gece .tp-gb p.d b{color:#7DD6A0}html.mf-gece .tp-gb p.y b{color:#FF9A92}html.mf-gece .tp-gb small{color:#C9B8BB}
 html.mf-gece .tp-btn{background:#C9A227;color:#2A1317}html.mf-gece .tp-btn2{background:#2E2124;color:#F2DDA8}
 @media (prefers-reduced-motion:reduce){.tp-ring,.tp-hs.onay .tp-ring,.tp-gir,.uf-s-yazi.tp-hazir .uf-tapinak .tp-e{animation:none}.tp-kutu.tp-sars,.tp-hs.tp-sars{animation:none}.tp-kap,.tp-kart,.tp-ort{transition:none}}
+/* Tapınak yazıtları (js/24-tapinak.js): levha ve kitaplara perspektifle oturan Latince metinler */
+.tp-yl{position:absolute;left:0;top:0;width:1600px;height:995px;transform-origin:0 0;pointer-events:none}
+.tp-yz{position:absolute;left:0;top:0;transform-origin:0 0;display:flex;align-items:center;justify-content:center;box-sizing:border-box;padding:20px 22px;margin:0;border:0;overflow:hidden;pointer-events:none;text-align:center;-webkit-tap-highlight-color:transparent}
+.tp-yz-b{pointer-events:auto;cursor:pointer;min-width:0;min-height:0;font:inherit}
+.tp-yt{display:block;width:100%;line-height:1.22;hyphens:none;overflow-wrap:normal;word-break:normal}
+.tp-yz-tunc{color:rgba(74,42,18,.88);box-shadow:inset 0 0 12px rgba(60,25,5,.38),inset 0 -1px 0 rgba(255,220,150,.3)}
+.tp-yz-tunc .tp-yt{font:700 16px Cinzel,'Trajan Pro',Georgia,serif;letter-spacing:.06em;text-transform:uppercase;text-shadow:0 1px 0 rgba(255,220,150,.35),0 -1px 0 rgba(30,10,0,.25)}
+.tp-yz-parsomen,.tp-yz-kitap{color:rgba(59,36,24,.9)}
+.tp-yz-parsomen .tp-yt,.tp-yz-kitap .tp-yt{font:italic 500 16px Georgia,'Times New Roman',serif;letter-spacing:.01em}
+html.mf-gece .tp-yl{filter:brightness(.78) saturate(.95)}
+.tp-yk{margin:12px 0 2px;padding:10px 12px;border-radius:12px;border-left:4px solid #C9A227;background:#F4EADF}
+.tp-yk-la{margin:0;font:italic 600 16px/1.45 Georgia,'Times New Roman',serif;color:#3B2418}
+.tp-yk-tr{margin:6px 0 0;font-size:15px;line-height:1.5;color:#351E22}
+.tp-yk-k{display:block;margin-top:6px;font-size:12.5px;color:#6B5A5D}
+html.mf-gece .tp-yk{background:#3A262A}html.mf-gece .tp-yk-la{color:#F2DDA8}html.mf-gece .tp-yk-tr{color:#F4ECED}html.mf-gece .tp-yk-k{color:#C9B8BB}
+.tp-hs.tp-hs-y{align-items:flex-end}.tp-hs-y .tp-ring{margin-bottom:-12px}

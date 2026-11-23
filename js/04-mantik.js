@@ -315,6 +315,7 @@
   function sayfaEl(ad){return document.getElementById('pg-'+ad);}
   function engel(el){
     var kg=document.getElementById('kt-gor');if(kg&&!kg.hidden)return true;
+    if(document.querySelector('.tp-kap'))return true;   // Tapınak açıkken yatay kaydırma sekme değiştirmesin (geri kayıtlarını bozuyordu)
     if(document.querySelector('.pm-sheet.acik,#alarm.acik,#sik-sor.acik,#pm-curu.acik,#koc-onay.acik,#pm-not.acik,#pm-dnm.acik,#sil-p.acik'))return true;
     return !!(el&&el.closest&&el.closest('input,select,textarea,.kaydir,.pm-chips,.mt-sec,.mt-noktalar,.uf-nok,.uf-sahne,.mv-arac,.pr-gunler,.alt-nav,.st-cizim,.dg-cip,.dg-d,.kt-gor,.kt-ort,.kt-yan'));
   }

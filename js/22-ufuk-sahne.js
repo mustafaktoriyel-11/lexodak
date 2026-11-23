@@ -50,7 +50,6 @@
         var mu=2+28*Math.pow(Math.min(1,(1-tt)/.15),1.5),px=function(u){return u/(1.9*ax)},py=function(u){return u/(1.9*ay)};
         IS.style.clipPath=tt>=.85?'inset('+(50-py(19.5+mu)).toFixed(2)+'% '+(50-px(6.5+mu)).toFixed(2)+'% '+(50-py(19.5+mu)).toFixed(2)+'% '+(50-px(6.5+mu)).toFixed(2)+'%)':'none';
         var bu=32.5+150*Math.pow(1-tt,6),m1=50+py(bu),m2=50+py(bu+9),mk=tt>.02?'linear-gradient(to bottom,#000 '+m1.toFixed(2)+'%,transparent '+m2.toFixed(2)+'%)':'none';IS.style.webkitMaskImage=mk;IS.style.maskImage=mk;IS.style.setProperty('--uk',(1-.4*tt*tt*tt).toFixed(3));IS.style.setProperty('--ub',(1+.7*(1-tt)).toFixed(3));}
-      if(window.LEX_UFUK_MUZIK)LEX_UFUK_MUZIK.ilerleme(tt);
       if(BAS)BAS.style.opacity=Math.max(0,1-tt*1.6).toFixed(2);
       bg.style.transform=on+'translate('+(vx-(vx-ox)*bs).toFixed(1)+'px,'+(vy-(vy-oy)*bs+dy).toFixed(1)+'px) scale('+bs.toFixed(4)+')';
       var vY=vy+dy,k=Math.max(60,H-vY),bW=Math.min(W,H*1.2)/400,odak=Math.round(c);

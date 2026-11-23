@@ -31,6 +31,7 @@
     var k=kalanMs(),ara=araMi(),mola=!calismaMi(d.mod)||ara;
     $('pm-sure').textContent=bicim(k);$('pm-sure').style.fontSize=k>=3600000?'36px':'';
     $('pm-halka').style.strokeDashoffset=CEVRE*(1-k/d.toplam);
+    try{$('lawris-mola').hidden=!(d.mod==='kisa'||d.mod==='uzun');}catch(e){}
     $('pm-saat').classList.toggle('mola',mola);$('pm-saat').classList.toggle('deneme',d.mod==='deneme'&&!ara);$('pm-sinav-k').classList.toggle('acik',d.mod==='deneme');$('pm-sinav').disabled=d.mod==='deneme'&&(k!==d.toplam||!!d.faz);
     var sfB=ara?'Arayı atla':mola?T.atla:((k!==d.toplam||d.faz)?'Bitir':'Sıfırla');$('pm-sifir').textContent=sfB;$('pm-sifir').classList.toggle('tut',sfB==='Bitir');$('pm-sifir').setAttribute('aria-label',sfB==='Bitir'?'Bitir, basılı tut':sfB);
     $('pm-domates').style.visibility=d.mod==='deneme'?'hidden':'';

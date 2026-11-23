@@ -72,6 +72,10 @@ html.mf-gece .pm-tut-ip{background:#F4ECED;color:#351E22}html.mf-gece .pm-tut-ip
 @media (prefers-reduced-motion:reduce){.pm-dugmeler button{transition:none}}
 .pm-dugmeler button{border:0;border-radius:999px;padding:12px 26px;font-size:16px;font-weight:700;cursor:pointer}
 .pm-basla{background:#C99A2E;color:#fff;min-width:140px}
+.lawris-mola{display:flex;width:100%;box-sizing:border-box;justify-content:center;align-items:center;gap:6px;margin:12px 0 0;padding:8px 16px;border-radius:999px;border:1px solid #C99A2E;color:#7A2E3A;background:rgba(201,154,46,.08);font-size:14px;text-decoration:none}
+.lawris-mola[hidden]{display:none}
+.lawris-mola b{color:#C99A2E}
+html.mf-gece .lawris-mola{color:#EBD3B0;background:rgba(201,154,46,.14)}
 .pm-sifir{background:#F7EBED;color:#762B37}
 .pm-muzik{position:absolute;top:-6px;right:-14px;z-index:2;width:44px;height:44px;padding:0;border:0;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#F7EBED;color:#762B37;cursor:pointer;transition:transform .16s;-webkit-tap-highlight-color:transparent}.pm-muzik:active{transform:scale(.92)}
 .pm-dugmeler .pm-basla,.pm-dugmeler .pm-sifir{flex:1 1 0;max-width:170px;min-width:0;padding-left:10px;padding-right:10px}

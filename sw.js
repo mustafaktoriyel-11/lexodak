@@ -1,5 +1,5 @@
 // Lex Odak - service worker
-var SURUM = 'lex-odak-v188';
+var SURUM = 'lex-odak-v189';
 var MEVZUAT = 'lex-mevzuat-3';
 var MEVZUAT_ESKI = 'lex-mevzuat-2';  // tek dosyalı eski mevzuat.json önbelleği; kanun dosyaları tamamen inene dek silinmez (aşağıda 'message')
 var MUZIK = 'lex-muzik-2';  // Ufuk yolculuk müziği (ses/ufuk/*.m4a: yol-ezgi, tapinak, toren; ~3 MB): ilk çalışta iner, sonra önbellekten; SURUM değişince silinmez

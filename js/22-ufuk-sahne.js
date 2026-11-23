@@ -44,8 +44,8 @@
       /* son adımda aşağıdan bakış hissi: basamaklar sabit, tapınak yukarı doğru yükselir (2B, keskin kalsın diye 3B dönüş yok) */
       var by=vy+(TB-VPY)*IH*s0*bs+dy,eg=1+tt*tt*tt*.16,on=eg>1.002?'translate('+vx.toFixed(1)+'px,'+by.toFixed(1)+'px) scale(1,'+eg.toFixed(4)+') translate('+(-vx).toFixed(1)+'px,'+(-by).toFixed(1)+'px) ':'';
       if(TK){var tz=tt>=.9;TK.classList.toggle('acik',tz);TK.tabIndex=tz?0:-1;if(KT)KT.classList.toggle('tp-hazir',tz);}
-      /* kapıdan yayılan ışık: yolun başında zar zor seçilir, tapınağa yaklaştıkça güçlenir (yalnız opaklık; nefes alma CSS'te) */
-      if(IS)IS.style.opacity=(.12+.88*Math.pow(tt,1.25)).toFixed(3);
+      /* kapıdan yayılan ışık: uzaktan belirgin (kamera yakınlaştıkça halo küçülür), yaklaştıkça güçlenir (opaklık+dönüşüm; nefes alma CSS'te; gecede --uk varışa doğru yumuşatır) */
+      if(IS){var ge=Math.max(1,Math.min(1.9,2.5/bs)),uo=.5+.5*Math.pow(tt,1.25);IS.style.setProperty('--uo',uo.toFixed(3));IS.style.transform='scale('+ge.toFixed(3)+')';IS.style.setProperty('--uk',(1-.4*tt*tt*tt).toFixed(3));IS.style.setProperty('--ub',(1+.7*(1-tt)).toFixed(3));}
       if(window.LEX_UFUK_MUZIK)LEX_UFUK_MUZIK.ilerleme(tt);
       if(BAS)BAS.style.opacity=Math.max(0,1-tt*1.6).toFixed(2);
       bg.style.transform=on+'translate('+(vx-(vx-ox)*bs).toFixed(1)+'px,'+(vy-(vy-oy)*bs+dy).toFixed(1)+'px) scale('+bs.toFixed(4)+')';
